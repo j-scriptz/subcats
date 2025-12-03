@@ -27,12 +27,6 @@
       "Jscriptz\\Subcats\\": ""
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "git@github.com:jscriptz/magento2-subcats.git"
-    }
-  ],
   "autoload-dev": {
     "psr-4": {
       "Jscriptz\\Subcats\\Test\\Unit\\": "Test/Unit/"

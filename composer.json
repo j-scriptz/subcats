@@ -1,0 +1,41 @@
+{
+  "name": "jscriptz/module-subcats",
+  "description": "Adds sub-category customizable image/link cards to the top of higher level categories.",
+  "type": "magento2-module",
+  "version": "2.1.0",
+  "license": [
+    "proprietary"
+  ],
+  "authors": [
+    {
+      "name": "Jason Lotzer",
+      "email": "jasonlotzer@gmail.com",
+      "homepage": "https://jscriptz.com/",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "magento/framework": "*",
+    "magento/module-catalog": "*"
+  },
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Jscriptz\\Subcats\\": ""
+    }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@github.com:jscriptz/magento2-subcats.git"
+    }
+  ],
+  "autoload-dev": {
+    "psr-4": {
+      "Jscriptz\\Subcats\\Test\\Unit\\": "Test/Unit/"
+    }
+  }
+}

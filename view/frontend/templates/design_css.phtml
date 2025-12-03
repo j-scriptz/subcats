@@ -1,0 +1,10 @@
+<?php
+/** @var \Jscriptz\Subcats\Block\Design $block */
+$css = $block->getCss();
+if (!$css) {
+    return;
+}
+?>
+<style>
+<?= $css ?>
+</style>

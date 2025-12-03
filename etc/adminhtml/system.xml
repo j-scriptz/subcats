@@ -1,0 +1,312 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="jscriptz" translate="label" sortOrder="0" class="jscriptz-tab">
+            <label>Jscriptz</label>
+        </tab>
+        <section id="jscriptz" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Jscriptz Subcats</label>
+            <tab>jscriptz</tab>
+            <resource>Jscriptz_Subcats::subcats</resource>
+            <group id="license" translate="label" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>License</label>
+                <!-- Header with logo + Get a License link -->
+                <field id="license_header" translate="label" type="label" sortOrder="0"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Jscriptz Subcats</label>
+                    <frontend_model>Jscriptz\Subcats\Block\Adminhtml\System\Config\Field\Header</frontend_model>
+                </field>
+                <!-- NEW: Spinner / “refreshing” indicator -->
+                <field id="license_refresh" translate="label" type="note" sortOrder="5"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>License Check</label>
+                    <frontend_model>Jscriptz\Subcats\Block\Adminhtml\System\Config\Field\LicenseRefresh</frontend_model>
+                </field>
+                <!-- License Key -->
+                <field id="license_key" translate="label" type="text" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>License Key</label>
+                    <config_path>jscriptz_subcats/license/license_key</config_path>
+                    <backend_model>Jscriptz\Subcats\Model\Config\Backend\License</backend_model>
+                    <frontend_model>Jscriptz\Subcats\Block\Adminhtml\System\Config\Field\LicenseKey</frontend_model>
+                </field>
+
+                <!-- License Status (green trial / red when ended) -->
+                <field id="license_status" translate="label" type="label" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>License Status</label>
+                    <config_path>jscriptz_subcats/license/license_status</config_path>
+                    <frontend_model>Jscriptz\Subcats\Block\Adminhtml\System\Config\Field\LicenseStatus</frontend_model>
+                </field>
+
+                <!-- Version Status -->
+                <field id="version_status" translate="label" type="label" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Version Status</label>
+                    <config_path>jscriptz_subcats/license/version_status</config_path>
+                    <frontend_model>Jscriptz\Subcats\Block\Adminhtml\System\Config\Field\Plain</frontend_model>
+                </field>
+
+                <!-- News / Marketing Message -->
+                <field id="news_message" translate="label" type="label" sortOrder="40"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Jscriptz News &amp; Updates</label>
+                    <config_path>jscriptz_subcats/license/news_message</config_path>
+                    <frontend_model>Jscriptz\Subcats\Block\Adminhtml\System\Config\Field\Plain</frontend_model>
+                </field>
+
+                <!-- Last Verify API Response (for debugging) -->
+                <field id="verify_message" translate="label" type="label" sortOrder="50"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Last Verify Response</label>
+                    <config_path>jscriptz_subcats/license/verify_message</config_path>
+                    <frontend_model>Jscriptz\Subcats\Block\Adminhtml\System\Config\Field\Plain</frontend_model>
+                </field>
+            </group>
+            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General Settings</label>
+
+ 				<field id="enabled" type="select" translate="label,comment,tooltip" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>jscriptz_subcats/general/enabled</config_path>
+                </field>
+            </group>
+            <group id="design" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Design &amp; Layout</label>
+
+                <!-- Basic copy and image sizing -->
+                <field id="subcat_name" type="text" translate="label,comment" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Section Title</label>
+                    <config_path>jscriptz_subcats/design/subcat_name</config_path>
+                    <comment>Title displayed above the subcategory cards.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="use_product_image_fallback" type="select" translate="label,comment" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use Product Image Fallback</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>jscriptz_subcats/design/use_product_image_fallback</config_path>
+                    <comment>When no custom or category image is set, use an image from a product in that category.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="subcat_height" type="text" translate="label,comment" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Subcategory Image Height</label>
+                    <config_path>jscriptz_subcats/design/subcat_height</config_path>
+                    <validate>required-entry numeric</validate>
+                    <comment>Default image height in pixels.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="subcat_width" type="text" translate="label,comment" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Subcategory Image Width</label>
+                    <config_path>jscriptz_subcats/design/subcat_width</config_path>
+                    <validate>required-entry numeric</validate>
+                    <comment>Default image width in pixels.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <!-- Columns per breakpoint -->
+                <field id="style_option_desktop" type="select" translate="label,comment" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Desktop Columns</label>
+                    <source_model>Jscriptz\Subcats\Model\Config\Source\OptionDesktop</source_model>
+                    <config_path>jscriptz_subcats/design/style_option_desktop</config_path>
+                    <comment>Number of cards per row on desktop.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="style_option_tablet" type="select" translate="label,comment" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Tablet Columns</label>
+                    <source_model>Jscriptz\Subcats\Model\Config\Source\OptionTablet</source_model>
+                    <config_path>jscriptz_subcats/design/style_option_tablet</config_path>
+                    <comment>Number of cards per row on tablet.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="style_option_phone" type="select" translate="label,comment" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Smartphone Columns</label>
+                    <source_model>Jscriptz\Subcats\Model\Config\Source\OptionPhone</source_model>
+                    <config_path>jscriptz_subcats/design/style_option_phone</config_path>
+                    <comment>Number of cards per row on mobile.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="cards" translate="label" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Card Design</label>
+                <!-- Theme presets -->
+                <field id="theme_preset" type="select" translate="label,comment" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Theme Preset</label>
+                    <source_model>Jscriptz\Subcats\Model\Config\Source\ThemePreset</source_model>
+                    <config_path>jscriptz_subcats/design/theme_preset</config_path>
+                    <comment>Choose a preset. Use Custom to fine tune card colors and spacing below.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="card_radius" type="text" translate="label,comment" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Card Corner Radius</label>
+                    <config_path>jscriptz_subcats/design/card_radius</config_path>
+                    <comment>Border radius for the card (e.g. 0, 4px, .5rem). Leave empty for default.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="card_border" type="text" translate="label,comment" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Card Border</label>
+                    <config_path>jscriptz_subcats/design/card_border</config_path>
+                    <comment>Any CSS border shorthand (e.g. 1px solid #ddd). Leave empty for no border.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="card_padding" type="text" translate="label,comment"
+                       sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Card Spacing (Gap)</label>
+                    <config_path>jscriptz_subcats/design/card_padding</config_path>
+                    <comment>Space between cards (e.g. 10px or 1.5rem). Leave empty to use the preset default.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="card_background" type="text" translate="label,comment" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Card Background</label>
+                    <config_path>jscriptz_subcats/design/card_background</config_path>
+                    <comment>Any valid CSS color (e.g. #ffffff, rgba(0,0,0,.03)). Leave empty for transparent.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="card_shadow" type="text" translate="label,comment"
+                       sortOrder="133" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Card Shadow</label>
+                    <config_path>jscriptz_subcats/design/card_shadow</config_path>
+                    <comment>CSS box-shadow for the card (e.g. 0 12px 30px rgba(0,0,0,0.5)). Leave empty for no shadow.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="image_border" type="text" translate="label,comment" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Image Border</label>
+                    <config_path>jscriptz_subcats/design/image_border</config_path>
+                    <comment>Any CSS border shorthand for the image (e.g. 1px solid #eee). Leave empty for none.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <!-- Card Hover Shadow -->
+                <field id="card_hover_shadow"
+                       translate="label,comment"
+                       type="select"
+                       sortOrder="134"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Card Hover Shadow</label>
+                    <source_model>Jscriptz\Subcats\Model\Config\Source\HoverShadow</source_model>
+                    <config_path>jscriptz_subcats/design/card_hover_shadow</config_path>
+                    <comment>Shadow intensity applied to the card on hover.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <!-- Card Hover Scale -->
+                <field id="card_hover_scale"
+                       translate="label,comment"
+                       type="select"
+                       sortOrder="135"
+                       showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Card Hover Scale</label>
+                    <source_model>Jscriptz\Subcats\Model\Config\Source\HoverScale</source_model>
+                    <config_path>jscriptz_subcats/design/card_hover_scale</config_path>
+                    <comment>How much the card zooms on hover.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="names_and_description" translate="label" sortOrder="26" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Card Title Design</label>
+                <field id="name_font_size" type="text" translate="label,comment"
+                       sortOrder="131" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Card Title Font Size</label>
+                    <config_path>jscriptz_subcats/design/name_font_size</config_path>
+                    <comment>Any valid CSS font-size (e.g. 1.4rem, 18px). If you enter just a number, it will be treated as px. Leave empty to use the default.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="link_color" type="text" translate="label,comment" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Card Title Color</label>
+                    <config_path>jscriptz_subcats/design/link_color</config_path>
+                    <comment>Any valid CSS color (e.g. #007bff, #ff0000, rgb(0,0,0)). Leave empty to inherit theme.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="name_font_weight" type="text" translate="label,comment"
+                       sortOrder="132" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Card Title Font Weight</label>
+                    <config_path>jscriptz_subcats/design/name_font_weight</config_path>
+                    <comment>Any valid CSS font-weight (e.g. 200, 400, 600, 900). </comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="transitions" translate="label" sortOrder="27" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Transitions</label>
+                <!-- Transitions -->
+                <field id="transition_card" type="select" translate="label,comment" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Card Hover Transition</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>jscriptz_subcats/design/transition_card</config_path>
+                    <comment>Enable/disable hover transition on the card itself.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="transition_image" type="select" translate="label,comment" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Image Hover Transition</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>jscriptz_subcats/design/transition_image</config_path>
+                    <comment>Enable/disable hover transition on the image.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="transition_text" type="select" translate="label,comment" sortOrder="170" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Text Hover Transition</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>jscriptz_subcats/design/transition_text</config_path>
+                    <comment>Enable/disable hover transition on title/description.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

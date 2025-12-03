@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <fieldset name="jscriptz_subcats">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="label" xsi:type="string" translate="true">Jscriptz Subcats</item>
+                <item name="collapsible" xsi:type="boolean">true</item>
+                <item name="sortOrder" xsi:type="string">20</item>
+            </item>
+        </argument>
+
+        <field name="is_subcat_enabled" sortOrder="1" formElement="checkbox">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">category</item>
+                    <item name="default" xsi:type="number">1</item>
+                    <item name="additionalClasses" xsi:type="string">subcat-admin-enabled</item>
+                    <item name="sortOrder" xsi:type="number">1</item>
+                </item>
+            </argument>
+            <settings>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">false</rule>
+                </validation>
+                <dataType>boolean</dataType>
+                <label translate="true">Display this Subcategory?</label>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <valueMap>
+                            <map name="false" xsi:type="string">0</map>
+                            <map name="true" xsi:type="string">1</map>
+                        </valueMap>
+                        <prefer>toggle</prefer>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+
+        <field name="subcat_image">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">string</item>
+                    <item name="source" xsi:type="string">category</item>
+                    <item name="label" xsi:type="string" translate="true">Subcat Image</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="formElement" xsi:type="string">fileUploader</item>
+                    <item name="elementTmpl" xsi:type="string">ui/form/element/uploader/uploader</item>
+                    <item name="previewTmpl" xsi:type="string">Magento_Catalog/image-preview</item>
+                    <item name="required" xsi:type="boolean">false</item>
+                    <item name="sortOrder" xsi:type="number">10</item>
+                    <item name="additionalClasses" xsi:type="string">subcat-admin-image</item>
+                    <item name="uploaderConfig" xsi:type="array">
+                        <item name="url" xsi:type="url" path="ait/image/upload"/>
+                    </item>
+                </item>
+            </argument>
+        </field>
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        
+
+        <field name="subcat_cols_desktop">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">
+                    Jscriptz\Subcats\Model\Category\Attribute\Source\OptionsDesktop
+                </item>
+                <item name="config" xsi:type="array">
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="label" xsi:type="string" translate="true">Desktop Column Display</item>
+                    <item name="options" xsi:type="array">
+                        <item name="1_column" xsi:type="number">12</item>
+                        <item name="2_column" xsi:type="number">6</item>
+                        <item name="3_column" xsi:type="number">4</item>
+                        <item name="4_column" xsi:type="number">3</item>
+                        <item name="6_column" xsi:type="number">2</item>
+                    </item>
+                    <item name="default" xsi:type="number">4</item>
+                    <item name="sortOrder" xsi:type="number">24</item>
+                </item>
+            </argument>
+        </field>
+
+        <field name="subcat_cols_tablet">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">
+                    Jscriptz\Subcats\Model\Category\Attribute\Source\OptionsTablet
+                </item>
+                <item name="config" xsi:type="array">
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="label" xsi:type="string" translate="true">Tablet Column Display</item>
+                    <item name="options" xsi:type="array">
+                        <item name="1_column" xsi:type="number">12</item>
+                        <item name="2_column" xsi:type="number">6</item>
+                        <item name="3_column" xsi:type="number">4</item>
+                        <item name="4_column" xsi:type="number">3</item>
+                        <item name="6_column" xsi:type="number">2</item>
+                    </item>
+                    <item name="default" xsi:type="number">6</item>
+                    <item name="sortOrder" xsi:type="number">25</item>
+                </item>
+            </argument>
+        </field>
+
+        <field name="subcat_cols_phone">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">
+                    Jscriptz\Subcats\Model\Category\Attribute\Source\OptionsPhone
+                </item>
+                <item name="config" xsi:type="array">
+                    <item name="formElement" xsi:type="string">select</item>
+                    <item name="label" xsi:type="string" translate="true">Smartphone Column Display</item>
+                    <item name="options" xsi:type="array">
+                        <item name="1_column" xsi:type="number">12</item>
+                        <item name="2_column" xsi:type="number">6</item>
+                        <item name="3_column" xsi:type="number">4</item>
+                        <item name="4_column" xsi:type="number">3</item>
+                        <item name="6_column" xsi:type="number">2</item>
+                    </item>
+                    <item name="default" xsi:type="number">12</item>
+                    <item name="sortOrder" xsi:type="number">30</item>
+                </item>
+            </argument>
+        </field>
+
+        <field name="subcats_children" sortOrder="35" formElement="multiselect">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="source" xsi:type="string">category</item>
+                    <item name="label" xsi:type="string" translate="true">Subcategories to Display</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataScope" xsi:type="string">subcats_children</item>
+                    <item name="multiple" xsi:type="boolean">true</item>
+                    <item name="notice" xsi:type="string" translate="true">
+                        Leave empty to show all active child categories.
+                    </item>
+
+                    <!-- Core multiselect + our template -->
+                    <item name="component" xsi:type="string">Magento_Ui/js/form/element/multiselect</item>
+                    <item name="elementTmpl" xsi:type="string">
+                        Jscriptz_Subcats/form/element/subcats-sortable-multiselect
+                    </item>
+                </item>
+            </argument>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="Jscriptz\Subcats\Model\Config\Source\CategoryChildren"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

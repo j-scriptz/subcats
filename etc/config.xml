@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+     <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+        <default>
+            <jscriptz_subcats>
+            	<general>
+            		<enabled>1</enabled>
+            	</general>
+                                <design>
+                	<grow_enabled>1</grow_enabled>
+                	<subcat_height>500</subcat_height>
+                	<subcat_width>500</subcat_width>
+                    <use_product_image_fallback>1</use_product_image_fallback>
+                    <style_option_desktop>4</style_option_desktop>
+                    <style_option_tablet>2</style_option_tablet>
+                    <style_option_phone>1</style_option_phone>
+
+                    <theme_preset>custom</theme_preset>
+                    <transition_card>1</transition_card>
+                    <transition_image>1</transition_image>
+                    <transition_text>1</transition_text>
+
+                    <!-- Fine-tuning defaults -->
+                    <link_color></link_color>
+                    <card_radius>30px</card_radius>
+                    <card_border>1px solid #ccc</card_border>
+                    <card_padding>15</card_padding>
+                    <card_background>#ffffff</card_background>
+                    <name_font_size>1.6rem</name_font_size>
+                    <name_font_weight>600</name_font_weight>
+                    <description_font_size>16px</description_font_size>
+                    <card_shadow>0 3px 4px rgba(0,0,0,0.05)</card_shadow>
+                    <card_hover_shadow>light</card_hover_shadow>
+                    <card_hover_scale>medium</card_hover_scale>
+                </design>
+
+                            <license>
+                    <license_status>Free Trial (30 Days Remaining)</license_status>
+                </license>
+
+</jscriptz_subcats>
+        </default>
+    </config>

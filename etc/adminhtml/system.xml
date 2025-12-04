@@ -63,7 +63,7 @@
                     <frontend_model>Jscriptz\Subcats\Block\Adminhtml\System\Config\Field\Plain</frontend_model>
                 </field>
             </group>
-            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>General Settings</label>
 
  				<field id="enabled" type="select" translate="label,comment,tooltip" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">

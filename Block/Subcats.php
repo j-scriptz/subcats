@@ -836,39 +836,93 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
         $spacing = 'var(--js-subcats-card-spacing, 20px)';
 
         $desktopSpan = $this->getWidgetDesktopSpan();
-        if ($desktopSpan && 12 % $desktopSpan === 0) {
-            $desktopCols = (int) (12 / $desktopSpan);
-            $desktopGaps = max(0, $desktopCols - 1);
-            $vars['--js-subcats-col-width-desktop'] = sprintf(
-                'calc((100%% - (%s * %d)) / %d)',
-                $spacing,
-                $desktopGaps,
-                $desktopCols
-            );
+        if ($desktopSpan) {
+            if ($desktopSpan === 5) {
+                $desktopCols = 5;
+                $desktopGaps = 4;
+
+                $vars['--js-subcats-col-width-desktop'] = sprintf(
+                    'calc((100%% - (%s * %d)) / %d)',
+                    $spacing,
+                    $desktopGaps,
+                    $desktopCols
+                );
+            } elseif (12 % $desktopSpan === 0) {
+                $desktopCols = (int) (12 / $desktopSpan);
+                $desktopGaps = max(0, $desktopCols - 1);
+
+                $vars['--js-subcats-col-width-desktop'] = sprintf(
+                    'calc((100%% - (%s * %d)) / %d)',
+                    $spacing,
+                    $desktopGaps,
+                    $desktopCols
+                );
+            } else {
+                $vars['--js-subcats-col-width-desktop'] = sprintf(
+                    '%.6f%%',
+                    100 * ($desktopSpan / 12)
+                );
+            }
         }
 
         $tabletSpan = $this->getWidgetTabletSpan();
-        if ($tabletSpan && 12 % $tabletSpan === 0) {
-            $tabletCols = (int) (12 / $tabletSpan);
-            $tabletGaps = max(0, $tabletCols - 1);
-            $vars['--js-subcats-col-width-tablet'] = sprintf(
-                'calc((100%% - (%s * %d)) / %d)',
-                $spacing,
-                $tabletGaps,
-                $tabletCols
-            );
+        if ($tabletSpan) {
+            if ($tabletSpan === 5) {
+                $tabletCols = 5;
+                $tabletGaps = 4;
+
+                $vars['--js-subcats-col-width-tablet'] = sprintf(
+                    'calc((100%% - (%s * %d)) / %d)',
+                    $spacing,
+                    $tabletGaps,
+                    $tabletCols
+                );
+            } elseif (12 % $tabletSpan === 0) {
+                $tabletCols = (int) (12 / $tabletSpan);
+                $tabletGaps = max(0, $tabletCols - 1);
+
+                $vars['--js-subcats-col-width-tablet'] = sprintf(
+                    'calc((100%% - (%s * %d)) / %d)',
+                    $spacing,
+                    $tabletGaps,
+                    $tabletCols
+                );
+            } else {
+                $vars['--js-subcats-col-width-tablet'] = sprintf(
+                    '%.6f%%',
+                    100 * ($tabletSpan / 12)
+                );
+            }
         }
 
         $phoneSpan = $this->getWidgetPhoneSpan();
-        if ($phoneSpan && 12 % $phoneSpan === 0) {
-            $phoneCols = (int) (12 / $phoneSpan);
-            $phoneGaps = max(0, $phoneCols - 1);
-            $vars['--js-subcats-col-width-phone'] = sprintf(
-                'calc((100%% - (%s * %d)) / %d)',
-                $spacing,
-                $phoneGaps,
-                $phoneCols
-            );
+        if ($phoneSpan) {
+            if ($phoneSpan === 5) {
+                $phoneCols = 5;
+                $phoneGaps = 4;
+
+                $vars['--js-subcats-col-width-phone'] = sprintf(
+                    'calc((100%% - (%s * %d)) / %d)',
+                    $spacing,
+                    $phoneGaps,
+                    $phoneCols
+                );
+            } elseif (12 % $phoneSpan === 0) {
+                $phoneCols = (int) (12 / $phoneSpan);
+                $phoneGaps = max(0, $phoneCols - 1);
+
+                $vars['--js-subcats-col-width-phone'] = sprintf(
+                    'calc((100%% - (%s * %d)) / %d)',
+                    $spacing,
+                    $phoneGaps,
+                    $phoneCols
+                );
+            } else {
+                $vars['--js-subcats-col-width-phone'] = sprintf(
+                    '%.6f%%',
+                    100 * ($phoneSpan / 12)
+                );
+            }
         }
 
         if (!$vars) {

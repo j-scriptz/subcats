@@ -208,7 +208,17 @@ class Design extends Template
         }
 
         if ($desktopSpan > 0) {
-            if (12 % $desktopSpan === 0) {
+            if ($desktopSpan === 5) {
+                // Special case: 5 columns (20% width, 4 gaps)
+                $desktopCols = 5;
+                $desktopGaps = 4;
+
+                $vars['--js-subcats-col-width-desktop'] = sprintf(
+                    'calc((100%% - (var(--js-subcats-card-spacing, 20px) * %d)) / %d)',
+                    $desktopGaps,
+                    $desktopCols
+                );
+            } elseif (12 % $desktopSpan === 0) {
                 $desktopCols = 12 / $desktopSpan;        // e.g. 4 -> 3 columns
                 $desktopGaps = max(0, $desktopCols - 1); // 3 columns -> 2 gaps
 
@@ -224,7 +234,16 @@ class Design extends Template
         }
 
         if ($tabletSpan > 0) {
-            if (12 % $tabletSpan === 0) {
+            if ($tabletSpan === 5) {
+                $tabletCols = 5;
+                $tabletGaps = 4;
+
+                $vars['--js-subcats-col-width-tablet'] = sprintf(
+                    'calc((100%% - (var(--js-subcats-card-spacing, 20px) * %d)) / %d)',
+                    $tabletGaps,
+                    $tabletCols
+                );
+            } elseif (12 % $tabletSpan === 0) {
                 $tabletCols = 12 / $tabletSpan;
                 $tabletGaps = max(0, $tabletCols - 1);
 
@@ -239,7 +258,16 @@ class Design extends Template
         }
 
         if ($phoneSpan > 0) {
-            if (12 % $phoneSpan === 0) {
+            if ($phoneSpan === 5) {
+                $phoneCols = 5;
+                $phoneGaps = 4;
+
+                $vars['--js-subcats-col-width-phone'] = sprintf(
+                    'calc((100%% - (var(--js-subcats-card-spacing, 20px) * %d)) / %d)',
+                    $phoneGaps,
+                    $phoneCols
+                );
+            } elseif (12 % $phoneSpan === 0) {
                 $phoneCols = 12 / $phoneSpan;
                 $phoneGaps = max(0, $phoneCols - 1);
 

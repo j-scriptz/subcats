@@ -21,5 +21,4 @@
             <argument name="imageUploader" xsi:type="object">Jscriptz\Subcats\ImageUpload</argument>
         </arguments>
     </type>
-	<preference for="Magento\Catalog\Block\Category\View" type="Jscriptz\Subcats\Block\Subcats" />
 </config>

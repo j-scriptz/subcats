@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+
+    <widget id="jscriptz_subcats_widget"
+            class="Jscriptz\Subcats\Block\Subcats">
+
+        <label translate="true">Jscriptz Subcats</label>
+        <description translate="true">
+            Display a grid of category cards using Jscriptz Subcats.
+        </description>
+
+        <parameters>
+
+            <!-- Optional title above the grid -->
+            <parameter name="block_title" xsi:type="text" visible="true" sort_order="10">
+                <label translate="true">Title</label>
+            </parameter>
+
+            <!-- Show / hide title -->
+            <parameter name="show_title" xsi:type="select" visible="true" sort_order="15">
+                <label translate="true">Show Title</label>
+                <options>
+                    <option name="yes" value="1">
+                        <label translate="true">Yes</label>
+                    </option>
+                    <option name="no" value="0">
+                        <label translate="true">No</label>
+                    </option>
+                </options>
+            </parameter>
+
+            <!-- Category chooser with dual-list + sort -->
+            <parameter name="category_ids"
+                       xsi:type="block"
+                       visible="true"
+                       required="true"
+                       sort_order="20">
+                <label translate="true">Categories</label>
+                <block class="Jscriptz\Subcats\Block\Adminhtml\Widget\CategoryOrder" />
+            </parameter>
+
+            <!-- Columns (Desktop) -->
+            <parameter name="columns_desktop" xsi:type="select" visible="true" sort_order="30">
+                <label translate="true">Columns (Desktop)</label>
+                <description translate="true">
+                    Leave blank to use global/category settings. Otherwise overrides columns on desktop.
+                </description>
+                <options>
+                    <option name="inherit" value="">
+                        <label translate="true">Use Global / Category Setting</label>
+                    </option>
+                    <option name="1col" value="12">
+                        <label translate="true">1 Column</label>
+                    </option>
+                    <option name="2col" value="6">
+                        <label translate="true">2 Columns</label>
+                    </option>
+                    <option name="3col" value="4">
+                        <label translate="true">3 Columns</label>
+                    </option>
+                    <option name="4col" value="3">
+                        <label translate="true">4 Columns</label>
+                    </option>
+                    <option name="6col" value="2">
+                        <label translate="true">6 Columns</label>
+                    </option>
+                </options>
+            </parameter>
+
+            <!-- Columns (Tablet) -->
+            <parameter name="columns_tablet" xsi:type="select" visible="true" sort_order="40">
+                <label translate="true">Columns (Tablet)</label>
+                <description translate="true">
+                    Leave blank to use global/category settings. Otherwise overrides columns on tablet.
+                </description>
+                <options>
+                    <option name="inherit" value="">
+                        <label translate="true">Use Global / Category Setting</label>
+                    </option>
+                    <option name="1col" value="12">
+                        <label translate="true">1 Column</label>
+                    </option>
+                    <option name="2col" value="6">
+                        <label translate="true">2 Columns</label>
+                    </option>
+                    <option name="3col" value="4">
+                        <label translate="true">3 Columns</label>
+                    </option>
+                    <option name="4col" value="3">
+                        <label translate="true">4 Columns</label>
+                    </option>
+                    <option name="6col" value="2">
+                        <label translate="true">6 Columns</label>
+                    </option>
+                </options>
+            </parameter>
+
+            <!-- Columns (Mobile) -->
+            <parameter name="columns_mobile" xsi:type="select" visible="true" sort_order="50">
+                <label translate="true">Columns (Mobile)</label>
+                <description translate="true">
+                    Leave blank to use global/category settings. Otherwise overrides columns on mobile.
+                </description>
+                <options>
+                    <option name="inherit" value="">
+                        <label translate="true">Use Global / Category Setting</label>
+                    </option>
+                    <option name="1col" value="12">
+                        <label translate="true">1 Column</label>
+                    </option>
+                    <option name="2col" value="6">
+                        <label translate="true">2 Columns</label>
+                    </option>
+                    <option name="3col" value="4">
+                        <label translate="true">3 Columns</label>
+                    </option>
+                    <option name="4col" value="3">
+                        <label translate="true">4 Columns</label>
+                    </option>
+                    <option name="6col" value="2">
+                        <label translate="true">6 Columns</label>
+                    </option>
+                </options>
+            </parameter>
+
+            <!-- Template selector -->
+            <parameter name="template" xsi:type="select" visible="true" required="true" sort_order="60">
+                <label translate="true">Template</label>
+                <options>
+                    <option name="default" value="Jscriptz_Subcats::subcats.phtml">
+                        <label translate="true">Default Subcats Template</label>
+                    </option>
+                </options>
+            </parameter>
+
+        </parameters>
+
+    </widget>
+</widgets>

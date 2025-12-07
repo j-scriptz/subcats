@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
-     <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+     <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
         <default>
             <jscriptz_subcats>
             	<general>
             		<enabled>1</enabled>
             	</general>
-                                <design>
+                <design>
                 	<grow_enabled>1</grow_enabled>
                 	<subcat_height>500</subcat_height>
                 	<subcat_width>500</subcat_width>
                     <use_product_image_fallback>1</use_product_image_fallback>
-                    <style_option_desktop>4</style_option_desktop>
+                    <style_option_desktop>3</style_option_desktop>
                     <style_option_tablet>2</style_option_tablet>
                     <style_option_phone>1</style_option_phone>
 
@@ -20,7 +20,6 @@
                     <transition_image>1</transition_image>
                     <transition_text>1</transition_text>
 
-                    <!-- Fine-tuning defaults -->
                     <link_color></link_color>
                     <card_radius>30px</card_radius>
                     <card_border>1px solid #ccc</card_border>
@@ -34,10 +33,9 @@
                     <card_hover_scale>medium</card_hover_scale>
                 </design>
 
-                            <license>
+                <license>
                     <license_status>Free Trial (30 Days Remaining)</license_status>
                 </license>
-
-</jscriptz_subcats>
+            </jscriptz_subcats>
         </default>
     </config>

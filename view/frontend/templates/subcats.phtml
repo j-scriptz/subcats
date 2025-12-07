@@ -8,21 +8,33 @@ if (!$canShow || !$children) {
     return;
 }
 
-$title     = $block->getBlockTitle();
+$title     = trim((string)$block->getData('block_title'));
+$showTitle = (int)$block->getData('show_title');
 $growClass = $block->isGrowEnabled() ? 'jscriptz-subcats__item--grow' : '';
 $presetClass = $block->getDesignPresetCssClass();
+$inlineCss   = $block->getWidgetCssOverrides();
 ?>
-<div class="block jscriptz-subcats <?= $escaper->escapeHtmlAttr($presetClass) ?>">
-    <?php if ($title): ?>
-        <div class="block-title">
-            <strong><?= $block->escapeHtml($title) ?></strong>
-        </div>
+<div class="block jscriptz-subcats <?= $escaper->escapeHtmlAttr($presetClass) ?>"
+    <?= $inlineCss ? 'style="' . $escaper->escapeHtmlAttr($inlineCss) . '"' : '' ?>>
+    <?php if ($showTitle && $title !== ''): ?>
+        <h2 class="jscriptz-subcats-title">
+            <?= $block->escapeHtml($title) ?>
+        </h2>
     <?php endif; ?>
 
     <div class="jscriptz-subcats__list">
         <?php foreach ($children as $child): ?>
             <?php
             /** @var \Magento\Catalog\Model\Category $child */
+
+            // Honor "Display this Subcategory" (is_subcat_enabled = 0 => hide)
+            $isEnabledFlag = $child->getData('is_subcat_enabled');
+
+            // Treat explicit 0 as "do NOT display"; null or 1 = display
+            if ($isEnabledFlag === 0 || $isEnabledFlag === '0') {
+                continue;
+            }
+
             $imageUrl    = $block->getSubcategoryImageUrl($child);
             $description = $block->getSubcategoryDescription($child);
 
@@ -34,13 +46,13 @@ $presetClass = $block->getDesignPresetCssClass();
             <div class="<?= $escaper->escapeHtmlAttr($itemClasses) ?>">
                 <a class="jscriptz-subcats__image-link"
                    href="<?= $escaper->escapeUrl($child->getUrl()) ?>">
-                    <span class="jscriptz-subcats__media-wrapper">
-                        <?php if ($imageUrl): ?>
-                            <img class="jscriptz-subcats__image"
-                                 src="<?= $escaper->escapeUrl($imageUrl) ?>"
-                                 alt="<?= $escaper->escapeHtmlAttr($child->getName()) ?>" />
-                        <?php endif; ?>
-                    </span>
+                <span class="jscriptz-subcats__media-wrapper">
+                    <?php if ($imageUrl): ?>
+                        <img class="jscriptz-subcats__image"
+                             src="<?= $escaper->escapeUrl($imageUrl) ?>"
+                             alt="<?= $escaper->escapeHtmlAttr($child->getName()) ?>" />
+                    <?php endif; ?>
+                </span>
                 </a>
 
                 <div class="jscriptz-subcats__content">

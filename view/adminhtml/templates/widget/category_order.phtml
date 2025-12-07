@@ -1,0 +1,247 @@
+<?php
+/**
+ * Dual-list category selector for the Jscriptz_Subcats widget.
+ *
+ * Left:  Available categories (full paths)
+ * Middle: Add ▶ / ◀ Remove
+ * Right: Final order (selected categories) + Move Up / Move Down
+ *
+ * The hidden widget param "category_ids" always stores the ordered list
+ * of IDs from the right-hand list.
+ *
+ * @var $block \Jscriptz\Subcats\Block\Adminhtml\Widget\CategoryOrder
+ */
+
+$element     = $block->getElement();
+$hiddenId    = $element->getId();
+$selectedIds = $block->getSelectedIds();
+$options     = $block->getOptions();
+
+// Build a simple id => label map so we can
+// render the Final Order box in saved order.
+$optionsById = [];
+foreach ($options as $opt) {
+    $value = (int) ($opt['value'] ?? 0);
+    if ($value <= 0) {
+        continue;
+    }
+    $optionsById[$value] = (string) ($opt['label'] ?? '');
+}
+
+$uid = uniqid('js-subcats-catorder-');
+?>
+<div class="js-subcats-widget-category-order">
+    <div class="admin__field">
+        <!-- Use Magento's main label column ("Categories *"), but pull the control
+             section left so we can use the full width of the form. -->
+        <div class="admin__field-control"
+             style="margin-left:-220px; width:calc(100% + 220px);">
+
+            <!-- Single row: Available | Buttons | Final Order -->
+            <div class="admin__control-fields"
+                 style="margin-top: 15px; display:flex; gap:24px; align-items:flex-start; flex-wrap:nowrap; width:100%;">
+
+                <!-- Available categories (about half width) -->
+                <div class="js-subcats-widget-col js-subcats-widget-col--available"
+                     style="flex:1 1 0; min-width:0;">
+                    <div class="admin__field">
+                        <label class="admin__field-label"
+                               for="<?= $block->escapeHtmlAttr($uid . '_available') ?>">
+                            <?= $block->escapeHtml(__('Available Categories')) ?>
+                        </label>
+                        <div class="admin__field-control">
+                            <select id="<?= $block->escapeHtmlAttr($uid . '_available') ?>"
+                                    class="admin__control-multiselect"
+                                    multiple="multiple"
+                                    size="12"
+                                    style="width:100%;">
+                                <?php foreach ($options as $opt): ?>
+                                    <?php
+                                    $value = (int) ($opt['value'] ?? 0);
+                                    $label = (string) ($opt['label'] ?? '');
+                                    if (in_array($value, $selectedIds, true)) {
+                                        // Selected ones go to the "Final order" box instead
+                                        continue;
+                                    }
+                                    ?>
+                                    <option value="<?= $value ?>">
+                                        <?= $block->escapeHtml($label) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transfer buttons (fixed narrow column so text doesn't wrap) -->
+                <div class="js-subcats-widget-col js-subcats-widget-col--controls"
+                     style="display:flex; flex-direction:column; gap:6px; margin-top:26px; flex:0 0 90px;">
+                    <button type="button"
+                            class="action-default"
+                            id="<?= $block->escapeHtmlAttr($uid . '_add') ?>"
+                            style="white-space:nowrap;">
+                        <span><?= $block->escapeHtml(__('Add ▶')) ?></span>
+                    </button>
+                    <button type="button"
+                            class="action-default"
+                            id="<?= $block->escapeHtmlAttr($uid . '_remove') ?>"
+                            style="white-space:nowrap;">
+                        <span><?= $block->escapeHtml(__('◀ Remove')) ?></span>
+                    </button>
+                </div>
+
+                <!-- Final order (other half width) -->
+                <div class="js-subcats-widget-col js-subcats-widget-col--selected"
+                     style="flex:1 1 0; min-width:0;">
+                    <div class="admin__field">
+                        <label class="admin__field-label"
+                               for="<?= $block->escapeHtmlAttr($uid . '_selected') ?>">
+                            <?= $block->escapeHtml(__('Final Order')) ?>
+                        </label>
+                        <div class="admin__field-control">
+                            <select id="<?= $block->escapeHtmlAttr($uid . '_selected') ?>"
+                                    class="admin__control-multiselect"
+                                    multiple="multiple"
+                                    size="12"
+                                    style="width:100%;">
+                                <?php foreach ($selectedIds as $id): ?>
+                                    <?php
+                                    $value = (int) $id;
+                                    if ($value <= 0 || !isset($optionsById[$value])) {
+                                        continue;
+                                    }
+                                    $label = $optionsById[$value];
+                                    ?>
+                                    <option value="<?= $value ?>">
+                                        <?= $block->escapeHtml($label) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+
+                            <div class="js-subcats-widget-order-buttons" style="margin-top:6px;white-space:nowrap">
+                                <button type="button"
+                                        class="action-default"
+                                        id="<?= $block->escapeHtmlAttr($uid . '_up') ?>"
+                                        style="margin-right:6px;">
+                                    <span><?= $block->escapeHtml(__('Move Up')) ?></span>
+                                </button>
+                                <button type="button"
+                                        class="action-default"
+                                        id="<?= $block->escapeHtmlAttr($uid . '_down') ?>">
+                                    <span><?= $block->escapeHtml(__('Move Down')) ?></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <p class="note" style="margin-top:20px;">
+                <?= $block->escapeHtml(
+                    __('Select categories from "Available Categories", click "Add" to move them into "Final Order", then use the arrows to adjust the display order. Only the categories in "Final Order" are rendered by the widget.')
+                ) ?>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    require(['jquery'], function ($) {
+        (function () {
+            var uid       = <?= json_encode($uid) ?>;
+            var hiddenId  = <?= json_encode($hiddenId) ?>;
+            var availableId = uid + '_available';
+            var selectedId  = uid + '_selected';
+
+            function jqid(id) {
+                return '#' + id.replace(/(:|\.|\[|\]|,|=|@)/g, '\\$1');
+            }
+
+            var $available = $(jqid(availableId));
+            var $selected  = $(jqid(selectedId));
+            var $hidden    = $(jqid(hiddenId));
+
+            function syncHidden() {
+                var ordered = [];
+                $selected.find('option').each(function () {
+                    ordered.push($(this).val());
+                });
+                $hidden.val(ordered.join(','));
+            }
+
+            var $btnAdd    = $('#' + uid + '_add');
+            var $btnRemove = $('#' + uid + '_remove');
+            var $btnUp     = $('#' + uid + '_up');
+            var $btnDown   = $('#' + uid + '_down');
+
+            // Add ▶
+            $btnAdd.on('click', function (e) {
+                e.preventDefault();
+                $available.find('option:selected').each(function () {
+                    var $opt = $(this);
+                    $opt.prop('selected', false);
+                    $opt.appendTo($selected);
+                });
+                syncHidden();
+            });
+
+            // ◀ Remove
+            $btnRemove.on('click', function (e) {
+                e.preventDefault();
+                $selected.find('option:selected').each(function () {
+                    var $opt = $(this);
+                    $opt.prop('selected', false);
+                    $opt.appendTo($available);
+                });
+                syncHidden();
+            });
+
+            // Move Up within "Final Order"
+            $btnUp.on('click', function (e) {
+                e.preventDefault();
+                var options = $selected.find('option:selected');
+                options.each(function () {
+                    var $opt  = $(this);
+                    var $prev = $opt.prev();
+                    if ($prev.length && !$prev.is(':selected')) {
+                        $opt.insertBefore($prev);
+                    }
+                });
+                syncHidden();
+            });
+
+            // Move Down within "Final Order"
+            $btnDown.on('click', function (e) {
+                e.preventDefault();
+                var options = $selected.find('option:selected').get().reverse();
+                $(options).each(function () {
+                    var $opt  = $(this);
+                    var $next = $opt.next();
+                    if ($next.length && !$next.is(':selected')) {
+                        $opt.insertAfter($next);
+                    }
+                });
+                syncHidden();
+            });
+
+            // Double-click convenience
+            $available.on('dblclick', 'option', function () {
+                var $opt = $(this);
+                $opt.prop('selected', false);
+                $opt.appendTo($selected);
+                syncHidden();
+            });
+
+            $selected.on('dblclick', 'option', function () {
+                var $opt = $(this);
+                $opt.prop('selected', false);
+                $opt.appendTo($available);
+                syncHidden();
+            });
+
+            // Initial sync
+            syncHidden();
+        })();
+    });
+</script>

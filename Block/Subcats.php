@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 /**
  * Jscriptz LLC.
  *
@@ -9,17 +7,16 @@ declare(strict_types=1);
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
  * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * http://www.jscriptz.net/LICENSE
  *
  ********************************************************************
  *
  * @category   Jscriptz
  * @package    Jscriptz_Subcats
  * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://www.jscriptz.net/)
+ * @license    https://www.jscriptz.net/LICENSE
  */
-
 
 namespace Jscriptz\Subcats\Block;
 
@@ -32,9 +29,25 @@ use Magento\Catalog\Model\Category;
 use Magento\Catalog\Model\ResourceModel\Category\Collection as CategoryCollection;
 use Jscriptz\Subcats\Model\LicenseValidator;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Widget\Block\BlockInterface;
 
-class Subcats extends \Magento\Catalog\Block\Category\View
+class Subcats extends \Magento\Framework\View\Element\Template implements BlockInterface
 {
+    /**
+     * Track product image paths we’ve already used as fallbacks,
+     * so we can avoid duplicates across the Subcats grid.
+     *
+     * @var array<string,bool>
+     */
+    private $usedFallbackImages = [];
+
+    /**
+     * Default template for widget usage (can still be overridden by layout)
+     *
+     * @var string
+     */
+    protected $_template = 'Jscriptz_Subcats::subcats.phtml';
+
     /**
      * @var \Magento\Framework\Filesystem
      */
@@ -48,8 +61,13 @@ class Subcats extends \Magento\Catalog\Block\Category\View
     /**
      * @var \Magento\Catalog\Model\CategoryRepository
      */
-    protected $_categoryRepository;
 
+    protected $_categoryRepository;
+    /**
+     * @var \Magento\Framework\Registry
+     */
+
+    protected $_registry;
     /**
      * @var \Magento\Catalog\Model\Category
      */
@@ -114,8 +132,7 @@ class Subcats extends \Magento\Catalog\Block\Category\View
         $this->catalogImageHelper        = $catalogImageHelper;
         $this->licenseValidator        = $licenseValidator;
 
-
-        parent::__construct($context, $layerResolver, $registry, $categoryHelper, $data);
+        parent::__construct($context, $data);
     }
 
     public function getSubcategoryImageUrl(\Magento\Catalog\Model\Category $child)
@@ -134,77 +151,173 @@ class Subcats extends \Magento\Catalog\Block\Category\View
 
         // 1) Explicit image via Jscriptz helper (subcat_image / additional_image)
         $imageUrl = $this->configHelper->getImageUrl($child);
+        if ($imageUrl) {
+            return $imageUrl;
+        }
 
         // 2) Native category image (if present)
-        if (!$imageUrl && method_exists($child, 'getImageUrl')) {
+        if (method_exists($child, 'getImageUrl')) {
             $imageUrl = $child->getImageUrl();
-        }
-
-        // 3) Fallback: pick a good product image from the child category,
-        //     mimicking the original module behavior.
-        if (!$imageUrl && $this->configHelper->isProductImageFallbackEnabled()) {
-            $limit   = 10;
-            $storeId = (int)$this->_storeManager->getStore()->getId();
-
-            /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection */
-            if ((bool)$child->getIsAnchor()) {
-                // Anchor categories often have products only in their children.
-                // Pull from this category + all descendants.
-                $categoryIds = $child->getAllChildren(true);
-                if (!is_array($categoryIds)) {
-                    $categoryIds = explode(',', (string)$child->getAllChildren());
-                }
-                $categoryIds = array_values(array_unique(array_filter(array_map('intval', $categoryIds))));
-                if (empty($categoryIds)) {
-                    $categoryIds = [(int)$child->getId()];
-                }
-
-                $productCollection = $this->_productCollectionFactory->create()
-                    ->addAttributeToSelect('*')
-                    ->addStoreFilter($storeId)
-                    ->setPageSize($limit)
-                    ->setCurPage(1);
-
-                // Magento supports addCategoriesFilter on product collections; keep this defensive.
-                if (method_exists($productCollection, 'addCategoriesFilter')) {
-                    $productCollection->addCategoriesFilter(['in' => $categoryIds]);
-                } else {
-                    $productCollection->addCategoryFilter($child);
-                }
-
-                // Stable fallback ordering (we only need "a good" image)
-                $productCollection->addAttributeToSort('entity_id', 'DESC');
-            } else {
-                // Non-anchor: products are usually assigned directly to the category
-                $productCollection = $child->getProductCollection()
-                    ->addAttributeToSelect('*')
-                    ->setOrder('position', 'ASC')
-                    ->setPageSize($limit);
+            if ($imageUrl) {
+                return $imageUrl;
             }
-
-            foreach ($productCollection as $product) {
-                // Use the same image role as the original: category_page_grid
-                $image = $this->catalogImageHelper
-                    ->init($product, 'category_page_grid')
-                    ->constrainOnly(false)
-                    ->keepAspectRatio(true)
-                    ->keepFrame(true);
-
-                if ($width && $height) {
-                    $image->resize($width, $height);
-                }
-
-                $candidate = $image->getUrl();
-
-                // Skip placeholders, just like the original
-                if ($candidate && stripos($candidate, 'placeholder') === false) {
-                    $imageUrl = $candidate;
-                    break;
+        } else {
+            $imageFile = (string)$child->getData('image');
+            if ($imageFile !== '') {
+                $mediaBase = $this->_storeManager
+                    ->getStore()
+                    ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+                $imageUrl = $mediaBase . 'catalog/category/' . ltrim($imageFile, '/');
+                if ($imageUrl) {
+                    return $imageUrl;
                 }
             }
         }
 
-        return $imageUrl;
+        // 3) Product image fallback (Men / Women / Performance Sportswear New, etc.)
+        //    Only runs if enabled in config.
+        if (!$this->configHelper->isProductImageFallbackEnabled()) {
+            return $imageUrl;
+        }
+
+        // Use ALL descendants (including the category itself) as candidates.
+        // getAllChildren(true) is an array of IDs; getAllChildren() is a comma string.
+        $categoryIds = [];
+        $allChildren = $child->getAllChildren(true);
+
+        if (is_array($allChildren)) {
+            $categoryIds = $allChildren;
+        } else {
+            $categoryIds = array_filter(array_map(
+                'intval',
+                explode(',', (string)$child->getAllChildren())
+            ));
+        }
+
+        if (empty($categoryIds)) {
+            $categoryIds = [(int)$child->getId()];
+        }
+
+        $categoryIds = array_values(array_unique(array_map('intval', $categoryIds)));
+
+        $storeId = (int)$this->_storeManager->getStore()->getId();
+
+        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
+        $collection = $this->_productCollectionFactory->create();
+        $collection->addAttributeToSelect(['small_image'])
+            ->addStoreFilter($storeId)
+            ->addAttributeToFilter('small_image', ['neq' => 'no_selection'])
+            ->addCategoriesFilter(['in' => $categoryIds])
+            ->setPageSize(30)
+            ->setCurPage(1);
+
+        // Track used fallback images across this block (static, so each card gets a unique one if possible)
+        static $usedFallbackImages = [];
+
+        foreach ($collection as $product) {
+            $image = $this->catalogImageHelper
+                ->init($product, 'category_page_grid')
+                ->constrainOnly(false)
+                ->keepAspectRatio(true)
+                ->keepFrame(true);
+
+            if ($width && $height) {
+                $image->resize($width, $height);
+            }
+
+            $candidate = $image->getUrl();
+
+            // Skip placeholders
+            if (!$candidate || stripos($candidate, 'placeholder') !== false) {
+                continue;
+            }
+
+            // Enforce uniqueness (path-only key so CDN params don't matter)
+            $imageKey = parse_url($candidate, PHP_URL_PATH) ?: $candidate;
+            if (isset($usedFallbackImages[$imageKey])) {
+                continue;
+            }
+
+            $usedFallbackImages[$imageKey] = true;
+            return $candidate;
+        }
+
+        // No usable fallback found
+        return null;
+    }
+
+    /**
+     * Get a unique fallback product image for a category.
+     *
+     * - If the category has no products, we also consider its child categories.
+     * - Ensures, as much as possible, that each card gets a different fallback
+     *   image by tracking already-used image paths in $this->usedFallbackImages.
+     *
+     * @param \Magento\Catalog\Model\Category $category
+     * @return string|null
+     */
+    protected function getUniqueFallbackProductImage(
+        \Magento\Catalog\Model\Category $category
+    ): ?string {
+        // Start with this category
+        $categoryIds = [(int)$category->getId()];
+
+        // If it has no products, include children as candidates for fallback
+        $productCount = (int)$category->getProductCount();
+        if ($productCount === 0) {
+            $childrenIds = array_filter(array_map(
+                'intval',
+                explode(',', (string)$category->getChildren())
+            ));
+
+            if (!empty($childrenIds)) {
+                $categoryIds = array_values(array_unique(array_merge(
+                    $categoryIds,
+                    $childrenIds
+                )));
+            }
+        }
+
+        /** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $collection */
+        $collection = $this->_productCollectionFactory->create();
+
+        $collection->addAttributeToSelect(['small_image'])
+            ->addAttributeToFilter('small_image', ['neq' => 'no_selection'])
+            ->addCategoriesFilter(['in' => $categoryIds])
+            ->setPageSize(30)
+            ->setCurPage(1);
+
+        // 1) Try to find a product image we haven’t used yet
+        foreach ($collection as $product) {
+            $imageUrl = $this->catalogImageHelper
+                ->init($product, 'category_page_grid')
+                ->keepAspectRatio(true)
+                ->getUrl();
+
+            // Use the path as a stable key so CDN query strings etc. don’t break uniqueness
+            $imageKey = parse_url($imageUrl, PHP_URL_PATH) ?: $imageUrl;
+
+            if (!isset($this->usedFallbackImages[$imageKey])) {
+                $this->usedFallbackImages[$imageKey] = true;
+                return $imageUrl;
+            }
+        }
+
+        // 2) As a last resort, allow a duplicate rather than a blank card
+        $product = $collection->getFirstItem();
+        if ($product && $product->getId()) {
+            $imageUrl = $this->catalogImageHelper
+                ->init($product, 'category_page_grid')
+                ->keepAspectRatio(true)
+                ->getUrl();
+
+            $imageKey = parse_url($imageUrl, PHP_URL_PATH) ?: $imageUrl;
+            $this->usedFallbackImages[$imageKey] = true;
+
+            return $imageUrl;
+        }
+
+        return null;
     }
 
     public function canShowSubcategories(): bool
@@ -452,44 +565,83 @@ class Subcats extends \Magento\Catalog\Block\Category\View
      * @param int[] $ids
      * @return \Magento\Catalog\Model\Category[]
      */
-    protected function getCategoriesByIds(array $ids)
+    public function getCategoriesByIds(array $ids)
     {
-        $categories = [];
+        // Normalize and keep the *explicit* order from the widget/category config
+        $ids = array_values(array_unique(array_map('intval', $ids)));
 
-        if (!$ids) {
-            return $categories;
+        if (empty($ids)) {
+            return [];
         }
 
-        $storeId = (int)$this->_storeManager->getStore()->getId();
+        /** @var CategoryCollection $collection */
+        $collection = $this->_categoryCollectionFactory->create();
 
-        foreach ($ids as $id) {
-            try {
-                $category = $this->_categoryRepository->get($id, $storeId);
-            } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-                continue;
-            }
+        $collection->addAttributeToSelect('*')
+            ->addAttributeToFilter('entity_id', ['in' => $ids])
+            ->addIsActiveFilter();
 
-            if (!$category->getIsActive()) {
-                continue;
-            }
+        // Preserve the order of $ids (same trick as for selected_subcats / subcats_children)
+        $fieldExpr = 'FIELD(e.entity_id,' . implode(',', $ids) . ')';
+        $collection->getSelect()->order($fieldExpr);
 
-            $categories[] = $category;
-        }
-
-        return $categories;
+        return $collection;
     }
+
+
+    /**
+     * Get current category from block data or the registry, if available.
+     *
+     * This replaces Magento\Catalog\Block\Category\View::getCurrentCategory()
+     * so this block can be safely used on CMS pages too.
+     *
+     * @return \Magento\Catalog\Model\Category|null
+     */
+    /**
+     * Get the category context for rendering Subcats.
+     *
+     * Priority:
+     *  1) Explicit category_ids passed to the block/widget (first ID)
+     *  2) current_category set on the block
+     *  3) current_category from the registry (normal category pages)
+     *
+     * @return \Magento\Catalog\Model\Category|null
+     */
+    public function getCurrentCategory()
+    {
+        // 1) Explicit override via category_ids (widget / CMS / Page Builder)
+        $selectedIds = $this->getSelectedCategoryIds();
+        if (!empty($selectedIds)) {
+            $storeId   = (int)$this->_storeManager->getStore()->getId();
+            $categoryId = (int)reset($selectedIds);
+
+            try {
+                $category = $this->_categoryRepository->get($categoryId, $storeId);
+                if ($category && $category->getId() && $category->getIsActive()) {
+                    return $category;
+                }
+            } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+                // fall through to default behavior
+            }
+        }
+
+        // 2) Block data / registry (normal category page flow)
+        $category = $this->getData('current_category')
+            ?: $this->_registry->registry('current_category');
+
+        if ($category instanceof \Magento\Catalog\Model\Category) {
+            return $category;
+        }
+
+        return null;
+    }
+
 
     /**
      * Prepared list of active child categories for the current category
      * or for an explicit list of category IDs (Page Builder).
      *
      * @return \Magento\Catalog\Model\Category[]|\Magento\Catalog\Model\ResourceModel\Category\Collection|array
-     */
-    /**
-     * Get selected child category IDs for the current category from the 'subcats_children' attribute.
-     * Empty array means: show all active children.
-     *
-     * @return int[]
      */
     public function getCurrentCategoryFilterIds()
     {
@@ -520,8 +672,22 @@ class Subcats extends \Magento\Catalog\Block\Category\View
         return array_values(array_unique($ids));
     }
 
+    /**
+     * Prepared list of active child categories for the effective category
+     * (either the current category or an explicit category_ids override).
+     *
+     * @return \Magento\Catalog\Model\Category[]|\Magento\Catalog\Model\ResourceModel\Category\Collection|array
+     */
     public function getChildCategories()
     {
+        // CASE 0: explicit IDs passed via widget / CMS / Page Builder
+        // In this mode we show exactly the selected categories and do NOT
+        // automatically include their children.
+        $explicitIds = $this->getSelectedCategoryIds();
+        if (!empty($explicitIds)) {
+            return $this->getCategoriesByIds($explicitIds);
+        }
+
         /** @var Category|null $category */
         $category = $this->getData('current_category')
             ?: $this->_registry->registry('current_category');
@@ -543,7 +709,7 @@ class Subcats extends \Magento\Catalog\Block\Category\View
             }
         }
 
-        // CASE 1: explicit selection -> use that exact order
+        // CASE 1: explicit selection on the category (Subcategories to display)
         if (!empty($orderedIds)) {
             /** @var CategoryCollection $collection */
             $collection = $this->_categoryCollectionFactory->create();
@@ -568,7 +734,6 @@ class Subcats extends \Magento\Catalog\Block\Category\View
 
         return $children;
     }
-
 
     /**
      * Effective design preset for this block instance.
@@ -627,6 +792,94 @@ class Subcats extends \Magento\Catalog\Block\Category\View
         return strip_tags($description);
     }
 
+    /**
+     * Widget-specific column span (12 / 6 / 4 / 3 / 2) for desktop.
+     * Returns null when not set so global/category settings are used.
+     */
+    public function getWidgetDesktopSpan(): ?int
+    {
+        $value = $this->getData('columns_desktop');
+        if ($value === null || $value === '' || (int)$value <= 0) {
+            return null;
+        }
+        return (int)$value;
+    }
 
+    public function getWidgetTabletSpan(): ?int
+    {
+        $value = $this->getData('columns_tablet');
+        if ($value === null || $value === '' || (int)$value <= 0) {
+            return null;
+        }
+        return (int)$value;
+    }
 
+    public function getWidgetPhoneSpan(): ?int
+    {
+        $value = $this->getData('columns_mobile');
+        if ($value === null || $value === '' || (int)$value <= 0) {
+            return null;
+        }
+        return (int)$value;
+    }
+
+    /**
+     * Build inline CSS custom properties that override column widths
+     * for this particular Subcats block (useful for widgets).
+     *
+     * It reuses the same 12-column grid math as the global design block:
+     *   span = 4  =>  3 columns  =>  width calc based on gaps.
+     */
+    public function getWidgetCssOverrides(): string
+    {
+        $vars    = [];
+        $spacing = 'var(--js-subcats-card-spacing, 20px)';
+
+        $desktopSpan = $this->getWidgetDesktopSpan();
+        if ($desktopSpan && 12 % $desktopSpan === 0) {
+            $desktopCols = (int) (12 / $desktopSpan);
+            $desktopGaps = max(0, $desktopCols - 1);
+            $vars['--js-subcats-col-width-desktop'] = sprintf(
+                'calc((100%% - (%s * %d)) / %d)',
+                $spacing,
+                $desktopGaps,
+                $desktopCols
+            );
+        }
+
+        $tabletSpan = $this->getWidgetTabletSpan();
+        if ($tabletSpan && 12 % $tabletSpan === 0) {
+            $tabletCols = (int) (12 / $tabletSpan);
+            $tabletGaps = max(0, $tabletCols - 1);
+            $vars['--js-subcats-col-width-tablet'] = sprintf(
+                'calc((100%% - (%s * %d)) / %d)',
+                $spacing,
+                $tabletGaps,
+                $tabletCols
+            );
+        }
+
+        $phoneSpan = $this->getWidgetPhoneSpan();
+        if ($phoneSpan && 12 % $phoneSpan === 0) {
+            $phoneCols = (int) (12 / $phoneSpan);
+            $phoneGaps = max(0, $phoneCols - 1);
+            $vars['--js-subcats-col-width-phone'] = sprintf(
+                'calc((100%% - (%s * %d)) / %d)',
+                $spacing,
+                $phoneGaps,
+                $phoneCols
+            );
+        }
+
+        if (!$vars) {
+            return '';
+        }
+
+        $pairs = [];
+        foreach ($vars as $name => $value) {
+            $pairs[] = $name . ':' . $value;
+        }
+
+        return implode(';', $pairs);
+    }
 }

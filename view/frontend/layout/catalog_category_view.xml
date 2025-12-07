@@ -2,18 +2,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
 
-    <head>
-        <css src="Jscriptz_Subcats::css/subcats.css"/>
-    </head>
-
     <body>
-        <!-- Inject dynamic design CSS into the head.additional block -->
-        <referenceBlock name="head.additional">
-            <block class="Jscriptz\Subcats\Block\Design"
-                   name="jscriptz.subcats.design"
-                   template="Jscriptz_Subcats::design_css.phtml"/>
-        </referenceBlock>
-
         <referenceContainer name="content">
             <block before="category.products"
                    class="Jscriptz\Subcats\Block\Subcats"

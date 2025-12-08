@@ -43,7 +43,7 @@ class License extends Value
     const UPDATE_URL  = 'https://mage.jscriptz.com/rest/V1/jscriptz/license/update';
     const MODULE_CODE = 'jscriptz_subcats';
     const TRIAL_DAYS  = 30;
-    const LICENSE_ACCOUNT_URL = 'https://mage.jscriptz.com/license/account/';
+    const LICENSE_ACCOUNT_URL = 'https://mage.jscriptz.com/jscriptz_license/account/';
 
     /**
      * @var Curl|null

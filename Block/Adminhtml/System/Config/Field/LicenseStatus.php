@@ -38,31 +38,44 @@ class LicenseStatus extends Field
     protected function _getElementHtml(AbstractElement $element)
     {
         $value = (string)$element->getValue();
-
-        // Default styling (valid / neutral)
-        $color = '#3f9c35'; // green-ish
-        $fontWeight = 'bold';
-
         $lower = strtolower($value);
 
-        // Mark inactive / invalid / not found as red
-        if (
+        // Default styling
+        $color = '#666666'; // gray for unknown states
+        $fontWeight = 'bold';
+        $icon = '';
+
+        // Priority 1: Active/Valid licenses (GREEN)
+        if (str_contains($lower, 'active') 
+            || str_contains($lower, 'valid')
+            || str_contains($lower, 'verified')
+        ) {
+            $color = '#3f9c35'; // green
+            $icon = '✓ ';
+        }
+        // Priority 2: Invalid/Expired/Error states (RED)
+        elseif (
             str_contains($lower, 'inactive')
             || str_contains($lower, 'not valid')
             || str_contains($lower, 'not found')
             || str_contains($lower, 'verification error')
             || str_contains($lower, 'expired')
+            || str_contains($lower, 'suspended')
         ) {
             $color = '#b30000'; // red
-        } elseif (str_contains($lower, 'trial')) {
-            // Optional: trial = amber
-            $color = '#e0a800';
+            $icon = '✗ ';
+        }
+        // Priority 3: Trial states (AMBER)
+        elseif (str_contains($lower, 'trial')) {
+            $color = '#e0a800'; // amber
+            $icon = '⏱ ';
         }
 
         return sprintf(
-            '<span style="color:%s;font-weight:%s;">%s</span>',
+            '<span style="color:%s;font-weight:%s;">%s%s</span>',
             $color,
             $fontWeight,
+            $icon,
             $this->escapeHtml($value)
         );
     }

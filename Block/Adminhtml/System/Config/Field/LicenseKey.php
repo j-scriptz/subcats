@@ -54,23 +54,54 @@ class LicenseKey extends Field
 
     protected function _getElementHtml(AbstractElement $element)
     {
-        // Read the human-readable status message we store in config
-        $statusMessage = (string)$this->scopeConfig->getValue(
+        // Read both status fields to determine if license is valid
+        $licenseStatus = strtolower((string)$this->scopeConfig->getValue(
             'jscriptz_subcats/license/license_status'
-        );
+        ));
+        $verifyMessage = strtolower((string)$this->scopeConfig->getValue(
+            'jscriptz_subcats/license/verify_message'
+        ));
 
-        // Lock the field only when we know the license has been successfully verified
-        $hasVerified = (stripos($statusMessage, 'License verified') !== false);
+        // Check if license is active/valid in either field
+        // This handles both the /update response ("License is active.") 
+        // and /verify response ("License is valid.")
+        $isLicenseValid = false;
+        
+        // Check license_status for active/valid indicators
+        if (str_contains($licenseStatus, 'active') 
+            || str_contains($licenseStatus, 'valid')
+            || str_contains($licenseStatus, 'verified')
+        ) {
+            $isLicenseValid = true;
+        }
+        
+        // Also check verify_message as fallback
+        if (str_contains($verifyMessage, 'valid') 
+            || str_contains($verifyMessage, 'active')
+            || str_contains($verifyMessage, 'verified')
+        ) {
+            $isLicenseValid = true;
+        }
+        
+        // Don't lock if it's a trial or if there's no license key
+        $licenseKey = (string)$element->getValue();
+        if (empty(trim($licenseKey)) 
+            || str_contains($licenseStatus, 'trial')
+            || str_contains($licenseStatus, 'expired')
+            || str_contains($verifyMessage, 'not found')
+        ) {
+            $isLicenseValid = false;
+        }
 
-        if ($hasVerified) {
-            // Make the input uneditable
+        if ($isLicenseValid) {
+            // Make the input readonly and visually disabled
             $element->setReadonly(true);
             $element->setData('disabled', 'disabled');
 
-            // Optional: add a small note under the field
+            // Add explanatory note
             $note = $element->getNote();
             $extraNote = (string)__(
-                'License key locked after successful verification. Contact support if you need to change it.'
+                '🔒 License key locked after successful verification. <a href="mailto:support@jscriptz.com">Contact support</a> to change it.'
             );
             $element->setNote($note ? $note . ' ' . $extraNote : $extraNote);
         }

@@ -20,19 +20,18 @@ declare(strict_types=1);
  * @license    https://mage.jscriptz.com/LICENSE.txt
  */
 
-
 namespace Jscriptz\Subcats\Model\License;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\HTTP\Client\Curl;
+use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\Serialize\Serializer\Json;
-use Psr\Log\LoggerInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
 use Magento\User\Model\UserFactory;
+use Psr\Log\LoggerInterface;
 
 class ApiClient
 {
@@ -109,8 +108,7 @@ class ApiClient
     public function syncUpdateInfo(
         string $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         int $scopeId = 0
-    ): void
-    {
+    ): void {
         $licenseKey = (string)$this->scopeConfig->getValue(self::XML_PATH_LICENSE_KEY);
 
         // Always sync update info (even without a license key) so trial users still see:
@@ -170,7 +168,7 @@ class ApiClient
             }
 
             // License server currently returns a JSON LIST (not object) because it returns a plain `array` via webapi:
-            //   [ latestVersion, updateAvailable, message, newsMessage ]
+            //   [ latestVersion, updateAvailable, message, newsMessage, trialDaysRemaining, trialExpired, licenseStatus, trialStatus, trialMessage ]
             // But we support both list and object forms for durability.
             $latestVersion = '';
             $newsMessage   = '';
@@ -226,7 +224,6 @@ class ApiClient
                 $scopeId
             );
 
-            
             // If the license server sent license/trial info, persist a friendly License Status.
             if (is_array($decoded)) {
                 $licenseStatusFromServer = '';
@@ -237,6 +234,7 @@ class ApiClient
                 $isList = array_values($decoded) === $decoded;
 
                 if (!$isList) {
+                    // Associative array format
                     $licenseStatusFromServer = isset($decoded['licenseStatus'])
                         ? (string)$decoded['licenseStatus']
                         : '';
@@ -249,6 +247,23 @@ class ApiClient
                     $trialExpired = isset($decoded['trialExpired'])
                         ? (bool)$decoded['trialExpired']
                         : null;
+                } else {
+                    // ✅ FIXED: Read from indexed array format
+                    // Response format: [latestVersion, updateAvailable, message, newsMessage, 
+                    //                   trialDaysRemaining, trialExpired, licenseStatus, trialStatus, trialMessage]
+                    $trialDaysRemaining = isset($decoded[4]) && $decoded[4] !== null
+                        ? (int)$decoded[4]
+                        : null;
+                    $trialExpired = isset($decoded[5]) && $decoded[5] !== null
+                        ? (bool)$decoded[5]
+                        : null;
+                    $licenseStatusFromServer = isset($decoded[6]) && $decoded[6] !== null
+                        ? (string)$decoded[6]
+                        : '';
+                    // Skip index 7 (trialStatus object) - we don't need it for display
+                    $trialMessageFromServer = isset($decoded[8]) && $decoded[8] !== null
+                        ? (string)$decoded[8]
+                        : '';
                 }
 
                 $licenseStatusLabel = '';
@@ -312,44 +327,22 @@ class ApiClient
             }
         } catch (\Throwable $e) {
             $this->logger->error(
-                'Jscriptz_Subcats: update() exception: ' . $e->getMessage(),
+                'Jscriptz_Subcats: update API sync exception: ' . $e->getMessage(),
                 ['exception' => $e]
-            );
-
-            $this->configWriter->save(
-                self::CONFIG_PATH_VERSION_STATUS,
-                'Update check error: ' . $e->getMessage(),
-                $scopeType,
-                $scopeId
             );
         }
     }
 
-
     /**
-     * Hit /V1/jscriptz/license/verify and store whatever you care about.
-     * Since we don't know its exact payload, we log it and store a simple message.
-     */
-
-    /**
-     * Hit the central /V1/jscriptz/license/verify endpoint and update:
-     *  - jscriptz/license/license_status
-     *  - jscriptz/license/verify_message
+     * Hit /V1/jscriptz/license/verify and store license_status/verify_message
      */
     public function syncVerifyInfo(
         string $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         int $scopeId = 0
-    ): void
-    {
-        // Only verify real license keys. Trials are handled via the Update API.
+    ): void {
         $licenseKey = (string)$this->scopeConfig->getValue(self::XML_PATH_LICENSE_KEY);
 
-        if ($licenseKey === '') {
-            // Nothing to verify yet; leave License Status as whatever Update API provided.
-            return;
-        }
-
-        $domain     = rtrim(
+        $domain = rtrim(
             (string)$this->scopeConfig->getValue('web/unsecure/base_url', ScopeInterface::SCOPE_STORE),
             '/'
         );
@@ -358,80 +351,78 @@ class ApiClient
 
         try {
             $payloadArray = [
-                'licenseKey' => $licenseKey,          // may be empty during trial
-                'domain'     => $domain,
+                'licenseKey' => $licenseKey,
                 'moduleCode' => self::MODULE_CODE,
+                'domain'     => $domain,
             ];
+
+            $payloadArray = array_merge(
+                $payloadArray,
+                $this->getLicenseMetadata(),
+                $this->getEnvironmentMetadata()
+            );
+
             $payload = $this->json->serialize($payloadArray);
 
             $this->curl->addHeader('Content-Type', 'application/json');
             $this->curl->post($endpoint, $payload);
 
-            $status = $this->curl->getStatus();
+            $status = (int)$this->curl->getStatus();
             $body   = (string)$this->curl->getBody();
 
-            if ($status !== 200) {
-                $this->logger->warning(
-                    sprintf('Jscriptz_Subcats: verify API HTTP %d. Body: %s', $status, $body)
-                );
+            $this->logger->info('Jscriptz_Subcats: verify API response', ['body' => $body]);
 
-                $this->configWriter->save(
-                    self::CONFIG_PATH_LICENSE_STATUS,
-                    (string)__('License verification failed (HTTP %1).', $status),
-                    $scopeType,
-                    $scopeId
-                );
+            if ($status !== 200) {
                 $this->configWriter->save(
                     self::CONFIG_PATH_VERIFY_MESSAGE,
-                    $body,
+                    (string)__('License verification failed (HTTP %1).', $status),
                     $scopeType,
                     $scopeId
                 );
                 return;
             }
 
-            $verifyResult = [];
+            $decoded = null;
             try {
-                $verifyResult = $this->json->unserialize($body);
+                $decoded = $this->json->unserialize($body);
             } catch (\Throwable $e) {
                 $this->logger->warning(
-                    'Jscriptz_Subcats: verify response not valid JSON: ' . $e->getMessage()
+                    'Jscriptz_Subcats: verify API response not valid JSON: ' . $e->getMessage()
                 );
             }
 
-            $message = '';
+            $licenseStatus = '';
+            $verifyMessage = '';
 
-            if (is_array($verifyResult)) {
-                $message = isset($verifyResult['message']) ? (string)$verifyResult['message'] : '';
+            if (is_array($decoded)) {
+                $isList = array_values($decoded) === $decoded;
+
+                if ($isList) {
+                    $licenseStatus = isset($decoded[0]) ? (string)$decoded[0] : '';
+                    $verifyMessage = isset($decoded[1]) ? (string)$decoded[1] : '';
+                } else {
+                    $licenseStatus = !empty($decoded['status']) ? (string)$decoded['status'] : '';
+                    $verifyMessage = !empty($decoded['message']) ? (string)$decoded['message'] : '';
+                }
             }
 
-            $this->logger->info('Jscriptz_Subcats: verify API response', ['body' => $body]);
+            // Normalize the verify message to be user-friendly for free trials
+            $normalized = $this->normalizeLicenseStatusMessage($verifyMessage, $licenseKey);
 
-            // Normalize the message so we keep a friendly Free Trial status
-            // instead of raw "not found" errors while a trial is active.
-            $message = $this->normalizeLicenseStatusMessage($message, $licenseKey);
-
-            $this->configWriter->save(
-                self::CONFIG_PATH_LICENSE_STATUS,
-                $message,
-                $scopeType,
-                $scopeId
-            );
             $this->configWriter->save(
                 self::CONFIG_PATH_VERIFY_MESSAGE,
-                $body,
+                $normalized,
                 $scopeType,
                 $scopeId
             );
-
         } catch (\Throwable $e) {
             $this->logger->error(
-                'Jscriptz_Subcats: error in syncVerifyInfo(): ' . $e->getMessage(),
+                'Jscriptz_Subcats: verify API sync exception: ' . $e->getMessage(),
                 ['exception' => $e]
             );
 
             $this->configWriter->save(
-                self::CONFIG_PATH_LICENSE_STATUS,
+                self::CONFIG_PATH_VERIFY_MESSAGE,
                 (string)__('License verification error: %1', $e->getMessage()),
                 $scopeType,
                 $scopeId
@@ -622,7 +613,7 @@ class ApiClient
         return '';
     }
 
-private function hasTrialStart(): bool
+    private function hasTrialStart(): bool
     {
         $trialStart = (string)$this->scopeConfig->getValue(
             'jscriptz_subcats/license/trial_start',

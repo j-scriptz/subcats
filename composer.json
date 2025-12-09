@@ -2,7 +2,7 @@
   "name": "jscriptz/module-subcats",
   "description": "Adds sub-category customizable image/link cards to the top of higher level categories.",
   "type": "magento2-module",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "license": [
     "proprietary"
   ],

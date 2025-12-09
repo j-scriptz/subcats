@@ -25,6 +25,12 @@ class CategoryMultiselect implements ArrayInterface
      */
     private $storeManager;
 
+    /**
+     * Constructor.
+     *
+     * @param CategoryCollectionFactory $categoryCollectionFactory
+     * @param StoreManagerInterface $storeManager
+     */
     public function __construct(
         CategoryCollectionFactory $categoryCollectionFactory,
         StoreManagerInterface $storeManager

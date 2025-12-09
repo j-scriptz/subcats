@@ -26,8 +26,16 @@ namespace Jscriptz\Subcats\Block\Adminhtml\System\Config\Field;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 
+/**
+ * Block LicenseRefresh
+ */
 class LicenseRefresh extends Field
 {
+    /**
+     * Render
+     *
+     * @param AbstractElement $element
+     */
     public function render(AbstractElement $element)
     {
         $element->setCanUseWebsiteValue(false);

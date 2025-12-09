@@ -33,6 +33,9 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\User\Model\UserFactory;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Model ApiClient
+ */
 class ApiClient
 {
     // ...
@@ -80,6 +83,19 @@ class ApiClient
     private LoggerInterface $logger;
     private ModuleListInterface $moduleList;
 
+    /**
+     * Constructor.
+     *
+     * @param ScopeConfigInterface $scopeConfig
+     * @param StoreManagerInterface $storeManager
+     * @param RemoteAddress $remoteAddress
+     * @param UserFactory $userFactory
+     * @param WriterInterface $configWriter
+     * @param Curl $curl
+     * @param Json $json
+     * @param LoggerInterface $logger
+     * @param ModuleListInterface $moduleList
+     */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         StoreManagerInterface $storeManager,
@@ -249,7 +265,7 @@ class ApiClient
                         : null;
                 } else {
                     // ✅ FIXED: Read from indexed array format
-                    // Response format: [latestVersion, updateAvailable, message, newsMessage, 
+                    // Response format: [latestVersion, updateAvailable, message, newsMessage,
                     //                   trialDaysRemaining, trialExpired, licenseStatus, trialStatus, trialMessage]
                     $trialDaysRemaining = isset($decoded[4]) && $decoded[4] !== null
                         ? (int)$decoded[4]

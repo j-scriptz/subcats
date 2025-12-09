@@ -27,6 +27,9 @@ use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context;
 use Jscriptz\Subcats\Helper\Data;
 
+/**
+ * Block Config
+ */
 class Config extends Template
 {
     /**
@@ -34,7 +37,14 @@ class Config extends Template
      */
     protected $helper;
 
-    public function __construct(Context $context, Data $helper) {
+    /**
+     * Constructor.
+     *
+     * @param Context $context
+     * @param Data $helper
+     */
+    public function __construct(Context $context, Data $helper)
+    {
         $this->helper = $helper;
         parent::__construct($context);
     }

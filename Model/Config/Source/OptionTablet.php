@@ -25,8 +25,14 @@ namespace Jscriptz\Subcats\Model\Config\Source;
 
 use \Magento\Framework\Data\OptionSourceInterface;
 
+/**
+ * Model OptionTablet
+ */
 class OptionTablet implements OptionSourceInterface
 {
+    /**
+     * To option array
+     */
     public function toOptionArray()
     {
         return [

@@ -8,29 +8,44 @@
             Display a grid of category cards using Jscriptz Subcats.
         </description>
         <parameters>
-            <parameter name="block_title" xsi:type="text" visible="true" sort_order="10">
-                <label translate="true">Title</label>
-            </parameter>
-            <parameter name="show_title" xsi:type="select" visible="true" sort_order="15">
-                <label translate="true">Show Title</label>
+            <parameter name="template" xsi:type="select" visible="true" required="true" sort_order="1">
+                <label translate="true">Template</label>
                 <options>
-                    <option name="yes" value="1">
-                        <label translate="true">Yes</label>
+                    <option name="default" value="Jscriptz_Subcats::subcats.phtml">
+                        <label translate="true">Default Subcats Grid</label>
                     </option>
-                    <option name="no" value="0">
-                        <label translate="true">No</label>
+                    <option name="hyva_slider" value="Jscriptz_Subcats::widget/hyva-slider.phtml">
+                        <label translate="true">Hyvä Snap Slider (x-snap-slider)</label>
                     </option>
                 </options>
             </parameter>
+            <parameter name="slider_autoplay" xsi:type="select" visible="true" sort_order="2">
+                <label translate="true">Autoplay Slider</label>
+                <options>
+                    <option name="no" value="0">
+                        <label translate="true">No</label>
+                    </option>
+                    <option name="yes" value="1">
+                        <label translate="true">Yes</label>
+                    </option>
+                </options>
+            </parameter>
+            <parameter name="slider_autoplay_delay" xsi:type="text" visible="true" sort_order="3">
+                <label translate="true">Autoplay Delay (ms)</label>
+                <description translate="true">
+                    Time between slide changes in milliseconds (e.g. 5000). Used only when Autoplay is enabled.
+                </description>
+            </parameter>
+
             <parameter name="category_ids"
                        xsi:type="block"
                        visible="true"
                        required="true"
-                       sort_order="20">
+                       sort_order="40">
                 <label translate="true">Categories</label>
                 <block class="Jscriptz\Subcats\Block\Adminhtml\Widget\CategoryOrder" />
             </parameter>
-            <parameter name="columns_desktop" xsi:type="select" visible="true" sort_order="30">
+            <parameter name="columns_desktop" xsi:type="select" visible="true" sort_order="45">
                 <label translate="true">Columns (Desktop)</label>
                 <description translate="true">
                     Leave blank to use global/category settings. Otherwise overrides columns on desktop.
@@ -59,7 +74,7 @@
                     </option>
                 </options>
             </parameter>
-            <parameter name="columns_tablet" xsi:type="select" visible="true" sort_order="40">
+            <parameter name="columns_tablet" xsi:type="select" visible="true" sort_order="50">
                 <label translate="true">Columns (Tablet)</label>
                 <description translate="true">
                     Leave blank to use global/category settings. Otherwise overrides columns on tablet.
@@ -88,7 +103,7 @@
                     </option>
                 </options>
             </parameter>
-            <parameter name="columns_mobile" xsi:type="select" visible="true" sort_order="50">
+            <parameter name="columns_mobile" xsi:type="select" visible="true" sort_order="55">
                 <label translate="true">Columns (Mobile)</label>
                 <description translate="true">
                     Leave blank to use global/category settings. Otherwise overrides columns on mobile.
@@ -117,13 +132,89 @@
                     </option>
                 </options>
             </parameter>
-            <parameter name="template" xsi:type="select" visible="true" required="true" sort_order="60">
-                <label translate="true">Template</label>
+            <parameter name="show_title" xsi:type="select" visible="true" sort_order="65">
+                <label translate="true">Show Title</label>
                 <options>
-                    <option name="default" value="Jscriptz_Subcats::subcats.phtml">
-                        <label translate="true">Default Subcats Template</label>
+                    <option name="yes" value="1">
+                        <label translate="true">Yes</label>
+                    </option>
+                    <option name="no" value="0">
+                        <label translate="true">No</label>
                     </option>
                 </options>
+            </parameter>
+            <parameter name="block_title" xsi:type="text" visible="true" sort_order="70">
+                <label translate="true">Title</label>
+            </parameter>
+            <!-- Slider Title design (block heading above the cards) -->
+            <parameter name="title_font_size" xsi:type="text" visible="true" sort_order="75">
+                <label translate="true">Title Font Size</label>
+                <description translate="true">
+                    CSS font-size value (e.g. 1.5rem, 24px). Leave empty to use the theme default.
+                </description>
+            </parameter>
+            <parameter name="title_font_weight" xsi:type="text" visible="true" sort_order="80">
+                <label translate="true">Title Font Weight</label>
+                <description translate="true">
+                    CSS font-weight value (e.g. 400, 500, 700). Leave empty to use the theme default.
+                </description>
+            </parameter>
+            <parameter name="title_alignment" xsi:type="select" visible="true" sort_order="85">
+                <label translate="true">Title Alignment</label>
+                <options>
+                    <option name="left" value="left">
+                        <label translate="true">Left</label>
+                    </option>
+                    <option name="center" value="center">
+                        <label translate="true">Center</label>
+                    </option>
+                    <option name="right" value="right">
+                        <label translate="true">Right</label>
+                    </option>
+                </options>
+            </parameter>
+            <parameter name="title_color" xsi:type="text" visible="true" sort_order="90">
+                <label translate="true">Title Color</label>
+                <description translate="true">
+                    CSS color value (e.g. #2563eb, #111827, rgb(37,99,235)), Red, Blue, Yellow. Leave empty to inherit theme.
+                </description>
+            </parameter>
+            <parameter name="title_margin" xsi:type="text" visible="true" sort_order="95">
+                <label translate="true">Title Margin</label>
+                <description translate="true">
+                    CSS margin value for the title (e.g. 0 0 1.5rem 0). Leave empty to use the theme default.
+                </description>
+            </parameter>
+            <parameter name="title_padding" xsi:type="text" visible="true" sort_order="100">
+                <label translate="true">Title Padding</label>
+                <description translate="true">
+                    CSS padding value for the title (e.g. 0.5rem 0). Leave empty to use the theme default.
+                </description>
+            </parameter>
+            <!-- Card Title design (category title on each card) -->
+            <parameter name="card_title_font_size" xsi:type="text" visible="true" sort_order="105">
+                <label translate="true">Card Title Font Size</label>
+                <description translate="true">
+                    CSS font-size for the card titles (e.g. 1rem, 18px). Leave empty to use the global Subcats configuration.
+                </description>
+            </parameter>
+            <parameter name="card_title_font_weight" xsi:type="text" visible="true" sort_order="110">
+                <label translate="true">Card Title Font Weight</label>
+                <description translate="true">
+                    CSS font-weight for the card titles (e.g. 400, 500, 700). Leave empty to use the global Subcats configuration.
+                </description>
+            </parameter>
+            <parameter name="card_title_color" xsi:type="text" visible="true" sort_order="115">
+                <label translate="true">Card Title Color</label>
+                <description translate="true">
+                    CSS color for the card titles (e.g. #2563eb, #111827). Leave empty to use the global Subcats configuration.
+                </description>
+            </parameter>
+            <parameter name="card_title_hover_color" xsi:type="text" visible="true" sort_order="66">
+                <label translate="true">Card Title Hover Color</label>
+                <description translate="true">
+                    CSS color for the card titles on hover (e.g. #2563eb, #111827). Leave empty to use the theme default.
+                </description>
             </parameter>
         </parameters>
     </widget>

@@ -26,6 +26,9 @@ namespace Jscriptz\Subcats\Model\Config\Source;
 use Magento\Framework\Option\ArrayInterface;
 use Jscriptz\Subcats\Helper\Data as ConfigHelper;
 
+/**
+ * Model ThemePreset
+ */
 class ThemePreset implements ArrayInterface
 {
     /**

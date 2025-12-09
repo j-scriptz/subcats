@@ -32,6 +32,9 @@ use Magento\MediaStorage\Model\File\UploaderFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Model Uploader
+ */
 class Uploader
 {
     /**
@@ -124,7 +127,6 @@ class Uploader
         $baseTmpPath,
         $basePath,
         $allowedExtensions = []
-
     ) {
         $this->coreFileStorageDatabase  = $coreFileStorageDatabase;
         $this->mediaDirectory           = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
@@ -250,6 +252,9 @@ class Uploader
         return $name;
     }
 
+    /**
+     * Get base url.
+     */
     public function getBaseUrl()
     {
         return $this->storeManager

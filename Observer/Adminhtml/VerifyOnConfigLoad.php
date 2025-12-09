@@ -29,6 +29,9 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Observer VerifyOnConfigLoad
+ */
 class VerifyOnConfigLoad implements ObserverInterface
 {
     /** @var RequestInterface */
@@ -40,6 +43,13 @@ class VerifyOnConfigLoad implements ObserverInterface
     /** @var LoggerInterface */
     private $logger;
 
+    /**
+     * Constructor.
+     *
+     * @param RequestInterface $request
+     * @param ApiClient $apiClient
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         RequestInterface $request,
         ApiClient $apiClient,
@@ -50,6 +60,12 @@ class VerifyOnConfigLoad implements ObserverInterface
         $this->logger    = $logger;
     }
 
+    /**
+     * Execute.
+     *
+     * @param Observer $observer
+     * @return void
+     */
     public function execute(Observer $observer): void
     {
         // Only when our section is opened

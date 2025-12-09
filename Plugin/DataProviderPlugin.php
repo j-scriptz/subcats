@@ -25,6 +25,9 @@ namespace Jscriptz\Subcats\Plugin;
 
 use Magento\Catalog\Model\Category\DataProvider as Subject;
 
+/**
+ * Plugin DataProviderPlugin
+ */
 class DataProviderPlugin
 {
     /**
@@ -90,12 +93,12 @@ class DataProviderPlugin
                     $imageValue = preg_replace('#^(?:media/)?catalog/category/+?#i', '', $imageValue);
                 }
 
-                $result[$category->getId()][\Jscriptz\Subcats\Helper\Data::ATTRIBUTE_NAME] = array(
-                    array(
+                $result[$category->getId()][\Jscriptz\Subcats\Helper\Data::ATTRIBUTE_NAME] = [
+                    [
                         'name' => $imageValue,
                         'url' => $this->_helper->getImageUrl($category),
-                    )
-                );
+                    ]
+                ];
             }
         }
 

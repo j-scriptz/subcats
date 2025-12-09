@@ -31,6 +31,12 @@ class LicenseSync
     private $apiClient;
     private $logger;
 
+    /**
+     * Constructor.
+     *
+     * @param ApiClient $apiClient
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         ApiClient $apiClient,
         LoggerInterface $logger
@@ -39,6 +45,11 @@ class LicenseSync
         $this->logger    = $logger;
     }
 
+    /**
+     * Execute.
+     *
+     * @return void
+     */
     public function execute(): void
     {
         try {

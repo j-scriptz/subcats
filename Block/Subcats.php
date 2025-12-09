@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Jscriptz LLC.
  *
@@ -31,6 +33,9 @@ use Jscriptz\Subcats\Model\LicenseValidator;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Widget\Block\BlockInterface;
 
+/**
+ * Block Subcats
+ */
 class Subcats extends \Magento\Framework\View\Element\Template implements BlockInterface
 {
     /**
@@ -79,8 +84,8 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
     protected $_productCollectionFactory;
 
     /**
-    * @var \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory
-    */
+     * @var \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory
+     */
     protected $_categoryCollectionFactory;
 
     /**
@@ -103,6 +108,24 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
      */
     protected $licenseValidator;
 
+    /**
+     * Constructor.
+     *
+     * @param Context $context
+     * @param \Magento\Catalog\Model\Layer\Resolver $layerResolver
+     * @param \Magento\Framework\Registry $registry
+     * @param \Magento\Catalog\Helper\Category $categoryHelper
+     * @param \Magento\Framework\Filesystem $filesystem
+     * @param \Magento\Framework\Image\AdapterFactory $imageFactory
+     * @param \Magento\Catalog\Model\ResourceModel\Product\CollectionFactory $productCollectionFactory
+     * @param \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $categoryCollectionFactory
+     * @param \Magento\Catalog\Model\CategoryFactory $categoryFactory
+     * @param \Magento\Catalog\Model\CategoryRepository $categoryRepository
+     * @param ConfigHelper $configHelper
+     * @param CatalogImageHelper $catalogImageHelper
+     * @param LicenseValidator $licenseValidator
+     * @param array $data
+     */
     public function __construct(
         Context $context,
         \Magento\Catalog\Model\Layer\Resolver $layerResolver,
@@ -135,6 +158,11 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
         parent::__construct($context, $data);
     }
 
+    /**
+     * Get subcategory image url.
+     *
+     * @param \Magento\Catalog\Model\Category $child
+     */
     public function getSubcategoryImageUrl(\Magento\Catalog\Model\Category $child)
     {
         // Prefer your configured subcat dimensions; fall back to whatever
@@ -320,6 +348,11 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
         return null;
     }
 
+    /**
+     * Can show subcategories
+     *
+     * @return bool
+     */
     public function canShowSubcategories(): bool
     {
         // 1) Global on/off switch
@@ -399,20 +432,29 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
     }
 
     // pass imagename, width and height
+    /**
+     * Resize
+     *
+     * @param mixed $image
+     * @param mixed $width
+     * @param mixed $height
+     */
     public function resize($image, $width = null, $height = null)
     {
         $absolutePath = $this->_filesystem->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::MEDIA)->getAbsolutePath('catalog/category/').$image;
-        if (!file_exists($absolutePath)) return false;
+        if (!file_exists($absolutePath)) {
+            return false;
+        }
         $imageResized = $this->_filesystem->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::MEDIA)->getAbsolutePath('resized/'.$width.'/').$image;
         if (!file_exists($imageResized)) { // Only resize image if not already exists.
             //create image factory...
             $imageResize = $this->_imageFactory->create();
             $imageResize->open($absolutePath);
-            $imageResize->constrainOnly(TRUE);
-            $imageResize->keepTransparency(TRUE);
-            $imageResize->keepFrame(FALSE);
-            $imageResize->keepAspectRatio(TRUE);
-            $imageResize->resize($width,$height);
+            $imageResize->constrainOnly(true);
+            $imageResize->keepTransparency(true);
+            $imageResize->keepFrame(false);
+            $imageResize->keepAspectRatio(true);
+            $imageResize->resize($width, $height);
             //destination folder
             $destination = $imageResized ;
             //save image
@@ -420,7 +462,7 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
         }
         $resizedURL = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA).'resized/'.$width.'/'.$image;
         return $resizedURL;
-  }
+    }
 
     /**
      * Get category object
@@ -805,6 +847,11 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
         return (int)$value;
     }
 
+    /**
+     * Get widget tablet span.
+     *
+     * @return ?int
+     */
     public function getWidgetTabletSpan(): ?int
     {
         $value = $this->getData('columns_tablet');
@@ -814,6 +861,11 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
         return (int)$value;
     }
 
+    /**
+     * Get widget phone span.
+     *
+     * @return ?int
+     */
     public function getWidgetPhoneSpan(): ?int
     {
         $value = $this->getData('columns_mobile');

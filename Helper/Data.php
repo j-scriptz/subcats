@@ -29,8 +29,10 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\Encryption\EncryptorInterface;
 
-class Data
-    extends \Magento\Framework\App\Helper\AbstractHelper
+/**
+ * Helper Data
+ */
+class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
      * Primary category attribute code for Jscriptz Subcats image.
@@ -73,26 +75,31 @@ class Data
      * Store manager
      *
      * @var \Magento\Store\Model\StoreManagerInterface
-     */   
-     protected $_storeManager;
-     
-     /**
-     * @var EncryptorInterface
      */
+     protected $_storeManager;
+
+     /**
+      * @var EncryptorInterface
+      */
     protected $encryptor;
 
+    /**
+     * Constructor.
+     *
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param EncryptorInterface $encryptor
+     */
     public function __construct(
-	\Magento\Framework\App\Helper\Context $context,
+        \Magento\Framework\App\Helper\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         EncryptorInterface $encryptor
     ) {
-    	 
+
         $this->_storeManager = $storeManager;
         $this->encryptor = $encryptor;
-        
+
          parent::__construct($context);
-        
-        
     }
 
     /**
@@ -108,7 +115,7 @@ class Data
         if (!$image) {
             $image = $category->getData(self::ATTRIBUTE_LEGACY_NAME);
         }
-        
+
         return $this->getUrl($image);
     }
 
@@ -202,7 +209,7 @@ class Data
             $scope
         );
         $secret = $this->encryptor->decrypt($secret);
-        
+
         return $secret;
     }
     /*
@@ -334,6 +341,11 @@ class Data
         return $value !== '' ? $value : null;
     }
 
+    /**
+     * Get design card padding.
+     *
+     * @param mixed $storeId
+     */
     public function getDesignCardPadding($storeId = null)
     {
         $value = trim((string)$this->scopeConfig->getValue(
@@ -557,6 +569,4 @@ class Data
             $storeId
         );
     }
-
-
 }

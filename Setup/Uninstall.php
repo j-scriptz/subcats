@@ -93,22 +93,22 @@ class Uninstall implements UninstallInterface
                 'subcat_cols_tablet',
                 'subcat_cols_phone',
                 'subcats_children',
-            ];
+                        ];
 
 
-            foreach ($attributesToRemove as $code) {
-                $attributeId = $eavSetup->getAttributeId($entityTypeId, $code);
-                if ($attributeId) {
-                    $eavSetup->removeAttribute($entityTypeId, $code);
-                }
-            }
+                        foreach ($attributesToRemove as $code) {
+                            $attributeId = $eavSetup->getAttributeId($entityTypeId, $code);
+                            if ($attributeId) {
+                                $eavSetup->removeAttribute($entityTypeId, $code);
+                            }
+                        }
 
             // Remove core_config_data values for this module
-            $configTable = $setup->getTable('core_config_data');
-            $connection->delete(
-                $configTable,
-                "path LIKE 'jscriptz_subcats/%' OR path LIKE 'jscriptz/%'"
-            );
+                        $configTable = $setup->getTable('core_config_data');
+                        $connection->delete(
+                            $configTable,
+                            "path LIKE 'jscriptz_subcats/%' OR path LIKE 'jscriptz/%'"
+                        );
 
             // Remove patch_list entries for this module's patches
             $patchTable = $setup->getTable('patch_list');

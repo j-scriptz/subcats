@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace Jscriptz\Subcats\Model\Category\Attribute\Source;
 
+/**
+ * Model OptionsDesktop
+ */
 class OptionsDesktop extends \Magento\Eav\Model\Entity\Attribute\Source\AbstractSource
 {
 

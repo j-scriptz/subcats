@@ -28,6 +28,9 @@ use Jscriptz\Subcats\Helper\Data as ConfigHelper;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 
+/**
+ * Block Design
+ */
 class Design extends Template
 {
     /**
@@ -41,6 +44,14 @@ class Design extends Template
     /** @var CategoryRepositoryInterface */
     private $categoryRepository;
 
+    /**
+     * Constructor.
+     *
+     * @param Template\Context $context
+     * @param ConfigHelper $configHelper
+     * @param CategoryRepositoryInterface $categoryRepository
+     * @param array $data
+     */
     public function __construct(
         Template\Context $context,
         ConfigHelper $configHelper,
@@ -350,6 +361,5 @@ class Design extends Template
                 . "  --js-subcats-hover-shadow: {$hoverShadow};\n"
                 . "  --js-subcats-hover-scale: {$hoverScale};\n"
             . "}";
-
     }
 }

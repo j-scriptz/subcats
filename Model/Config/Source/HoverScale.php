@@ -25,8 +25,14 @@ namespace Jscriptz\Subcats\Model\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 
+/**
+ * Model HoverScale
+ */
 class HoverScale implements ArrayInterface
 {
+    /**
+     * To option array
+     */
     public function toOptionArray()
     {
         return [

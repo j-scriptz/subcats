@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace Jscriptz\Subcats\Observer;
 
-class CatalogCategoryPrepareSaveObserver
-    implements \Magento\Framework\Event\ObserverInterface
+/**
+ * Observer CatalogCategoryPrepareSaveObserver
+ */
+class CatalogCategoryPrepareSaveObserver implements \Magento\Framework\Event\ObserverInterface
 {
     /**
      * @param \Magento\Framework\Event\Observer $observer

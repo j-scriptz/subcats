@@ -30,6 +30,9 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Data\OptionSourceInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
+/**
+ * Model CategoryChildren
+ */
 class CategoryChildren implements OptionSourceInterface
 {
     /**
@@ -47,6 +50,13 @@ class CategoryChildren implements OptionSourceInterface
      */
     private $storeManager;
 
+    /**
+     * Constructor.
+     *
+     * @param CollectionFactory $categoryCollectionFactory
+     * @param RequestInterface $request
+     * @param StoreManagerInterface $storeManager
+     */
     public function __construct(
         CollectionFactory $categoryCollectionFactory,
         RequestInterface $request,

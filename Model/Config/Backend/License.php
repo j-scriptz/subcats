@@ -32,6 +32,7 @@ use Magento\Framework\UrlInterface;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Module\ModuleListInterface;
 use Jscriptz\Subcats\Model\License\ApiClient;
+use JsonException;
 
 /**
  * Backend model for validating and storing Jscriptz Subcats license key,
@@ -66,8 +67,8 @@ class License extends Value
     private $moduleList;
 
 /**
-     * @var ApiClient|null
-     */
+ * @var ApiClient|null
+ */
     private $apiClient = null;
 
 
@@ -309,7 +310,15 @@ class License extends Value
                 return $result;
             }
 
-            $data = @json_decode($curl->getBody(), true);
+            $body = (string) $curl->getBody();
+            try {
+                $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+            } catch (JsonException $e) {
+                return $result;
+            }
+            if (!is_array($data)) {
+                return $result;
+            }
             if (!is_array($data)) {
                 return $result;
             }

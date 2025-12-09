@@ -115,25 +115,25 @@ class CleanupData extends Command
                 'subcat_cols_tablet',
                 'subcat_cols_phone',
                 'subcats_children',
-            ];
+                        ];
 
 
-            foreach ($attributesToRemove as $code) {
-                $attributeId = $eavSetup->getAttributeId($entityTypeId, $code);
-                if ($attributeId) {
-                    $output->writeln(sprintf(' - Removing category attribute <comment>%s</comment>', $code));
-                    $eavSetup->removeAttribute($entityTypeId, $code);
-                } else {
-                    $output->writeln(sprintf(' - Attribute <comment>%s</comment> not found, skipping.', $code));
-                }
-            }
+                        foreach ($attributesToRemove as $code) {
+                            $attributeId = $eavSetup->getAttributeId($entityTypeId, $code);
+                            if ($attributeId) {
+                                $output->writeln(sprintf(' - Removing category attribute <comment>%s</comment>', $code));
+                                $eavSetup->removeAttribute($entityTypeId, $code);
+                            } else {
+                                $output->writeln(sprintf(' - Attribute <comment>%s</comment> not found, skipping.', $code));
+                            }
+                        }
 
             // Remove core_config_data entries
-            $configTable = $this->moduleDataSetup->getTable('core_config_data');
-            $deleted = $connection->delete(
-                $configTable,
-                "path LIKE 'jscriptz_subcats/%' OR path LIKE 'jscriptz/%'"
-            );
+                        $configTable = $this->moduleDataSetup->getTable('core_config_data');
+                        $deleted = $connection->delete(
+                            $configTable,
+                            "path LIKE 'jscriptz_subcats/%' OR path LIKE 'jscriptz/%'"
+                        );
             $output->writeln(sprintf(
                 ' - Removed <comment>%d</comment> row(s) from core_config_data with jscriptz_subcats/* or jscriptz/* paths.',
                 $deleted

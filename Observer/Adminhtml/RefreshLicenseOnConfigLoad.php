@@ -32,6 +32,9 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Observer RefreshLicenseOnConfigLoad
+ */
 class RefreshLicenseOnConfigLoad implements ObserverInterface
 {
     private RequestInterface $request;
@@ -39,6 +42,14 @@ class RefreshLicenseOnConfigLoad implements ObserverInterface
     private LoggerInterface $logger;
     private StoreManagerInterface $storeManager;
 
+    /**
+     * Constructor.
+     *
+     * @param RequestInterface $request
+     * @param ApiClient $apiClient
+     * @param LoggerInterface $logger
+     * @param StoreManagerInterface $storeManager
+     */
     public function __construct(
         RequestInterface $request,
         ApiClient $apiClient,
@@ -51,6 +62,12 @@ class RefreshLicenseOnConfigLoad implements ObserverInterface
         $this->storeManager = $storeManager;
     }
 
+    /**
+     * Execute.
+     *
+     * @param Observer $observer
+     * @return void
+     */
     public function execute(Observer $observer): void
     {
         // Only for the Jscriptz section (<section id="jscriptz">)

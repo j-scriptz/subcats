@@ -25,6 +25,9 @@ namespace Jscriptz\Subcats\Helper;
 
 use Magento\Framework\App\Filesystem\DirectoryList;
 
+/**
+ * Helper Image
+ */
 class Image extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
@@ -96,12 +99,12 @@ class Image extends \Magento\Framework\App\Helper\AbstractHelper
                 $path .= $height ;
             }
         }
-	
+
         $absolutePath = $this->_mediaDirectory->getAbsolutePath($mediaFolder) . $image;
         $imageResized = $this->_mediaDirectory->getAbsolutePath($path) . $image;
-        
 
-	if (!$this->_fileExists($path . $image) && $this->_fileExists($absolutePath)){
+
+        if (!$this->_fileExists($path . $image) && $this->_fileExists($absolutePath)) {
             $imageFactory = $this->_imageFactory->create();
             $imageFactory->open($absolutePath);
             //$imageFactory->constrainOnly(false);

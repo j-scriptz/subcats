@@ -25,11 +25,7 @@ namespace Jscriptz\Subcats\Controller\Adminhtml\Image;
 
 use Magento\Framework\Controller\ResultFactory;
 
-/**
- * Class Upload
- */
-class Upload
-    extends \Magento\Backend\App\Action
+class Upload extends \Magento\Backend\App\Action
 {
     /**
      * @var \Jscriptz\Subcats\Model\ImageUploader
@@ -79,7 +75,7 @@ class Upload
         } catch (\Exception $e) {
             $result = ['error' => $e->getMessage(), 'errorcode' => $e->getCode()];
         }
-        
+
         return $this->resultFactory->create(ResultFactory::TYPE_JSON)->setData($result);
     }
 }

@@ -8,32 +8,32 @@ $inputName  = $element->getName();
 ?>
 
 <div class="js-subcats-selected-wrapper">
-    <ul id="<?php echo $block->escapeHtmlAttr($inputId); ?>_sortable"
+    <ul id="<?= $escaper->escapeHtmlAttr($inputId); ?>_sortable"
         class="js-subcats-selected">
         <?php foreach ($categories as $category): ?>
             <li class="js-subcats-selected-item"
-                data-id="<?php echo (int)$category->getId(); ?>">
-                <span class="drag-handle" title="<?php echo $block->escapeHtmlAttr(__('Drag to reorder')); ?>">⇅</span>
-                <span class="label"><?php echo $block->escapeHtml($category->getName()); ?></span>
+                data-id="<?= (int)$category->getId(); ?>">
+                <span class="drag-handle" title="<?= $escaper->escapeHtmlAttr(__('Drag to reorder')); ?>">⇅</span>
+                <span class="label"><?= $escaper->escapeHtml($category->getName()); ?></span>
             </li>
         <?php endforeach; ?>
     </ul>
 
     <!-- Hidden input storing the ordered list of IDs -->
     <input type="hidden"
-           id="<?php echo $block->escapeHtmlAttr($inputId); ?>"
-           name="<?php echo $block->escapeHtmlAttr($inputName); ?>"
-           value="<?php echo $block->escapeHtmlAttr($value); ?>" />
+           id="<?= $escaper->escapeHtmlAttr($inputId); ?>"
+           name="<?= $escaper->escapeHtmlAttr($inputName); ?>"
+           value="<?= $escaper->escapeHtmlAttr($value); ?>" />
     <p class="note">
-        <span><?php /* @noEscape */ echo __('Drag the items above to change the display order of selected subcategories.'); ?></span>
+        <span><?= /* @noEscape */ __('Drag the items above to change the display order of selected subcategories.'); ?></span>
     </p>
 </div>
 
 <script type="text/x-magento-init">
 {
-    "#<?php echo $block->escapeHtmlAttr($inputId); ?>_sortable": {
+    "#<?= $escaper->escapeHtmlAttr($inputId); ?>_sortable": {
         "Jscriptz_Subcats/js/subcats-sortable": {
-            "inputSelector": "#<?php echo $block->escapeHtmlAttr($inputId); ?>"
+            "inputSelector": "#<?= $escaper->escapeHtmlAttr($inputId); ?>"
         }
     }
 }

@@ -1,10 +1,21 @@
 <?php
+declare(strict_types=1);
+
 /** @var \Jscriptz\Subcats\Block\Design $block */
-$css = $block->getCss();
-if (!$css) {
+/** @var \Magento\Framework\Escaper $escaper */
+
+$css = (string) $block->getCss();
+if ($css === '') {
     return;
 }
+
+/**
+ * CSS is rendered inside a <style> tag. Avoid HTML-breaking sequences.
+ * We keep quotes intact (CSS may legitimately include them) and strip tag delimiters.
+ */
+$css = preg_replace('/<\/?style\b[^>]*>/i', '', $css) ?? $css;
+$css = str_replace(['<', '>'], '', $css);
 ?>
 <style>
-<?= $css ?>
+<?= /* @noEscape */ $css ?>
 </style>

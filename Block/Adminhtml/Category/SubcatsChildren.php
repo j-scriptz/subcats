@@ -28,6 +28,9 @@ use Magento\Framework\Data\Form\Element\Renderer\RendererInterface;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
 
+/**
+ * Block SubcatsChildren
+ */
 class SubcatsChildren extends Template implements RendererInterface
 {
     /**

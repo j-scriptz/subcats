@@ -35,13 +35,20 @@ class CategoryOrder extends Template
      */
     private $element;
 
+    /**
+     * Constructor.
+     *
+     * @param Context $context
+     * @param ElementFactory $elementFactory
+     * @param CategoryMultiselect $categorySource
+     * @param array $data
+     */
     public function __construct(
         Context             $context,
         ElementFactory      $elementFactory,
         CategoryMultiselect $categorySource,
         array               $data = []
-    )
-    {
+    ) {
         $this->elementFactory = $elementFactory;
         $this->categorySource = $categorySource;
         parent::__construct($context, $data);

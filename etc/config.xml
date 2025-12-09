@@ -3,13 +3,13 @@
     xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
         <default>
             <jscriptz_subcats>
-            	<general>
-            		<enabled>1</enabled>
-            	</general>
+                <general>
+                    <enabled>1</enabled>
+                </general>
                 <design>
-                	<grow_enabled>1</grow_enabled>
-                	<subcat_height>500</subcat_height>
-                	<subcat_width>500</subcat_width>
+                    <grow_enabled>1</grow_enabled>
+                    <subcat_height>500</subcat_height>
+                    <subcat_width>500</subcat_width>
                     <use_product_image_fallback>1</use_product_image_fallback>
                     <style_option_desktop>3</style_option_desktop>
                     <style_option_tablet>2</style_option_tablet>

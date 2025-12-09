@@ -26,7 +26,6 @@ namespace Jscriptz\Subcats\Model;
 /**
  * Catalog image uploader
  */
-class ImageUploader
-    extends \Magento\Catalog\Model\ImageUploader
+class ImageUploader extends \Magento\Catalog\Model\ImageUploader
 {
 }

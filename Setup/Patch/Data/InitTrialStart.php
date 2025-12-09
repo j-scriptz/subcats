@@ -27,6 +27,9 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 
+/**
+ * Setup InitTrialStart
+ */
 class InitTrialStart implements DataPatchInterface
 {
     /**
@@ -39,6 +42,12 @@ class InitTrialStart implements DataPatchInterface
      */
     private $configWriter;
 
+    /**
+     * Constructor.
+     *
+     * @param ModuleDataSetupInterface $moduleDataSetup
+     * @param WriterInterface $configWriter
+     */
     public function __construct(
         ModuleDataSetupInterface $moduleDataSetup,
         WriterInterface $configWriter
@@ -91,6 +100,9 @@ class InitTrialStart implements DataPatchInterface
         return [];
     }
 
+    /**
+     * Get aliases.
+     */
     public function getAliases()
     {
         return [];

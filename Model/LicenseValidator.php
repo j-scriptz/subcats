@@ -26,6 +26,9 @@ namespace Jscriptz\Subcats\Model;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 
+/**
+ * Model LicenseValidator
+ */
 class LicenseValidator
 {
     const XML_PATH_LICENSE_KEY    = 'jscriptz_subcats/license/license_key';
@@ -36,6 +39,11 @@ class LicenseValidator
      */
     private $scopeConfig;
 
+    /**
+     * Constructor.
+     *
+     * @param ScopeConfigInterface $scopeConfig
+     */
     public function __construct(
         ScopeConfigInterface $scopeConfig
     ) {

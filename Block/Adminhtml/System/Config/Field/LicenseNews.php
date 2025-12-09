@@ -26,8 +26,16 @@ namespace Jscriptz\Subcats\Block\Adminhtml\System\Config\Field;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 
+/**
+ * Block LicenseNews
+ */
 class LicenseNews extends Field
 {
+    /**
+     * Render
+     *
+     * @param AbstractElement $element
+     */
     public function render(AbstractElement $element)
     {
         // No "Use Default / Use Website" toggles for this read-only field

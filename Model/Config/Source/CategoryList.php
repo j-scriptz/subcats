@@ -26,6 +26,9 @@ namespace Jscriptz\Subcats\Model\Config\Source;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\Framework\Data\OptionSourceInterface;
 
+/**
+ * Model CategoryList
+ */
 class CategoryList implements OptionSourceInterface
 {
     /**

@@ -46,11 +46,11 @@ $uid = uniqid('js-subcats-catorder-');
                      style="flex:1 1 0; min-width:0;">
                     <div class="admin__field">
                         <label class="admin__field-label"
-                               for="<?= $block->escapeHtmlAttr($uid . '_available') ?>">
-                            <?= $block->escapeHtml(__('Available Categories')) ?>
+                               for="<?= $escaper->escapeHtmlAttr($uid . '_available') ?>">
+                            <?= $escaper->escapeHtml(__('Available Categories')) ?>
                         </label>
                         <div class="admin__field-control">
-                            <select id="<?= $block->escapeHtmlAttr($uid . '_available') ?>"
+                            <select id="<?= $escaper->escapeHtmlAttr($uid . '_available') ?>"
                                     class="admin__control-multiselect"
                                     multiple="multiple"
                                     size="12"
@@ -64,8 +64,8 @@ $uid = uniqid('js-subcats-catorder-');
                                         continue;
                                     }
                                     ?>
-                                    <option value="<?= $value ?>">
-                                        <?= $block->escapeHtml($label) ?>
+                                    <option value="<?= $escaper->escapeHtmlAttr((string) $value) ?>">
+                                        <?= $escaper->escapeHtml($label) ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -78,15 +78,15 @@ $uid = uniqid('js-subcats-catorder-');
                      style="display:flex; flex-direction:column; gap:6px; margin-top:26px; flex:0 0 90px;">
                     <button type="button"
                             class="action-default"
-                            id="<?= $block->escapeHtmlAttr($uid . '_add') ?>"
+                            id="<?= $escaper->escapeHtmlAttr($uid . '_add') ?>"
                             style="white-space:nowrap;">
-                        <span><?= $block->escapeHtml(__('Add ▶')) ?></span>
+                        <span><?= $escaper->escapeHtml(__('Add ▶')) ?></span>
                     </button>
                     <button type="button"
                             class="action-default"
-                            id="<?= $block->escapeHtmlAttr($uid . '_remove') ?>"
+                            id="<?= $escaper->escapeHtmlAttr($uid . '_remove') ?>"
                             style="white-space:nowrap;">
-                        <span><?= $block->escapeHtml(__('◀ Remove')) ?></span>
+                        <span><?= $escaper->escapeHtml(__('◀ Remove')) ?></span>
                     </button>
                 </div>
 
@@ -95,11 +95,11 @@ $uid = uniqid('js-subcats-catorder-');
                      style="flex:1 1 0; min-width:0;">
                     <div class="admin__field">
                         <label class="admin__field-label"
-                               for="<?= $block->escapeHtmlAttr($uid . '_selected') ?>">
-                            <?= $block->escapeHtml(__('Final Order')) ?>
+                               for="<?= $escaper->escapeHtmlAttr($uid . '_selected') ?>">
+                            <?= $escaper->escapeHtml(__('Final Order')) ?>
                         </label>
                         <div class="admin__field-control">
-                            <select id="<?= $block->escapeHtmlAttr($uid . '_selected') ?>"
+                            <select id="<?= $escaper->escapeHtmlAttr($uid . '_selected') ?>"
                                     class="admin__control-multiselect"
                                     multiple="multiple"
                                     size="12"
@@ -112,8 +112,8 @@ $uid = uniqid('js-subcats-catorder-');
                                     }
                                     $label = $optionsById[$value];
                                     ?>
-                                    <option value="<?= $value ?>">
-                                        <?= $block->escapeHtml($label) ?>
+                                    <option value="<?= $escaper->escapeHtmlAttr((string) $value) ?>">
+                                        <?= $escaper->escapeHtml($label) ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -121,14 +121,14 @@ $uid = uniqid('js-subcats-catorder-');
                             <div class="js-subcats-widget-order-buttons" style="margin-top:6px;white-space:nowrap">
                                 <button type="button"
                                         class="action-default"
-                                        id="<?= $block->escapeHtmlAttr($uid . '_up') ?>"
+                                        id="<?= $escaper->escapeHtmlAttr($uid . '_up') ?>"
                                         style="margin-right:6px;">
-                                    <span><?= $block->escapeHtml(__('Move Up')) ?></span>
+                                    <span><?= $escaper->escapeHtml(__('Move Up')) ?></span>
                                 </button>
                                 <button type="button"
                                         class="action-default"
-                                        id="<?= $block->escapeHtmlAttr($uid . '_down') ?>">
-                                    <span><?= $block->escapeHtml(__('Move Down')) ?></span>
+                                        id="<?= $escaper->escapeHtmlAttr($uid . '_down') ?>">
+                                    <span><?= $escaper->escapeHtml(__('Move Down')) ?></span>
                                 </button>
                             </div>
                         </div>
@@ -138,7 +138,7 @@ $uid = uniqid('js-subcats-catorder-');
             </div>
 
             <p class="note" style="margin-top:20px;">
-                <?= $block->escapeHtml(
+                <?= $escaper->escapeHtml(
                     __('Select categories from "Available Categories", click "Add" to move them into "Final Order", then use the arrows to adjust the display order. Only the categories in "Final Order" are rendered by the widget.')
                 ) ?>
             </p>
@@ -149,8 +149,8 @@ $uid = uniqid('js-subcats-catorder-');
 <script>
     require(['jquery'], function ($) {
         (function () {
-            var uid       = <?= json_encode($uid) ?>;
-            var hiddenId  = <?= json_encode($hiddenId) ?>;
+            var uid       = <?= /* @noEscape */ json_encode($uid, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+            var hiddenId  = <?= /* @noEscape */ json_encode($hiddenId, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
             var availableId = uid + '_available';
             var selectedId  = uid + '_selected';
 

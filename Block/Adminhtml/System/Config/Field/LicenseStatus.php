@@ -26,8 +26,16 @@ namespace Jscriptz\Subcats\Block\Adminhtml\System\Config\Field;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 
+/**
+ * Block LicenseStatus
+ */
 class LicenseStatus extends Field
 {
+    /**
+     * Render
+     *
+     * @param AbstractElement $element
+     */
     public function render(AbstractElement $element)
     {
         $element->setCanUseWebsiteValue(false);
@@ -46,7 +54,7 @@ class LicenseStatus extends Field
         $icon = '';
 
         // Priority 1: Active/Valid licenses (GREEN)
-        if (str_contains($lower, 'active') 
+        if (str_contains($lower, 'active')
             || str_contains($lower, 'valid')
             || str_contains($lower, 'verified')
         ) {
@@ -54,8 +62,7 @@ class LicenseStatus extends Field
             $icon = '✓ ';
         }
         // Priority 2: Invalid/Expired/Error states (RED)
-        elseif (
-            str_contains($lower, 'inactive')
+        elseif (str_contains($lower, 'inactive')
             || str_contains($lower, 'not valid')
             || str_contains($lower, 'not found')
             || str_contains($lower, 'verification error')

@@ -18,7 +18,7 @@ $inlineCss   = $block->getWidgetCssOverrides();
     <?= $inlineCss ? 'style="' . $escaper->escapeHtmlAttr($inlineCss) . '"' : '' ?>>
     <?php if ($showTitle && $title !== ''): ?>
         <h2 class="jscriptz-subcats-title">
-            <?= $block->escapeHtml($title) ?>
+            <?= $escaper->escapeHtml($title) ?>
         </h2>
     <?php endif; ?>
 

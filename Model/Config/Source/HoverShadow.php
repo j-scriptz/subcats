@@ -25,8 +25,14 @@ namespace Jscriptz\Subcats\Model\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 
+/**
+ * Model HoverShadow
+ */
 class HoverShadow implements ArrayInterface
 {
+    /**
+     * To option array
+     */
     public function toOptionArray()
     {
         return [

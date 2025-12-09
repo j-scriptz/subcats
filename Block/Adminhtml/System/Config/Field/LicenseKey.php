@@ -28,6 +28,9 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Backend\Block\Template\Context;
 
+/**
+ * Block LicenseKey
+ */
 class LicenseKey extends Field
 {
     /**
@@ -35,6 +38,13 @@ class LicenseKey extends Field
      */
     private $scopeConfig;
 
+    /**
+     * Constructor.
+     *
+     * @param Context $context
+     * @param ScopeConfigInterface $scopeConfig
+     * @param array $data
+     */
     public function __construct(
         Context $context,
         ScopeConfigInterface $scopeConfig,
@@ -44,6 +54,11 @@ class LicenseKey extends Field
         $this->scopeConfig = $scopeConfig;
     }
 
+    /**
+     * Render
+     *
+     * @param AbstractElement $element
+     */
     public function render(AbstractElement $element)
     {
         // No "Use Website / Use Default" for the license key
@@ -63,29 +78,29 @@ class LicenseKey extends Field
         ));
 
         // Check if license is active/valid in either field
-        // This handles both the /update response ("License is active.") 
+        // This handles both the /update response ("License is active.")
         // and /verify response ("License is valid.")
         $isLicenseValid = false;
-        
+
         // Check license_status for active/valid indicators
-        if (str_contains($licenseStatus, 'active') 
+        if (str_contains($licenseStatus, 'active')
             || str_contains($licenseStatus, 'valid')
             || str_contains($licenseStatus, 'verified')
         ) {
             $isLicenseValid = true;
         }
-        
+
         // Also check verify_message as fallback
-        if (str_contains($verifyMessage, 'valid') 
+        if (str_contains($verifyMessage, 'valid')
             || str_contains($verifyMessage, 'active')
             || str_contains($verifyMessage, 'verified')
         ) {
             $isLicenseValid = true;
         }
-        
+
         // Don't lock if it's a trial or if there's no license key
         $licenseKey = (string)$element->getValue();
-        if (empty(trim($licenseKey)) 
+        if (empty(trim($licenseKey))
             || str_contains($licenseStatus, 'trial')
             || str_contains($licenseStatus, 'expired')
             || str_contains($verifyMessage, 'not found')

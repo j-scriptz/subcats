@@ -243,7 +243,6 @@ class Image extends AbstractModel
 
         $this->mediaDirectory = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
         $this->mediaDirectory->create($this->uploader->getBasePath());
-
     }
 
     /**
@@ -542,7 +541,7 @@ class Image extends AbstractModel
             $miscParams[] = $this->getWatermarkHeight();
         }
 
-        $path[] = md5(implode('_', $miscParams));
+        $path[] = hash('sha256', implode('_', $miscParams));
 
         // append prepared filename
         $this->newFile = implode('/', $path) . $file;
@@ -624,7 +623,7 @@ class Image extends AbstractModel
      */
     public function rotate($angle)
     {
-        $angle = intval($angle);
+        $angle = (int) ($angle);
         $this->getImageProcessor()->rotate($angle);
         return $this;
     }
@@ -728,8 +727,8 @@ class Image extends AbstractModel
             );
         } else {
             $url = $this->storeManager->getStore()->getBaseUrl(
-                    UrlInterface::URL_TYPE_MEDIA
-                ) . $this->newFile;
+                UrlInterface::URL_TYPE_MEDIA
+            ) . $this->newFile;
         }
 
         return $url;

@@ -25,6 +25,9 @@ namespace Jscriptz\Subcats\Plugin;
 
 use Magento\Catalog\Model\Category as Subject;
 
+/**
+ * Plugin CategoryPlugin
+ */
 class CategoryPlugin
 {
     /**

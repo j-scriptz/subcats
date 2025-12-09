@@ -212,7 +212,7 @@ class ApiClient
             // Build Version Status exactly how you want it:
             // - If latest == installed => "<installed> (Latest Version)"
             // - If latest > installed  => "Installed: <installed> — Newer version available (<latest>) Download Here"
-            $download = 'Download <a href="https://github.com/j-scriptz/subcats" target="_blank">Here</a>';
+            $download = 'Update <a href="https://github.com/j-scriptz/subcats" target="_blank">Instructions</a>';
 
             if ($installedVersion !== '' && $latestVersion !== '') {
                 if (version_compare($installedVersion, $latestVersion, '<')) {

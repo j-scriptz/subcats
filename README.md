@@ -18,6 +18,6 @@ bin/magento setup:static-content:deploy -f
 bin/magento cache:flush
 </pre>
 
-# License
-You can get a license key that's valid for up to 5 Domains (plus 5 dev domains) Here:
+# License Key
+Up to 5 Domains (plus 5 dev domains):
 Visit <a href="https://mage.jscriptz.com/jscriptz-subcats.html" target="_blank">https://mage.jscriptz.com/jscriptz-subcats.html</a>

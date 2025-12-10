@@ -16,7 +16,7 @@ declare(strict_types=1);
  * @category   Jscriptz
  * @package    Jscriptz_Subcats
  * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://www.jscriptz.net/)
+ * @copyright  Copyright (c) 2019-2025 Jscriptz LLC. (https://www.jscriptz.net/)
  * @license    https://www.jscriptz.net/LICENSE
  */
 
@@ -66,12 +66,11 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
     /**
      * @var \Magento\Catalog\Model\CategoryRepository
      */
-
     protected $_categoryRepository;
+
     /**
      * @var \Magento\Framework\Registry
      */
-
     protected $_registry;
     /**
      * @var \Magento\Catalog\Model\Category

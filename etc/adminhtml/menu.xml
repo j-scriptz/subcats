@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../Magento/Backend/etc/menu.xsd">
     <menu>
-        <add id="Jscriptz_Subcats::parent" title="Jscriptz Subcats" 
-             module="Jscriptz_Subcats" sortOrder="100" 
+        <add id="Jscriptz_Subcats::parent" title="Jscriptz Subcats"
+             module="Jscriptz_Subcats" sortOrder="100"
              resource="Jscriptz_Subcats::parent"/>
 
-        <add id="Jscriptz_Subcats::index" title="Subcats Settings" 
-             module="Jscriptz_Subcats" sortOrder="10" 
-             action="adminhtml/system_config/edit/section/jscriptz/" resource="Jscriptz_Subcats::index" 
+        <add id="Jscriptz_Subcats::index" title="Subcats Settings"
+             module="Jscriptz_Subcats" sortOrder="10"
+             action="adminhtml/system_config/edit/section/jscriptz/" resource="Jscriptz_Subcats::index"
              parent="Jscriptz_Subcats::parent"/>
-              
+
          <!---->
-         <add id="Jscriptz_Subcats::jscriptz" title="Settings" module="Jscriptz_Subcats" sortOrder="30" action="adminhtml/system_config/edit/section/settings/" resource="Jscriptz_Subcats::jscriptz"/>         
+         <add id="Jscriptz_Subcats::jscriptz" title="Settings" module="Jscriptz_Subcats" sortOrder="30" action="adminhtml/system_config/edit/section/settings/" resource="Jscriptz_Subcats::jscriptz"/>
     </menu>
 </config>

@@ -1,0 +1,251 @@
+<?php
+/** @var \Jscriptz\Subcats\Block\Subcats $block */
+/** @var $escaper \Laminas\View\Helper\Escaper */
+
+$canShow  = $block->canShowSubcategories();
+$children = $block->getChildCategories();
+
+if (!$canShow || !$children) {
+    return;
+}
+
+$children = is_array($children) ? $children : iterator_to_array($children);
+
+// --- Widget options --------------------------------------------------
+
+// Autoplay options
+$sliderAutoplayRaw  = (string) $block->getData('slider_autoplay');
+$autoplayEnabled    = $sliderAutoplayRaw === '1';
+$autoplayDelayInput = (int) ($block->getData('slider_autoplay_delay') ?? 5000);
+$autoplayDelay      = $autoplayDelayInput > 0 ? $autoplayDelayInput : 5000;
+
+// Title options
+$title             = trim((string) $block->getData('block_title'));
+$showTitle         = (int) $block->getData('show_title') !== 0;
+$titleFontSize     = trim((string) $block->getData('title_font_size'));
+$titleFontWeight   = trim((string) $block->getData('title_font_weight'));
+$titleAlignment    = trim((string) $block->getData('title_alignment'));
+$titleColor        = trim((string) $block->getData('title_color'));
+
+// Card title options
+$cardTitleFontSize   = trim((string) $block->getData('card_title_font_size'));
+$cardTitleFontWeight = trim((string) $block->getData('card_title_font_weight'));
+$cardTitleColor      = trim((string) $block->getData('card_title_color'));
+$cardTitleHoverColor = trim((string) $block->getData('card_title_hover_color'));
+
+// --- Classes & inline styles -----------------------------------------
+
+$growClass   = $block->isGrowEnabled() ? 'jscriptz-subcats__item--grow' : '';
+$presetClass = $block->getDesignPresetCssClass();
+$inlineCss   = $block->getWidgetCssOverrides();
+
+// Title style
+$titleStyleParts = [];
+if ($titleFontSize !== '') {
+    $titleStyleParts[] = 'font-size:' . $titleFontSize;
+}
+if ($titleFontWeight !== '') {
+    $titleStyleParts[] = 'font-weight:' . $titleFontWeight;
+}
+if ($titleAlignment !== '') {
+    $titleStyleParts[] = 'text-align:' . $titleAlignment;
+}
+if ($titleColor !== '') {
+    $titleStyleParts[] = 'color:' . $titleColor;
+}
+$titleStyleAttr = $titleStyleParts
+    ? ' style="' . $escaper->escapeHtmlAttr(implode('; ', $titleStyleParts)) . '"'
+    : '';
+
+// Card title style
+$cardTitleStyleParts = [];
+if ($cardTitleFontSize !== '') {
+    $cardTitleStyleParts[] = 'font-size:' . $cardTitleFontSize;
+}
+if ($cardTitleFontWeight !== '') {
+    $cardTitleStyleParts[] = 'font-weight:' . $cardTitleFontWeight;
+}
+if ($cardTitleColor !== '') {
+    $cardTitleStyleParts[] = 'color:' . $cardTitleColor;
+}
+$cardTitleStyleAttr = $cardTitleStyleParts
+    ? ' style="' . $escaper->escapeHtmlAttr(implode('; ', $cardTitleStyleParts)) . '"'
+    : '';
+
+// Widget ID for scoping hover styles
+$widgetId = preg_replace('/[^A-Za-z0-9_-]/', '-', (string) $block->getNameInLayout());
+if (!$widgetId) {
+    $widgetId = 'jscriptz-subcats-slider-' . uniqid();
+}
+
+$sliderLabel = $title !== '' ? $title : __('Category slider');
+?>
+<section
+    class="block jscriptz-subcats jscriptz-subcats--slider <?= $escaper->escapeHtmlAttr($presetClass) ?>"
+    aria-label="<?= $escaper->escapeHtmlAttr($sliderLabel) ?>"
+    aria-roledescription="carousel"
+    data-widget-id="<?= $escaper->escapeHtmlAttr($widgetId) ?>"
+    x-data='{
+        autoplayEnabled: <?= $autoplayEnabled ? 'true' : 'false' ?>,
+        delay: <?= (int) $autoplayDelay ?>,
+        timer: null,
+        track: null,
+
+        init() {
+            this.track = this.$el.querySelector("[data-track]");
+            if (this.autoplayEnabled && this.track) {
+                this.startAutoplay();
+            }
+        },
+
+        startAutoplay() {
+            if (!this.autoplayEnabled || !this.track) return;
+            this.stopAutoplay();
+
+            const maxScroll = this.track.scrollWidth - this.track.clientWidth;
+            if (maxScroll <= 0) return;
+
+            const delay = this.delay || 5000;
+
+            this.timer = setInterval(() => {
+                const maxScrollInner = this.track.scrollWidth - this.track.clientWidth;
+                if (maxScrollInner <= 0) {
+                    this.stopAutoplay();
+                    return;
+                }
+                let next = this.track.scrollLeft + this.track.clientWidth;
+                if (next >= maxScrollInner - 1) {
+                    next = 0;
+                }
+                this.track.scrollTo({ left: next, behavior: "smooth" });
+            }, delay);
+        },
+
+        stopAutoplay() {
+            if (this.timer) {
+                clearInterval(this.timer);
+                this.timer = null;
+            }
+        },
+
+        startAutoplayIfNeeded() {
+            if (this.autoplayEnabled) {
+                this.startAutoplay();
+            }
+        },
+
+        scrollNext() {
+            if (!this.track) return;
+            const amount = this.track.clientWidth;
+            const maxScroll = this.track.scrollWidth - this.track.clientWidth;
+            let next = this.track.scrollLeft + amount;
+            if (next > maxScroll) {
+                next = maxScroll;
+            }
+            this.track.scrollTo({ left: next, behavior: "smooth" });
+        },
+
+        scrollPrev() {
+            if (!this.track) return;
+            const amount = this.track.clientWidth;
+            let prev = this.track.scrollLeft - amount;
+            if (prev < 0) {
+                prev = 0;
+            }
+            this.track.scrollTo({ left: prev, behavior: "smooth" });
+        }
+    }'
+    x-on:mouseenter="stopAutoplay()"
+    x-on:mouseleave="startAutoplayIfNeeded()"
+    x-snap-slider.auto-pager.group-pager
+    <?= $inlineCss ? 'style="' . $escaper->escapeHtmlAttr($inlineCss) . '"' : '' ?>
+>
+    <?php if ($cardTitleHoverColor !== ''): ?>
+        <style>
+            .jscriptz-subcats--slider[data-widget-id="<?= $escaper->escapeHtmlAttr($widgetId) ?>"]
+            .jscriptz-subcats__name .jscriptz-subcats__link:hover {
+                color: <?= $escaper->escapeHtml($cardTitleHoverColor) ?> !important;
+            }
+        </style>
+    <?php endif; ?>
+
+    <?php if ($showTitle && $title !== ''): ?>
+        <h2 class="jscriptz-subcats-title"<?= /* @noEscape */ $titleStyleAttr ?>>
+            <?= $escaper->escapeHtml($title) ?>
+        </h2>
+    <?php endif; ?>
+
+    <div class="jscriptz-subcats__inner">
+        <div
+            class="jscriptz-subcats__list jscriptz-subcats__list--slider"
+            data-track
+            tabindex="0"
+        >
+            <?php foreach ($children as $index => $child): ?>
+                <?php
+                /** @var \Magento\Catalog\Model\Category $child */
+                $imageUrl    = $block->getSubcategoryImageUrl($child);
+                $itemClasses = 'jscriptz-subcats__item';
+                if ($growClass) {
+                    $itemClasses .= ' ' . $growClass;
+                }
+                ?>
+                <article
+                    class="<?= $escaper->escapeHtmlAttr($itemClasses) ?>"
+                    role="group"
+                    aria-roledescription="slide"
+                    aria-label="<?= $escaper->escapeHtmlAttr(
+                        sprintf('%s (%d / %d)', $child->getName(), $index + 1, count($children))
+                    ) ?>"
+                >
+                    <a class="jscriptz-subcats__image-link"
+                       href="<?= $escaper->escapeUrl($child->getUrl()) ?>">
+                        <span class="jscriptz-subcats__media-wrapper">
+                            <?php if ($imageUrl): ?>
+                                <img
+                                    class="jscriptz-subcats__image"
+                                    src="<?= $escaper->escapeUrl($imageUrl) ?>"
+                                    alt="<?= $escaper->escapeHtmlAttr($child->getName()) ?>"
+                                />
+                            <?php endif; ?>
+                        </span>
+                    </a>
+
+                    <div class="jscriptz-subcats__content">
+                        <h3 class="jscriptz-subcats__name">
+                            <a class="jscriptz-subcats__link"<?= /* @noEscape */ $cardTitleStyleAttr ?>
+                               href="<?= $escaper->escapeUrl($child->getUrl()) ?>">
+                                <?= $escaper->escapeHtml($child->getName()) ?>
+                            </a>
+                        </h3>
+                    </div>
+                </article>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="jscriptz-subcats__slider-controls">
+            <button
+                type="button"
+                data-prev
+                class="jscriptz-subcats__slider-button jscriptz-subcats__slider-button--prev"
+                @click.prevent="scrollPrev()"
+            >
+                <?= $escaper->escapeHtml(__('Previous')) ?>
+            </button>
+
+            <div
+                data-pager
+                class="jscriptz-subcats__slider-pager"
+            ></div>
+
+            <button
+                type="button"
+                data-next
+                class="jscriptz-subcats__slider-button jscriptz-subcats__slider-button--next"
+                @click.prevent="scrollNext()"
+            >
+                <?= $escaper->escapeHtml(__('Next')) ?>
+            </button>
+        </div>
+    </div>
+</section>

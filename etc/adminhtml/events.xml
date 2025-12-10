@@ -6,4 +6,3 @@
                   instance="Jscriptz\Subcats\Observer\Adminhtml\RefreshLicenseOnConfigLoad" />
     </event>
 </config>
-

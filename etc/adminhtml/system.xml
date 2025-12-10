@@ -210,7 +210,14 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-
+                <field id="image_radius" type="text" translate="label,comment" sortOrder="141" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Image Corner Radius</label>
+                    <config_path>jscriptz_subcats/design/image_radius</config_path>
+                    <comment>Any CSS radius shorthand for the image (e.g. 33px, 33%, etc.). Leave empty for none.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
                 <!-- Card Hover Shadow -->
                 <field id="card_hover_shadow"
                        translate="label,comment"

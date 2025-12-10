@@ -16,7 +16,7 @@ declare(strict_types=1);
  * @category   Jscriptz
  * @package    Jscriptz_Subcats
  * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
+ * @copyright  Copyright (c) 2019-2025 Jscriptz LLC. (https://mage.jscriptz.com)
  * @license    https://mage.jscriptz.com/LICENSE.txt
  */
 
@@ -139,7 +139,6 @@ class ApiClient
         $endpoint = self::UPDATE_URL;
 
         try {
-
             $payloadArray = [
                 'licenseKey'     => $licenseKey,        // currently ignored by server update(), kept for forward-compat
                 'domain'         => $domain,            // currently ignored by server update()
@@ -212,7 +211,7 @@ class ApiClient
             // Build Version Status exactly how you want it:
             // - If latest == installed => "<installed> (Latest Version)"
             // - If latest > installed  => "Installed: <installed> — Newer version available (<latest>) Download Here"
-            $download = 'Update <a href="https://github.com/j-scriptz/subcats" target="_blank">Instructions</a>';
+            $download = 'Download <a href="https://github.com/j-scriptz/subcats" target="_blank">Here</a>';
 
             if ($installedVersion !== '' && $latestVersion !== '') {
                 if (version_compare($installedVersion, $latestVersion, '<')) {
@@ -264,9 +263,7 @@ class ApiClient
                         ? (bool)$decoded['trialExpired']
                         : null;
                 } else {
-                    // ✅ FIXED: Read from indexed array format
-                    // Response format: [latestVersion, updateAvailable, message, newsMessage,
-                    //                   trialDaysRemaining, trialExpired, licenseStatus, trialStatus, trialMessage]
+
                     $trialDaysRemaining = isset($decoded[4]) && $decoded[4] !== null
                         ? (int)$decoded[4]
                         : null;
@@ -276,7 +273,6 @@ class ApiClient
                     $licenseStatusFromServer = isset($decoded[6]) && $decoded[6] !== null
                         ? (string)$decoded[6]
                         : '';
-                    // Skip index 7 (trialStatus object) - we don't need it for display
                     $trialMessageFromServer = isset($decoded[8]) && $decoded[8] !== null
                         ? (string)$decoded[8]
                         : '';
@@ -299,12 +295,10 @@ class ApiClient
                     } elseif (strtolower($licenseStatusFromServer) === 'expired_trial') {
                         $licenseStatusLabel = (string)__('Free Trial has expired.');
                     } else {
-                        // Generic status passthrough
                         $licenseStatusLabel = $licenseStatusFromServer;
                     }
                 }
 
-                // Persist human-readable License Status (for admin UI)
                 if ($licenseStatusLabel !== '') {
                     $this->configWriter->save(
                         self::CONFIG_PATH_LICENSE_STATUS,
@@ -314,7 +308,6 @@ class ApiClient
                     );
                 }
 
-                // Persist machine-readable trial flags for frontend gating
                 if ($trialExpired !== null) {
                     $this->configWriter->save(
                         self::CONFIG_PATH_TRIAL_EXPIRED,
@@ -640,15 +633,12 @@ class ApiClient
     }
 
     /**
-     * Very simple base URL helper: current Magento base URL.
-     * If the APIs live on a different host, change this to read a config,
-     * or just hard-code https://mage.jscriptz.com.
+     *
+     * License server URL
      */
     private function getBaseUrl(): string
     {
-        // If the License APIs live on the SAME Magento instance, this works:
-        // http[s]://mage.jscriptz.com + /V1/jscriptz/license/...
-        return rtrim($this->scopeConfig->getValue('web/unsecure/base_url'), '/');
-        // or hard-code: return 'https://mage.jscriptz.com';
+        return 'https://mage.jscriptz.com';
+
     }
 }

@@ -1,4 +1,4 @@
-Copyright � 2019 Jscriptz Co. Ltd.
+Copyright (c) 2019-2025 Jscriptz LLC.
 
 This License is entered by Jscriptz to govern the usage or redistribution of Jscriptz software. This is a legal agreement between you (either an individual or a single entity) and Jscriptz for Jscriptz software product(s) which may include extensions, templates and services.
 
@@ -10,7 +10,7 @@ The Agreement becomes effective at the moment when you acquire software from our
 
         1. Customer will receive source code open 100%.
 
-        2. Customer will obtain a License Certificate which will remain valid until the Customer stops using the Product or until Jscriptz terminates this License because of Customer�s failure to comply with any of its Terms and Conditions. Each License Certificate includes a license serial which is valid for one live Magento installation only and unlimited test Magento installations.
+        2. Customer will obtain a License Certificate which will remain valid until the Customer stops using the Product or until Jscriptz terminates this License because of Customer's failure to comply with any of its Terms and Conditions. Each License Certificate includes a license serial which is valid for one live Magento installation only and unlimited test Magento installations.
 
         3. You are allowed to customize our products to fit with your using purpose.
 
@@ -28,7 +28,6 @@ The Agreement becomes effective at the moment when you acquire software from our
 
     5. TERMINATION: Without prejudice to any other rights, Jscriptz may terminate this License at any time if you fail to comply with the terms and conditions of this License. In such event, it constitutes a breach of the agreement, and your license to use the program is revoked and you must destroy all copies of Jscriptz products in your possession. After being notified of termination of your license, if you continue to use Jscriptz software, you hereby agree to accept an injunction to prevent you from its further use and to pay all costs (including but not limited to reasonable attorney fees) to enforce our revocation of your license and any damages suffered by us because of your misuse of the Software. We are not bound to return you the amount spent for purchase of the Software for the termination of this License.
 
-    6. LIMITATION OF LIABILITY: In no event shall Jscriptz be liable for any damages (including, without limitation, lost profits, business interruption, or lost information) rising out of �Authorized Users� use of or inability to use the Jscriptz products, even if Jscriptz has been advised of the possibility of such damages. In no event will Jscriptz be liable for prosecution arising from use of the Software against law or for any illegal use.
+    6. LIMITATION OF LIABILITY: In no event shall Jscriptz be liable for any damages (including, without limitation, lost profits, business interruption, or lost information) rising out of "Authorized Users" use of or inability to use the Jscriptz products, even if Jscriptz has been advised of the possibility of such damages. In no event will Jscriptz be liable for prosecution arising from use of the Software against law or for any illegal use.
 
 The latest License: https://mage.jscriptz.com/LICENSE
->>>>>>> 2808b9c (Initial Commit)

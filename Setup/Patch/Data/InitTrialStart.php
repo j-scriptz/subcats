@@ -16,10 +16,9 @@ declare(strict_types=1);
  * @category   Jscriptz
  * @package    Jscriptz_Subcats
  * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
+ * @copyright  Copyright (c) 2019-2025 Jscriptz LLC. (https://mage.jscriptz.com)
  * @license    https://mage.jscriptz.com/LICENSE.txt
  */
-
 
 namespace Jscriptz\Subcats\Setup\Patch\Data;
 

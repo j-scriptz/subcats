@@ -16,10 +16,9 @@ declare(strict_types=1);
  * @category   Jscriptz
  * @package    Jscriptz_Subcats
  * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
+ * @copyright  Copyright (c) 2019-2025 Jscriptz LLC. (https://mage.jscriptz.com)
  * @license    https://mage.jscriptz.com/LICENSE.txt
  */
-
 
 namespace Jscriptz\Subcats\Helper;
 
@@ -95,7 +94,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         EncryptorInterface $encryptor
     ) {
-
         $this->_storeManager = $storeManager;
         $this->encryptor = $encryptor;
 
@@ -159,7 +157,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $baseMediaUrl . 'catalog/category/' . ltrim($value, '/');
     }
 
-    /*
+    /**
      * @return bool
      */
     public function isEnabled($scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT)
@@ -169,7 +167,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $scope
         );
     }
-    /*
+    /**
      * @return string
      */
     public function getSubcatName($scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT)
@@ -179,7 +177,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $scope
         );
     }
-    /*
+    /**
      * @return string
      */
     public function getSubcatImageWidth($scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT)
@@ -189,7 +187,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $scope
         );
     }
-    /*
+    /**
      * @return string
      */
     public function getSubcatImageHeight($scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT)
@@ -199,7 +197,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $scope
         );
     }
-    /*
+    /**
      * @return string
      */
     public function getSecret($scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT)
@@ -212,7 +210,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return $secret;
     }
-    /*
+    /**
      * @return string
      */
     public function getGrowEnabled($scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT)
@@ -269,10 +267,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $storeId
         );
     }
-
-
-
-
 
 
     /**

@@ -11,9 +11,9 @@
                     <subcat_height>500</subcat_height>
                     <subcat_width>500</subcat_width>
                     <use_product_image_fallback>1</use_product_image_fallback>
-                    <style_option_desktop>3</style_option_desktop>
-                    <style_option_tablet>2</style_option_tablet>
-                    <style_option_phone>1</style_option_phone>
+                    <style_option_desktop>4</style_option_desktop>
+                    <style_option_tablet>6</style_option_tablet>
+                    <style_option_phone>12</style_option_phone>
 
                     <theme_preset>custom</theme_preset>
                     <transition_card>1</transition_card>

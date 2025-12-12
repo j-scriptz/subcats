@@ -32,9 +32,10 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 class LicenseRefresh extends Field
 {
     /**
-     * Render
+     * Render field.
      *
      * @param AbstractElement $element
+     * @return string
      */
     public function render(AbstractElement $element)
     {
@@ -44,6 +45,12 @@ class LicenseRefresh extends Field
         return parent::render($element);
     }
 
+    /**
+     * Get element HTML.
+     *
+     * @param AbstractElement $element
+     * @return string
+     */
     protected function _getElementHtml(AbstractElement $element)
     {
         $html = '<div id="jscriptz-license-refresh" class="jscriptz-license-refresh" '

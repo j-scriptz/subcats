@@ -30,7 +30,7 @@ class OptionsDesktop extends \Magento\Eav\Model\Entity\Attribute\Source\Abstract
 {
 
     /**
-     * getAllOptions
+     * Get all options.
      *
      * @return array
      */

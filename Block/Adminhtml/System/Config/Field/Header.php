@@ -32,9 +32,10 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 class Header extends Field
 {
     /**
-     * Render
+     * Render field.
      *
      * @param AbstractElement $element
+     * @return string
      */
     public function render(AbstractElement $element)
     {
@@ -43,11 +44,18 @@ class Header extends Field
         return parent::render($element);
     }
 
+    /**
+     * Get element HTML.
+     *
+     * @param AbstractElement $element
+     * @return string
+     */
     protected function _getElementHtml(AbstractElement $element)
     {
         $logoUrl = $this->getViewFileUrl('Jscriptz_Subcats::images/jscriptz-logo.svg');
 
-        $html  = '<div class="jscriptz-license-header" style="display:flex;align-items:center;gap:12px;margin:10px 0;">';
+        $html = '<div class="jscriptz-license-header" ';
+        $html .= 'style="display:flex;align-items:center;gap:12px;margin:10px 0;">';
         $html .= sprintf(
             '<img src="%s" alt="%s" style="height:32px;max-width:180px;" />',
             $logoUrl,

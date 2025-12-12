@@ -60,10 +60,12 @@ class CleanupData extends Command
     private $logger;
 
     /**
+     * Constructor.
+     *
      * @param ModuleDataSetupInterface $moduleDataSetup
-     * @param ResourceConnection        $resourceConnection
-     * @param LoggerInterface           $logger
-     * @param string|null               $name
+     * @param ResourceConnection $resourceConnection
+     * @param LoggerInterface $logger
+     * @param string|null $name
      */
     public function __construct(
         ModuleDataSetupInterface $moduleDataSetup,
@@ -78,7 +80,7 @@ class CleanupData extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function configure(): void
     {
@@ -88,7 +90,11 @@ class CleanupData extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * Execute cleanup command.
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -103,10 +109,10 @@ class CleanupData extends Command
             $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
             /** @var EavSetupFactory $eavSetupFactory */
             $eavSetupFactory = $objectManager->get(EavSetupFactory::class);
-            $eavSetup     = $eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
+            $eavSetup = $eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
             $entityTypeId = Category::ENTITY;
 
-                        $attributesToRemove = [
+            $attributesToRemove = [
                 'subcat_image',
                 'subcat_name',
                 'subcat_description',
@@ -115,29 +121,35 @@ class CleanupData extends Command
                 'subcat_cols_tablet',
                 'subcat_cols_phone',
                 'subcats_children',
-                        ];
+            ];
 
-
-                        foreach ($attributesToRemove as $code) {
-                            $attributeId = $eavSetup->getAttributeId($entityTypeId, $code);
-                            if ($attributeId) {
-                                $output->writeln(sprintf(' - Removing category attribute <comment>%s</comment>', $code));
-                                $eavSetup->removeAttribute($entityTypeId, $code);
-                            } else {
-                                $output->writeln(sprintf(' - Attribute <comment>%s</comment> not found, skipping.', $code));
-                            }
-                        }
+            foreach ($attributesToRemove as $code) {
+                $attributeId = $eavSetup->getAttributeId($entityTypeId, $code);
+                if ($attributeId) {
+                    $output->writeln(
+                        sprintf(' - Removing category attribute <comment>%s</comment>', $code)
+                    );
+                    $eavSetup->removeAttribute($entityTypeId, $code);
+                } else {
+                    $output->writeln(
+                        sprintf(' - Attribute <comment>%s</comment> not found, skipping.', $code)
+                    );
+                }
+            }
 
             // Remove core_config_data entries
-                        $configTable = $this->moduleDataSetup->getTable('core_config_data');
-                        $deleted = $connection->delete(
-                            $configTable,
-                            "path LIKE 'jscriptz_subcats/%' OR path LIKE 'jscriptz/%'"
-                        );
-            $output->writeln(sprintf(
-                ' - Removed <comment>%d</comment> row(s) from core_config_data with jscriptz_subcats/* or jscriptz/* paths.',
-                $deleted
-            ));
+            // phpcs:ignore Magento2.SQL.RawQuery.FoundRawSql
+            $configTable = $this->moduleDataSetup->getTable('core_config_data');
+            $deleted = $connection->delete(
+                $configTable,
+                "path LIKE 'jscriptz_subcats/%' OR path LIKE 'jscriptz/%'"
+            );
+            $output->writeln(
+                sprintf(
+                    ' - Removed <comment>%d</comment> row(s) from core_config_data.',
+                    $deleted
+                )
+            );
 
             // Remove patch_list entries for data patches
             $patchTable = $this->moduleDataSetup->getTable('patch_list');

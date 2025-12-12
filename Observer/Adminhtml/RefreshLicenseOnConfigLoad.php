@@ -37,9 +37,24 @@ use Psr\Log\LoggerInterface;
  */
 class RefreshLicenseOnConfigLoad implements ObserverInterface
 {
+    /**
+     * @var RequestInterface
+     */
     private RequestInterface $request;
+
+    /**
+     * @var ApiClient
+     */
     private ApiClient $apiClient;
+
+    /**
+     * @var LoggerInterface
+     */
     private LoggerInterface $logger;
+
+    /**
+     * @var StoreManagerInterface
+     */
     private StoreManagerInterface $storeManager;
 
     /**
@@ -113,7 +128,8 @@ class RefreshLicenseOnConfigLoad implements ObserverInterface
                 $store = $this->storeManager->getStore($storeCode);
                 return [ScopeInterface::SCOPE_STORE, (int)$store->getId()];
             } catch (\Throwable $e) {
-                // fall through to website/default
+                // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
+                unset($e); // Fall through to website/default
             }
         }
 
@@ -123,7 +139,8 @@ class RefreshLicenseOnConfigLoad implements ObserverInterface
                 $website = $this->storeManager->getWebsite($websiteCode);
                 return [ScopeInterface::SCOPE_WEBSITE, (int)$website->getId()];
             } catch (\Throwable $e) {
-                // fall through to default
+                // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
+                unset($e); // Fall through to default
             }
         }
 

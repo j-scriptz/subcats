@@ -10,6 +10,7 @@
  * of IDs from the right-hand list.
  *
  * @var $block \Jscriptz\Subcats\Block\Adminhtml\Widget\CategoryOrder
+ * @var $escaper \Magento\Framework\Escaper
  */
 
 $element     = $block->getElement();
@@ -39,7 +40,8 @@ $uid = uniqid('js-subcats-catorder-');
 
             <!-- Single row: Available | Buttons | Final Order -->
             <div class="admin__control-fields"
-                 style="margin-top: 15px; display:flex; gap:24px; align-items:flex-start; flex-wrap:nowrap; width:100%;">
+                 style="margin-top: 15px; display:flex; gap:24px; align-items:flex-start;
+                 flex-wrap:nowrap; width:100%;">
 
                 <!-- Available categories (about half width) -->
                 <div class="js-subcats-widget-col js-subcats-widget-col--available"
@@ -139,7 +141,9 @@ $uid = uniqid('js-subcats-catorder-');
 
             <p class="note" style="margin-top:20px;">
                 <?= $escaper->escapeHtml(
-                    __('Select categories from "Available Categories", click "Add" to move them into "Final Order", then use the arrows to adjust the display order. Only the categories in "Final Order" are rendered by the widget.')
+                    __('Select categories from "Available Categories", click "Add" to move them into "Final Order", 
+                    then use the arrows to adjust the display order. Only the categories in "Final Order" are 
+                      rendered by the widget.')
                 ) ?>
             </p>
         </div>
@@ -149,8 +153,10 @@ $uid = uniqid('js-subcats-catorder-');
 <script>
     require(['jquery'], function ($) {
         (function () {
-            var uid       = <?= /* @noEscape */ json_encode($uid, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
-            var hiddenId  = <?= /* @noEscape */ json_encode($hiddenId, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+            var uid       = <?= /* @noEscape */ json_encode($uid, JSON_HEX_TAG | JSON_HEX_AMP |
+                                                            JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+            var hiddenId  = <?= /* @noEscape */ json_encode($hiddenId, JSON_HEX_TAG | JSON_HEX_AMP
+                                                            | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
             var availableId = uid + '_available';
             var selectedId  = uid + '_selected';
 

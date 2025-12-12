@@ -56,6 +56,9 @@ class CategoryOrder extends Template
 
     /**
      * Magento calls this to let us replace the standard field with our own UI.
+     *
+     * @param Element $element
+     * @return Element
      */
     public function prepareElementHtml(Element $element): Element
     {
@@ -119,11 +122,11 @@ class CategoryOrder extends Template
                 return [];
             }
             $ids = array_map('intval', explode(',', $value));
-        } // Case 2: array from POST / form context
-        elseif (is_array($value)) {
+        } elseif (is_array($value)) {
+            // Case 2: array from POST / form context
             $ids = array_map('intval', $value);
-        } // Anything else (null, bool, etc.) → nothing selected
-        else {
+        } else {
+            // Anything else (null, bool, etc.) → nothing selected
             return [];
         }
 

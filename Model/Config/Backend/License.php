@@ -40,11 +40,11 @@ use JsonException;
  */
 class License extends Value
 {
-    const VERIFY_URL  = 'https://mage.jscriptz.com/rest/V1/jscriptz/license/verify';
-    const UPDATE_URL  = 'https://mage.jscriptz.com/rest/V1/jscriptz/license/update';
-    const MODULE_CODE = 'jscriptz_subcats';
-    const TRIAL_DAYS  = 30;
-    const LICENSE_ACCOUNT_URL = 'https://mage.jscriptz.com/jscriptz_license/account/';
+    public const VERIFY_URL = 'https://mage.jscriptz.com/rest/V1/jscriptz/license/verify';
+    public const UPDATE_URL = 'https://mage.jscriptz.com/rest/V1/jscriptz/license/update';
+    public const MODULE_CODE = 'jscriptz_subcats';
+    public const TRIAL_DAYS = 30;
+    public const LICENSE_ACCOUNT_URL = 'https://mage.jscriptz.com/jscriptz_license/account/';
 
     /**
      * @var Curl|null
@@ -71,7 +71,6 @@ class License extends Value
  */
     private $apiClient = null;
 
-
     /**
      * Lazily get Curl client.
      *
@@ -84,12 +83,6 @@ class License extends Value
         }
         return $this->curl;
     }
-
-    /**
-     * Lazily get StoreManager.
-     *
-     * @return StoreManagerInterface
-     */
 
     /**
      * Lazily get the shared ApiClient.
@@ -106,6 +99,11 @@ class License extends Value
         return $this->apiClient;
     }
 
+    /**
+     * Lazily get StoreManager.
+     *
+     * @return StoreManagerInterface
+     */
     private function getStoreManager(): StoreManagerInterface
     {
         if ($this->storeManager === null) {
@@ -153,7 +151,8 @@ class License extends Value
                 return (string)$info['setup_version'];
             }
         } catch (\Throwable $e) {
-            // ignore, version info is optional
+            // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
+            unset($e); // Ignore, version info is optional
         }
 
         return null;
@@ -179,7 +178,8 @@ class License extends Value
                 return new \DateTimeImmutable($raw, new \DateTimeZone('UTC'));
             }
         } catch (\Throwable $e) {
-            // reset below
+            // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
+            unset($e); // Reset below
         }
 
         $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));

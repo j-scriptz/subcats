@@ -55,9 +55,10 @@ class LicenseKey extends Field
     }
 
     /**
-     * Render
+     * Render field.
      *
      * @param AbstractElement $element
+     * @return string
      */
     public function render(AbstractElement $element)
     {
@@ -67,6 +68,12 @@ class LicenseKey extends Field
         return parent::render($element);
     }
 
+    /**
+     * Get element HTML.
+     *
+     * @param AbstractElement $element
+     * @return string
+     */
     protected function _getElementHtml(AbstractElement $element)
     {
         // Read both status fields to determine if license is valid
@@ -115,9 +122,8 @@ class LicenseKey extends Field
 
             // Add explanatory note
             $note = $element->getNote();
-            $extraNote = (string)__(
-                '🔒 License key locked after successful verification. <a href="mailto:support@jscriptz.com">Contact support</a> to change it.'
-            );
+            $extraNote = (string)__('🔒 License key locked after successful verification. ');
+            $extraNote .= '<a href="mailto:support@jscriptz.com">Contact support</a> to change it.';
             $element->setNote($note ? $note . ' ' . $extraNote : $extraNote);
         }
 

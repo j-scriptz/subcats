@@ -72,9 +72,9 @@ class Uninstall implements UninstallInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
-    public function uninstall(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    public function uninstall(SchemaSetupInterface $setup, ModuleContextInterface $context): void
     {
         $connection = $setup->getConnection();
         $setup->startSetup();
@@ -84,31 +84,30 @@ class Uninstall implements UninstallInterface
             $eavSetup     = $this->eavSetupFactory->create(['setup' => $setup]);
             $entityTypeId = Category::ENTITY;
 
-                        $attributesToRemove = [
-                'subcat_image',
-                'subcat_name',
-                'subcat_description',
-                'is_subcat_enabled',
-                'subcat_cols_desktop',
-                'subcat_cols_tablet',
-                'subcat_cols_phone',
-                'subcats_children',
-                        ];
+            $attributesToRemove = [
+            'subcat_image',
+            'subcat_name',
+            'subcat_description',
+            'is_subcat_enabled',
+            'subcat_cols_desktop',
+            'subcat_cols_tablet',
+            'subcat_cols_phone',
+            'subcats_children',
+            ];
 
-
-                        foreach ($attributesToRemove as $code) {
-                            $attributeId = $eavSetup->getAttributeId($entityTypeId, $code);
-                            if ($attributeId) {
-                                $eavSetup->removeAttribute($entityTypeId, $code);
-                            }
-                        }
+            foreach ($attributesToRemove as $code) {
+                $attributeId = $eavSetup->getAttributeId($entityTypeId, $code);
+                if ($attributeId) {
+                    $eavSetup->removeAttribute($entityTypeId, $code);
+                }
+            }
 
             // Remove core_config_data values for this module
-                        $configTable = $setup->getTable('core_config_data');
-                        $connection->delete(
-                            $configTable,
-                            "path LIKE 'jscriptz_subcats/%' OR path LIKE 'jscriptz/%'"
-                        );
+            $configTable = $setup->getTable('core_config_data');
+            $connection->delete(
+                $configTable,
+                "path LIKE 'jscriptz_subcats/%' OR path LIKE 'jscriptz/%'"
+            );
 
             // Remove patch_list entries for this module's patches
             $patchTable = $setup->getTable('patch_list');

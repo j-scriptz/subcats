@@ -31,8 +31,8 @@ use Magento\Store\Model\ScopeInterface;
  */
 class LicenseValidator
 {
-    const XML_PATH_LICENSE_KEY    = 'jscriptz_subcats/license/license_key';
-    const XML_PATH_LICENSE_STATUS = 'jscriptz_subcats/license/license_status';
+    public const XML_PATH_LICENSE_KEY = 'jscriptz_subcats/license/license_key';
+    public const XML_PATH_LICENSE_STATUS = 'jscriptz_subcats/license/license_status';
 
     /**
      * @var ScopeConfigInterface
@@ -77,7 +77,6 @@ class LicenseValidator
         // Consider the license valid if the status text contains "License verified"
         return stripos($status, 'License verified') !== false;
     }
-
 
     /**
      * Get raw license status string.

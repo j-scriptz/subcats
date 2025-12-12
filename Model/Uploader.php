@@ -37,47 +37,27 @@ use Psr\Log\LoggerInterface;
  */
 class Uploader
 {
-    /**
-     * @var string
-     */
-    const IMAGE_TMP_PATH    = 'catalog/tmp/category';
-    /**
-     * @var string
-     */
-    const IMAGE_PATH        = 'catalog/category';
-    /**
-     * @var string
-     */
-    const FILE_TMP_PATH     = 'jscriptz_subcats/tmp/subcat/file';
-    /**
-     * @var string
-     */
-    const FILE_PATH         = 'jscriptz_subcats/subcat/file';
+    public const IMAGE_TMP_PATH = 'catalog/tmp/category';
+    public const IMAGE_PATH = 'catalog/category';
+    public const FILE_TMP_PATH = 'jscriptz_subcats/tmp/subcat/file';
+    public const FILE_PATH = 'jscriptz_subcats/subcat/file';
 
     /**
-     * Core file storage database
-     *
      * @var \Magento\MediaStorage\Helper\File\Storage\Database
      */
     protected $coreFileStorageDatabase;
 
     /**
-     * Media directory object (writable).
-     *
      * @var \Magento\Framework\Filesystem\Directory\WriteInterface
      */
     protected $mediaDirectory;
 
     /**
-     * Uploader factory
-     *
      * @var \Magento\MediaStorage\Model\File\UploaderFactory
      */
     private $uploaderFactory;
 
     /**
-     * Store manager
-     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
@@ -88,35 +68,31 @@ class Uploader
     protected $logger;
 
     /**
-     * Base tmp path
-     *
      * @var string
      */
     protected $baseTmpPath;
 
     /**
-     * Base path
-     *
      * @var string
      */
     protected $basePath;
 
     /**
-     * Allowed extensions
-     *
-     * @var string
+     * @var string[]
      */
     protected $allowedExtensions;
 
     /**
+     * Constructor.
+     *
      * @param Database $coreFileStorageDatabase
      * @param Filesystem $filesystem
      * @param UploaderFactory $uploaderFactory
      * @param StoreManagerInterface $storeManager
      * @param LoggerInterface $logger
+     * @param string $baseTmpPath
+     * @param string $basePath
      * @param array $allowedExtensions
-     * @param $baseTmpPath
-     * @param $basePath
      */
     public function __construct(
         Database $coreFileStorageDatabase,
@@ -311,8 +287,10 @@ class Uploader
     }
 
     /**
-     * @param $input
-     * @param $data
+     * Upload file and get the name.
+     *
+     * @param string $input
+     * @param array $data
      * @return string
      */
     public function uploadFileAndGetName($input, $data)
@@ -329,6 +307,7 @@ class Uploader
                 $result = $this->moveFileFromTmp($data[$input][0]['file']);
                 return $result;
             } catch (\Exception $e) {
+                // Intentionally empty - return empty string on failure
                 return '';
             }
         } elseif (isset($data[$input][0]['name'])) {

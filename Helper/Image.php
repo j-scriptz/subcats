@@ -31,9 +31,9 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 class Image extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
-     * Custom directory relative to the "media" folder
+     * Custom directory relative to the "media" folder.
      */
-    const DIRECTORY = 'catalog/category';
+    public const DIRECTORY = 'catalog/category';
 
     /**
      * @var \Magento\Framework\Filesystem\Directory\WriteInterface
@@ -46,8 +46,6 @@ class Image extends \Magento\Framework\App\Helper\AbstractHelper
     protected $_imageFactory;
 
     /**
-     * Store manager
-     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $_storeManager;
@@ -85,7 +83,11 @@ class Image extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Resize image
+     * Resize image.
+     *
+     * @param string $image
+     * @param int|null $width
+     * @param int|null $height
      * @return string
      */
     public function resize($image, $width = null, $height = null)
@@ -96,26 +98,23 @@ class Image extends \Magento\Framework\App\Helper\AbstractHelper
         if ($width !== null) {
             $path .= '/' . $width . 'x';
             if ($height !== null) {
-                $path .= $height ;
+                $path .= $height;
             }
         }
 
         $absolutePath = $this->_mediaDirectory->getAbsolutePath($mediaFolder) . $image;
         $imageResized = $this->_mediaDirectory->getAbsolutePath($path) . $image;
 
-
         if (!$this->_fileExists($path . $image) && $this->_fileExists($absolutePath)) {
             $imageFactory = $this->_imageFactory->create();
             $imageFactory->open($absolutePath);
-            //$imageFactory->constrainOnly(false);
-            //$imageFactory->keepTransparency(true);
-            //$imageFactory->keepFrame(true);
-            //$imageFactory->backgroundColor(array(255,255,255));
-            //$imageFactory->keepAspectRatio(true);
-            //$imageFactory->resize($width, $height);
             $imageFactory->save($imageResized);
         }
 
-        return $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA) . $path . $image;
+        $baseUrl = $this->_storeManager
+            ->getStore()
+            ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
+
+        return $baseUrl . $path . $image;
     }
 }

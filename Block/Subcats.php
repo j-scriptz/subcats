@@ -66,13 +66,13 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
     /**
      * @var \Magento\Catalog\Model\CategoryRepository
      */
-
     protected $_categoryRepository;
+
     /**
      * @var \Magento\Framework\Registry
      */
-
     protected $_registry;
+
     /**
      * @var \Magento\Catalog\Model\Category
      */
@@ -162,6 +162,7 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
      * Get subcategory image url.
      *
      * @param \Magento\Catalog\Model\Category $child
+     * @return string|null
      */
     public function getSubcategoryImageUrl(\Magento\Catalog\Model\Category $child)
     {
@@ -261,6 +262,7 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
             }
 
             // Enforce uniqueness (path-only key so CDN params don't matter)
+            // phpcs:ignore Magento2.Functions.DiscouragedFunction
             $imageKey = parse_url($candidate, PHP_URL_PATH) ?: $candidate;
             if (isset($usedFallbackImages[$imageKey])) {
                 continue;
@@ -322,7 +324,8 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
                 ->keepAspectRatio(true)
                 ->getUrl();
 
-            // Use the path as a stable key so CDN query strings etc. don’t break uniqueness
+            // Use the path as a stable key so CDN query strings etc. don't break uniqueness
+            // phpcs:ignore Magento2.Functions.DiscouragedFunction
             $imageKey = parse_url($imageUrl, PHP_URL_PATH) ?: $imageUrl;
 
             if (!isset($this->usedFallbackImages[$imageKey])) {
@@ -339,6 +342,7 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
                 ->keepAspectRatio(true)
                 ->getUrl();
 
+            // phpcs:ignore Magento2.Functions.DiscouragedFunction
             $imageKey = parse_url($imageUrl, PHP_URL_PATH) ?: $imageUrl;
             $this->usedFallbackImages[$imageKey] = true;
 
@@ -388,6 +392,9 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
 
     /**
      * Returns true if there is a valid license OR the free trial is active.
+     *
+     * @param int $storeId
+     * @return bool
      */
     private function isLicenseOrTrialActive(int $storeId): bool
     {
@@ -402,6 +409,8 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
 
     /**
      * Free trial check, based on canonical status from the Jscriptz_License server.
+     *
+     * @return bool
      */
     private function isTrialActive(): bool
     {
@@ -431,21 +440,26 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
         return true;
     }
 
-    // pass imagename, width and height
     /**
-     * Resize
+     * Resize category image.
      *
      * @param mixed $image
      * @param mixed $width
      * @param mixed $height
+     * @return string|bool
      */
     public function resize($image, $width = null, $height = null)
     {
-        $absolutePath = $this->_filesystem->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::MEDIA)->getAbsolutePath('catalog/category/').$image;
+        $mediaDirectory = $this->_filesystem->getDirectoryRead(
+            \Magento\Framework\App\Filesystem\DirectoryList::MEDIA
+        );
+        $absolutePath = $mediaDirectory->getAbsolutePath('catalog/category/') . $image;
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction
         if (!file_exists($absolutePath)) {
             return false;
         }
-        $imageResized = $this->_filesystem->getDirectoryRead(\Magento\Framework\App\Filesystem\DirectoryList::MEDIA)->getAbsolutePath('resized/'.$width.'/').$image;
+        $imageResized = $mediaDirectory->getAbsolutePath('resized/' . $width . '/') . $image;
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction
         if (!file_exists($imageResized)) { // Only resize image if not already exists.
             //create image factory...
             $imageResize = $this->_imageFactory->create();
@@ -460,14 +474,17 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
             //save image
             $imageResize->save($destination);
         }
-        $resizedURL = $this->_storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA).'resized/'.$width.'/'.$image;
+        $baseUrl = $this->_storeManager->getStore()->getBaseUrl(
+            \Magento\Framework\UrlInterface::URL_TYPE_MEDIA
+        );
+        $resizedURL = $baseUrl . 'resized/' . $width . '/' . $image;
         return $resizedURL;
     }
 
     /**
-     * Get category object
-     * Using $_categoryFactory
+     * Get category object using category factory.
      *
+     * @param int $categoryId
      * @return \Magento\Catalog\Model\Category
      */
     public function getCategory($categoryId)
@@ -478,9 +495,9 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
     }
 
     /**
-     * Get category object
-     * Using $_categoryRepository
+     * Get category object using category repository.
      *
+     * @param int $categoryId
      * @return \Magento\Catalog\Model\Category
      */
     public function getCategoryById($categoryId)
@@ -489,9 +506,10 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
     }
 
     /**
-     * Get all children categories IDs
+     * Get all children categories IDs.
      *
-     * @param boolean $asArray return result as array instead of comma-separated list of IDs
+     * @param boolean $asArray
+     * @param int|bool $categoryId
      * @return array|string
      */
     public function getAllChildren($asArray = false, $categoryId = false)
@@ -504,8 +522,9 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
     }
 
     /**
-     * Retrieve children ids comma separated
+     * Retrieve children ids comma separated.
      *
+     * @param int|bool $categoryId
      * @return string
      */
     public function getChildren($categoryId = false)
@@ -532,8 +551,9 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
     }
 
     /**
-     * Get parent category object
+     * Get parent category object.
      *
+     * @param int|bool $categoryId
      * @return \Magento\Catalog\Model\Category
      */
     public function getParentCategory($categoryId = false)
@@ -546,8 +566,9 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
     }
 
     /**
-     * Get parent category identifier
+     * Get parent category identifier.
      *
+     * @param int|bool $categoryId
      * @return int
      */
     public function getParentId($categoryId = false)
@@ -560,8 +581,9 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
     }
 
     /**
-     * Get all parent categories ids
+     * Get all parent categories ids.
      *
+     * @param int|bool $categoryId
      * @return array
      */
     public function getParentIds($categoryId = false)
@@ -630,22 +652,12 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
         return $collection;
     }
 
-
-    /**
-     * Get current category from block data or the registry, if available.
-     *
-     * This replaces Magento\Catalog\Block\Category\View::getCurrentCategory()
-     * so this block can be safely used on CMS pages too.
-     *
-     * @return \Magento\Catalog\Model\Category|null
-     */
     /**
      * Get the category context for rendering Subcats.
      *
-     * Priority:
-     *  1) Explicit category_ids passed to the block/widget (first ID)
-     *  2) current_category set on the block
-     *  3) current_category from the registry (normal category pages)
+     * Priority: 1) Explicit category_ids passed to the block/widget (first ID),
+     * 2) current_category set on the block, 3) current_category from the registry
+     * (normal category pages).
      *
      * @return \Magento\Catalog\Model\Category|null
      */
@@ -663,7 +675,8 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
                     return $category;
                 }
             } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-                // fall through to default behavior
+                // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
+                unset($e); // Intentionally empty - fallback behavior
             }
         }
 
@@ -678,10 +691,10 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
         return null;
     }
 
-
     /**
-     * Prepared list of active child categories for the current category
-     * or for an explicit list of category IDs (Page Builder).
+     * Prepared list of active child categories for the current category.
+     *
+     * Used for an explicit list of category IDs (Page Builder).
      *
      * @return \Magento\Catalog\Model\Category[]|\Magento\Catalog\Model\ResourceModel\Category\Collection|array
      */
@@ -802,7 +815,6 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
         return (bool) $this->configHelper->getGrowEnabled();
     }
 
-
     /**
      * CSS class for the container based on preset.
      *
@@ -836,7 +848,10 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
 
     /**
      * Widget-specific column span (12 / 6 / 4 / 3 / 2) for desktop.
+     *
      * Returns null when not set so global/category settings are used.
+     *
+     * @return int|null
      */
     public function getWidgetDesktopSpan(): ?int
     {
@@ -876,11 +891,13 @@ class Subcats extends \Magento\Framework\View\Element\Template implements BlockI
     }
 
     /**
-     * Build inline CSS custom properties that override column widths
-     * for this particular Subcats block (useful for widgets).
+     * Build inline CSS custom properties that override column widths.
      *
+     * Used for this particular Subcats block (useful for widgets).
      * It reuses the same 12-column grid math as the global design block:
      *   span = 4  =>  3 columns  =>  width calc based on gaps.
+     *
+     * @return string
      */
     public function getWidgetCssOverrides(): string
     {

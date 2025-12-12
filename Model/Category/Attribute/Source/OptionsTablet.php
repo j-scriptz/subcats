@@ -30,7 +30,7 @@ class OptionsTablet extends \Magento\Eav\Model\Entity\Attribute\Source\AbstractS
 {
 
     /**
-     * getAllOptions
+     * Get all options.
      *
      * @return array
      */

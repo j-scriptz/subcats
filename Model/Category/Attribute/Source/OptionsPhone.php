@@ -30,7 +30,7 @@ class OptionsPhone extends \Magento\Eav\Model\Entity\Attribute\Source\AbstractSo
 {
 
     /**
-     * getAllOptions
+     * Get all options.
      *
      * @return array
      */

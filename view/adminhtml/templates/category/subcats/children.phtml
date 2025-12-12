@@ -1,5 +1,7 @@
 <?php
 /** @var $block \Jscriptz\Subcats\Block\Adminhtml\Category\SubcatsChildren */
+/** @var $escaper \Magento\Framework\Escaper */
+
 $element    = $block->getElement();
 $value      = (string)$element->getValue();
 $categories = $block->getSelectedCategories();
@@ -25,7 +27,9 @@ $inputName  = $element->getName();
            name="<?= $escaper->escapeHtmlAttr($inputName); ?>"
            value="<?= $escaper->escapeHtmlAttr($value); ?>" />
     <p class="note">
-        <span><?= /* @noEscape */ __('Drag the items above to change the display order of selected subcategories.'); ?></span>
+        <span>
+            <?= /* @noEscape */ __('Drag the items above to change the display order of selected subcategories.'); ?>
+        </span>
     </p>
 </div>
 

@@ -32,9 +32,10 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 class LicenseStatus extends Field
 {
     /**
-     * Render
+     * Render field.
      *
      * @param AbstractElement $element
+     * @return string
      */
     public function render(AbstractElement $element)
     {
@@ -43,6 +44,12 @@ class LicenseStatus extends Field
         return parent::render($element);
     }
 
+    /**
+     * Get element HTML.
+     *
+     * @param AbstractElement $element
+     * @return string
+     */
     protected function _getElementHtml(AbstractElement $element)
     {
         $value = (string)$element->getValue();
@@ -60,20 +67,18 @@ class LicenseStatus extends Field
         ) {
             $color = '#3f9c35'; // green
             $icon = '✓ ';
-        }
-        // Priority 2: Invalid/Expired/Error states (RED)
-        elseif (str_contains($lower, 'inactive')
+        } elseif (str_contains($lower, 'inactive')
             || str_contains($lower, 'not valid')
             || str_contains($lower, 'not found')
             || str_contains($lower, 'verification error')
             || str_contains($lower, 'expired')
             || str_contains($lower, 'suspended')
         ) {
+            // Priority 2: Invalid/Expired/Error states (RED)
             $color = '#b30000'; // red
             $icon = '✗ ';
-        }
-        // Priority 3: Trial states (AMBER)
-        elseif (str_contains($lower, 'trial')) {
+        } elseif (str_contains($lower, 'trial')) {
+            // Priority 3: Trial states (AMBER)
             $color = '#e0a800'; // amber
             $icon = '⏱ ';
         }

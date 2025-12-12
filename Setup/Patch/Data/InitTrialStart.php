@@ -95,6 +95,11 @@ class InitTrialStart implements DataPatchInterface
         return $this;
     }
 
+    /**
+     * Get dependencies.
+     *
+     * @return array
+     */
     public static function getDependencies()
     {
         return [];

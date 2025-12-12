@@ -31,8 +31,6 @@ use Magento\Catalog\Model\Category as Subject;
 class CategoryPlugin
 {
     /**
-     * Store manager
-     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $_storeManager;
@@ -62,7 +60,7 @@ class CategoryPlugin
      * @param Subject $subject
      * @param \Closure $proceed
      * @param string $key
-     * @param null $index
+     * @param string|null $index
      * @return mixed|string
      */
     public function aroundGetData(

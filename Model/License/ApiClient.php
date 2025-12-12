@@ -77,10 +77,29 @@ class ApiClient
     private const API_UPDATE_URI = '/V1/jscriptz/license/update';
     private const API_VERIFY_URI = '/V1/jscriptz/license/verify';
 
+    /**
+     * @var WriterInterface
+     */
     private WriterInterface $configWriter;
+
+    /**
+     * @var Curl
+     */
     private Curl $curl;
+
+    /**
+     * @var Json
+     */
     private Json $json;
+
+    /**
+     * @var LoggerInterface
+     */
     private LoggerInterface $logger;
+
+    /**
+     * @var ModuleListInterface
+     */
     private ModuleListInterface $moduleList;
 
     /**
@@ -120,6 +139,10 @@ class ApiClient
 
     /**
      * Hit /V1/jscriptz/license/update and store latestVersion/newsMessage/etc.
+     *
+     * @param string $scopeType
+     * @param int $scopeId
+     * @return void
      */
     public function syncUpdateInfo(
         string $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
@@ -141,10 +164,10 @@ class ApiClient
         try {
 
             $payloadArray = [
-                'licenseKey'     => $licenseKey,        // currently ignored by server update(), kept for forward-compat
+                'licenseKey'     => $licenseKey,        // currently ignored by server update()
                 'domain'         => $domain,            // currently ignored by server update()
-                'moduleCode'     => self::MODULE_CODE,  // MUST match License server expectations ("jscriptz_subcats")
-                'currentVersion' => $installedVersion,  // MUST be provided so server can compare and set updateAvailable
+                'moduleCode'     => self::MODULE_CODE,  // MUST match server expectations
+                'currentVersion' => $installedVersion,  // MUST be provided for comparison
             ];
 
             $payloadArray = array_merge(
@@ -183,8 +206,9 @@ class ApiClient
                 );
             }
 
-            // License server currently returns a JSON LIST (not object) because it returns a plain `array` via webapi:
-            //   [ latestVersion, updateAvailable, message, newsMessage, trialDaysRemaining, trialExpired, licenseStatus, trialStatus, trialMessage ]
+            // License server currently returns a JSON LIST (not object)
+            // Format: [ latestVersion, updateAvailable, message, newsMessage,
+            //           trialDaysRemaining, trialExpired, licenseStatus, trialStatus, trialMessage ]
             // But we support both list and object forms for durability.
             $latestVersion = '';
             $newsMessage   = '';
@@ -212,6 +236,7 @@ class ApiClient
             // Build Version Status exactly how you want it:
             // - If latest == installed => "<installed> (Latest Version)"
             // - If latest > installed  => "Installed: <installed> — Newer version available (<latest>) Download Here"
+            // phpcs:ignore Magento2.SQL.RawQuery.FoundRawSql
             $download = 'Update <a href="https://github.com/j-scriptz/subcats" target="_blank">Instructions</a>';
 
             if ($installedVersion !== '' && $latestVersion !== '') {
@@ -351,6 +376,10 @@ class ApiClient
 
     /**
      * Hit /V1/jscriptz/license/verify and store license_status/verify_message
+     *
+     * @param string $scopeType
+     * @param int $scopeId
+     * @return void
      */
     public function syncVerifyInfo(
         string $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
@@ -446,6 +475,11 @@ class ApiClient
         }
     }
 
+    /**
+     * Get environment metadata.
+     *
+     * @return array
+     */
     private function getEnvironmentMetadata(): array
     {
         $store = $this->storeManager->getStore();
@@ -533,6 +567,11 @@ class ApiClient
         ];
     }
 
+    /**
+     * Get license metadata.
+     *
+     * @return array
+     */
     private function getLicenseMetadata(): array
     {
         $licenseStatus = $this->scopeConfig->getValue(
@@ -551,8 +590,13 @@ class ApiClient
     }
 
     /**
-     * Normalize the human-facing license status message so we keep a friendly
-     * Free Trial message instead of raw "not found" errors while a trial is active.
+     * Normalize the human-facing license status message.
+     *
+     * Keep a friendly Free Trial message instead of raw "not found" errors while a trial is active.
+     *
+     * @param string $message
+     * @param string $licenseKey
+     * @return string
      */
     private function normalizeLicenseStatusMessage(string $message, string $licenseKey): string
     {
@@ -583,6 +627,8 @@ class ApiClient
 
     /**
      * Calculate remaining trial days based on jscriptz_subcats/license/trial_start.
+     *
+     * @return int
      */
     private function getTrialDaysRemaining(): int
     {
@@ -614,21 +660,9 @@ class ApiClient
 
     /**
      * Check if a trial_start date exists.
+     *
+     * @return bool
      */
-
-    private function getInstalledVersion(): string
-    {
-        try {
-            $info = $this->moduleList->getOne(self::MODULE_NAME);
-            if (is_array($info) && !empty($info['setup_version'])) {
-                return (string)$info['setup_version'];
-            }
-        } catch (\Throwable $e) {
-            // ignore
-        }
-        return '';
-    }
-
     private function hasTrialStart(): bool
     {
         $trialStart = (string)$this->scopeConfig->getValue(
@@ -640,9 +674,32 @@ class ApiClient
     }
 
     /**
+     * Get installed version of the module.
+     *
+     * @return string
+     */
+    private function getInstalledVersion(): string
+    {
+        try {
+            $info = $this->moduleList->getOne(self::MODULE_NAME);
+            if (is_array($info) && !empty($info['setup_version'])) {
+                return (string)$info['setup_version'];
+            }
+        } catch (\Throwable $e) {
+            // Intentionally empty - fallback behavior
+            unset($e);
+        }
+        return '';
+    }
+
+    /**
+     * Get base URL helper.
+     *
      * Very simple base URL helper: current Magento base URL.
      * If the APIs live on a different host, change this to read a config,
      * or just hard-code https://mage.jscriptz.com.
+     *
+     * @return string
      */
     private function getBaseUrl(): string
     {

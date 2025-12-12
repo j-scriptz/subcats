@@ -31,8 +31,6 @@ use Magento\Catalog\Model\Category\DataProvider as Subject;
 class DataProviderPlugin
 {
     /**
-     * Store manager
-     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $_storeManager;
@@ -57,6 +55,8 @@ class DataProviderPlugin
     }
 
     /**
+     * Around get data for preprocess image.
+     *
      * @param Subject $subject
      * @param \Closure $proceed
      * @return array

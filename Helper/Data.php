@@ -40,47 +40,44 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      * We used to store this under "additional_image". That legacy code is
      * still supported via ATTRIBUTE_LEGACY_NAME for backward compatibility.
      */
-    const ATTRIBUTE_NAME = "subcat_image";
-    const ATTRIBUTE_LEGACY_NAME = "additional_image";
+    public const ATTRIBUTE_NAME = "subcat_image";
+    public const ATTRIBUTE_LEGACY_NAME = "additional_image";
 
+    public const XML_PATH_DESIGN_LINK_COLOR = 'jscriptz_subcats/design/link_color';
+    public const XML_PATH_DESIGN_CARD_RADIUS = 'jscriptz_subcats/design/card_radius';
+    public const XML_PATH_DESIGN_CARD_BORDER = 'jscriptz_subcats/design/card_border';
+    public const XML_PATH_DESIGN_CARD_PADDING = 'jscriptz_subcats/design/card_padding';
+    public const XML_PATH_DESIGN_CARD_BACKGROUND = 'jscriptz_subcats/design/card_background';
+    public const XML_PATH_DESIGN_USE_PRODUCT_FALLBACK = 'jscriptz_subcats/design/use_product_image_fallback';
+    public const XML_PATH_DESIGN_IMAGE_BORDER = 'jscriptz_subcats/design/image_border';
+    public const XML_PATH_DESIGN_NAME_FONT_SIZE = 'jscriptz_subcats/design/name_font_size';
+    public const XML_PATH_DESIGN_NAME_FONT_WEIGHT = 'jscriptz_subcats/design/name_font_weight';
+    public const XML_PATH_DESIGN_DESCRIPTION_FONT_SIZE = 'jscriptz_subcats/design/description_font_size';
+    public const XML_PATH_DESIGN_CARD_SHADOW = 'jscriptz_subcats/design/card_shadow';
+    public const XML_PATH_DESIGN_CARD_HOVER_SHADOW = 'jscriptz_subcats/design/card_hover_shadow';
+    public const XML_PATH_DESIGN_CARD_HOVER_SCALE = 'jscriptz_subcats/design/card_hover_scale';
 
-    const XML_PATH_DESIGN_LINK_COLOR      = 'jscriptz_subcats/design/link_color';
-    const XML_PATH_DESIGN_CARD_RADIUS     = 'jscriptz_subcats/design/card_radius';
-    const XML_PATH_DESIGN_CARD_BORDER     = 'jscriptz_subcats/design/card_border';
-    const XML_PATH_DESIGN_CARD_PADDING    = 'jscriptz_subcats/design/card_padding';
-    const XML_PATH_DESIGN_CARD_BACKGROUND = 'jscriptz_subcats/design/card_background';
-    const XML_PATH_DESIGN_USE_PRODUCT_FALLBACK = 'jscriptz_subcats/design/use_product_image_fallback';
-    const XML_PATH_DESIGN_IMAGE_BORDER    = 'jscriptz_subcats/design/image_border';
-    const XML_PATH_DESIGN_NAME_FONT_SIZE        = 'jscriptz_subcats/design/name_font_size';
-    const XML_PATH_DESIGN_NAME_FONT_WEIGHT        = 'jscriptz_subcats/design/name_font_weight';
-    const XML_PATH_DESIGN_DESCRIPTION_FONT_SIZE = 'jscriptz_subcats/design/description_font_size';
-    const XML_PATH_DESIGN_CARD_SHADOW           = 'jscriptz_subcats/design/card_shadow';
-    const XML_PATH_DESIGN_CARD_HOVER_SHADOW = 'jscriptz_subcats/design/card_hover_shadow';
-    const XML_PATH_DESIGN_CARD_HOVER_SCALE  = 'jscriptz_subcats/design/card_hover_scale';
+    public const XML_PATH_DESIGN_TRANSITION_CARD = 'jscriptz_subcats/design/transition_card';
+    public const XML_PATH_DESIGN_TRANSITION_IMAGE = 'jscriptz_subcats/design/transition_image';
+    public const XML_PATH_DESIGN_TRANSITION_TEXT = 'jscriptz_subcats/design/transition_text';
 
-    const XML_PATH_DESIGN_TRANSITION_CARD  = 'jscriptz_subcats/design/transition_card';
-    const XML_PATH_DESIGN_TRANSITION_IMAGE = 'jscriptz_subcats/design/transition_image';
-    const XML_PATH_DESIGN_TRANSITION_TEXT  = 'jscriptz_subcats/design/transition_text';
+    public const XML_PATH_DESIGN_PRESET = 'jscriptz_subcats/design/theme_preset';
 
-    const XML_PATH_DESIGN_PRESET           = 'jscriptz_subcats/design/theme_preset';
-
-    const DESIGN_PRESET_THEME_DEFAULT = 'default';
-    const DESIGN_PRESET_SOFT_CARDS    = 'soft';
-    const DESIGN_PRESET_BORDERLESS    = 'borderless';
-    const DESIGN_PRESET_LIGHT         = 'light';
-    const DESIGN_PRESET_DARK          = 'dark';
-    const DESIGN_PRESET_CUSTOM        = 'custom';
+    public const DESIGN_PRESET_THEME_DEFAULT = 'default';
+    public const DESIGN_PRESET_SOFT_CARDS = 'soft';
+    public const DESIGN_PRESET_BORDERLESS = 'borderless';
+    public const DESIGN_PRESET_LIGHT = 'light';
+    public const DESIGN_PRESET_DARK = 'dark';
+    public const DESIGN_PRESET_CUSTOM = 'custom';
 
     /**
-     * Store manager
-     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-     protected $_storeManager;
+    protected $_storeManager;
 
-     /**
-      * @var EncryptorInterface
-      */
+    /**
+     * @var EncryptorInterface
+     */
     protected $encryptor;
 
     /**
@@ -99,13 +96,14 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $this->_storeManager = $storeManager;
         $this->encryptor = $encryptor;
 
-         parent::__construct($context);
+        parent::__construct($context);
     }
 
     /**
-     * Retrieve image URL by category
+     * Retrieve image URL by category.
      *
-     * @return string
+     * @param \Magento\Catalog\Model\Category $category
+     * @return string|false
      */
     public function getImageUrl(\Magento\Catalog\Model\Category $category)
     {
@@ -119,11 +117,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getUrl($image);
     }
 
-
     /**
-     * Retrieve URL
+     * Retrieve URL from value.
      *
-     * @return string
+     * @param mixed $value
+     * @return string|false
      */
     public function getUrl($value)
     {
@@ -159,7 +157,10 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         return $baseMediaUrl . 'catalog/category/' . ltrim($value, '/');
     }
 
-    /*
+    /**
+     * Check if module is enabled.
+     *
+     * @param string $scope
      * @return bool
      */
     public function isEnabled($scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT)
@@ -169,8 +170,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $scope
         );
     }
-    /*
-     * @return string
+
+    /**
+     * Get subcat section name.
+     *
+     * @param string $scope
+     * @return string|null
      */
     public function getSubcatName($scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT)
     {
@@ -179,8 +184,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $scope
         );
     }
-    /*
-     * @return string
+
+    /**
+     * Get subcat image width setting.
+     *
+     * @param string $scope
+     * @return string|null
      */
     public function getSubcatImageWidth($scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT)
     {
@@ -189,8 +198,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $scope
         );
     }
-    /*
-     * @return string
+
+    /**
+     * Get subcat image height setting.
+     *
+     * @param string $scope
+     * @return string|null
      */
     public function getSubcatImageHeight($scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT)
     {
@@ -199,7 +212,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
             $scope
         );
     }
-    /*
+
+    /**
+     * Get decrypted secret value.
+     *
+     * @param string $scope
      * @return string
      */
     public function getSecret($scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT)
@@ -212,8 +229,12 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
         return $secret;
     }
-    /*
-     * @return string
+
+    /**
+     * Check if grow effect is enabled.
+     *
+     * @param string $scope
+     * @return bool
      */
     public function getGrowEnabled($scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT)
     {
@@ -270,11 +291,6 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
-
-
-
-
-
     /**
      * Design preset key for current store.
      *
@@ -297,6 +313,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get design link color setting.
+     *
      * @param int|null $storeId
      * @return string|null
      */
@@ -312,6 +330,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get design card border radius setting.
+     *
      * @param int|null $storeId
      * @return string|null
      */
@@ -327,6 +347,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get design card border setting.
+     *
      * @param int|null $storeId
      * @return string|null
      */
@@ -344,7 +366,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Get design card padding.
      *
-     * @param mixed $storeId
+     * @param int|null $storeId
+     * @return string|null
      */
     public function getDesignCardPadding($storeId = null)
     {
@@ -455,6 +478,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Get design card background color.
+     *
      * @param int|null $storeId
      * @return string|null
      */
@@ -470,6 +495,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Check if product image fallback is enabled.
+     *
      * @param int|null $storeId
      * @return bool
      */
@@ -482,8 +509,9 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
-
     /**
+     * Get design image border setting.
+     *
      * @param int|null $storeId
      * @return string|null
      */
@@ -532,6 +560,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Check if card transition is enabled.
+     *
      * @param int|null $storeId
      * @return bool
      */
@@ -545,6 +575,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Check if image transition is enabled.
+     *
      * @param int|null $storeId
      * @return bool
      */
@@ -558,6 +590,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Check if text transition is enabled.
+     *
      * @param int|null $storeId
      * @return bool
      */

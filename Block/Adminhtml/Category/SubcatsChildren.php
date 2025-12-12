@@ -74,6 +74,8 @@ class SubcatsChildren extends Template implements RendererInterface
     }
 
     /**
+     * Get form element.
+     *
      * @return AbstractElement|null
      */
     public function getElement()
@@ -82,6 +84,8 @@ class SubcatsChildren extends Template implements RendererInterface
     }
 
     /**
+     * Set form element.
+     *
      * @param AbstractElement $element
      * @return $this
      */

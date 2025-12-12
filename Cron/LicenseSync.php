@@ -28,7 +28,14 @@ use Psr\Log\LoggerInterface;
 
 class LicenseSync
 {
+    /**
+     * @var ApiClient
+     */
     private $apiClient;
+
+    /**
+     * @var LoggerInterface
+     */
     private $logger;
 
     /**

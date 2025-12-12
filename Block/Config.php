@@ -50,6 +50,8 @@ class Config extends Template
     }
 
     /**
+     * Check if module is enabled.
+     *
      * @return bool
      */
     public function isEnabled()

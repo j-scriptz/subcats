@@ -168,15 +168,11 @@ class Image extends AbstractModel
     protected $viewFileSystem;
 
     /**
-     * Core file storage database
-     *
      * @var \Magento\MediaStorage\Helper\File\Storage\Database
      */
     protected $coreFileStorageDatabase = null;
 
     /**
-     * Core store config
-     *
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $scopeConfig;
@@ -187,8 +183,6 @@ class Image extends AbstractModel
     protected $uploader;
 
     /**
-     * Store manager
-     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
@@ -209,7 +203,7 @@ class Image extends AbstractModel
      * @param Repository $assetRepo
      * @param ViewFileSystem $viewFileSystem
      * @param ScopeConfigInterface $scopeConfig
-     * @param $entityCode
+     * @param string $entityCode
      * @param AbstractResource|null $resource
      * @param AbstractDb|null $resourceCollection
      * @param array $data
@@ -246,6 +240,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Set image width
+     *
      * @param int $width
      * @return $this
      */
@@ -256,6 +252,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Get image width
+     *
      * @return int
      */
     public function getWidth()
@@ -264,6 +262,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Set image height
+     *
      * @param int $height
      * @return $this
      */
@@ -274,6 +274,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Get image height
+     *
      * @return int
      */
     public function getHeight()
@@ -304,6 +306,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Set whether to keep aspect ratio when resizing
+     *
      * @param bool $keep
      * @return $this
      */
@@ -314,6 +318,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Set whether to keep frame when resizing
+     *
      * @param bool $keep
      * @return $this
      */
@@ -324,6 +330,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Set whether to keep transparency when resizing
+     *
      * @param bool $keep
      * @return $this
      */
@@ -334,6 +342,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Set whether to constrain only larger images when resizing
+     *
      * @param bool $flag
      * @return $this
      */
@@ -344,6 +354,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Set background color for image
+     *
      * @param int[] $rgbArray
      * @return $this
      */
@@ -354,6 +366,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Set image dimensions from a size string (e.g., "100x200")
+     *
      * @param string $size
      * @return $this
      */
@@ -375,6 +389,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Check if there is enough memory to process the image file
+     *
      * @param string|null $file
      * @return bool
      */
@@ -387,6 +403,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Get PHP memory limit in bytes
+     *
      * @return string
      */
     protected function getMemoryLimit()
@@ -410,6 +428,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Get current memory usage in bytes
+     *
      * @return int
      */
     protected function getMemoryUsage()
@@ -421,6 +441,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Calculate memory needed to process the image file
+     *
      * @param string|null $file
      * @return float|int
      * @SuppressWarnings(PHPMD.NPathComplexity)
@@ -436,6 +458,7 @@ class Image extends AbstractModel
             return 0;
         }
 
+        // phpcs:ignore Magento2.Functions.DiscouragedFunction
         $imageInfo = getimagesize($this->mediaDirectory->getAbsolutePath($file));
 
         if (!isset($imageInfo[0]) || !isset($imageInfo[1])) {
@@ -505,6 +528,7 @@ class Image extends AbstractModel
         $baseFile = $baseDir . $file;
 
         if (!$file || !$this->mediaDirectory->isFile($baseFile)) {
+            // phpcs:ignore Magento2.Exceptions.DirectThrow
             throw new \Exception(__('We can\'t find the image file.'));
         }
 
@@ -551,6 +575,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Get base file path
+     *
      * @return string
      */
     public function getBaseFile()
@@ -559,6 +585,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Get new file path
+     *
      * @return bool|string
      */
     public function getNewFile()
@@ -577,6 +605,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Set image processor.
+     *
      * @param MagentoImage $processor
      * @return $this
      */
@@ -587,6 +617,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Get image processor.
+     *
      * @return MagentoImage
      */
     public function getImageProcessor()
@@ -605,6 +637,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Resize image to configured dimensions.
+     *
      * @see \Magento\Framework\Image\Adapter\AbstractAdapter
      * @return $this
      */
@@ -618,6 +652,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Rotate image by angle.
+     *
      * @param int $angle
      * @return $this
      */
@@ -643,8 +679,7 @@ class Image extends AbstractModel
     }
 
     /**
-     * Add watermark to image
-     * size param in format 100x200
+     * Add watermark to image. Size param in format 100x200.
      *
      * @param string $file
      * @param string $position
@@ -703,6 +738,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Save processed image to file.
+     *
      * @return $this
      */
     public function saveFile()
@@ -717,6 +754,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Get image URL.
+     *
      * @return string
      */
     public function getUrl()
@@ -735,6 +774,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Set destination subdirectory.
+     *
      * @param string $dir
      * @return $this
      */
@@ -745,6 +786,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Get destination subdirectory.
+     *
      * @return string
      */
     public function getDestinationSubdir()
@@ -753,7 +796,9 @@ class Image extends AbstractModel
     }
 
     /**
-     * @return bool|void
+     * Check if image is cached.
+     *
+     * @return bool
      */
     public function isCached()
     {
@@ -786,8 +831,7 @@ class Image extends AbstractModel
     }
 
     /**
-     * Get relative watermark file path
-     * or false if file not found
+     * Get relative watermark file path or false if file not found.
      *
      * @return string | bool
      */
@@ -922,6 +966,8 @@ class Image extends AbstractModel
     }
 
     /**
+     * Clear image cache.
+     *
      * @return void
      */
     public function clearCache()
@@ -933,8 +979,7 @@ class Image extends AbstractModel
     }
 
     /**
-     * First check this file on FS
-     * If it doesn't exist - try to download it from DB
+     * Check if file exists on filesystem or in database storage.
      *
      * @param string $filename
      * @return bool
@@ -951,9 +996,9 @@ class Image extends AbstractModel
     }
 
     /**
-     * Return resized image information
+     * Return resized image information.
      *
-     * @return array
+     * @return array|null
      */
     public function getResizedImageInfo()
     {
@@ -963,9 +1008,11 @@ class Image extends AbstractModel
                 "Sample_News::images/".$this->entityCode."/placeholder/{$this->getDestinationSubdir()}.jpg"
             );
             $img = $asset->getSourceFile();
+            // phpcs:ignore Magento2.Functions.DiscouragedFunction
             $fileInfo = getimagesize($img);
         } else {
             if ($this->mediaDirectory->isFile($this->mediaDirectory->getAbsolutePath($this->newFile))) {
+                // phpcs:ignore Magento2.Functions.DiscouragedFunction
                 $fileInfo = getimagesize($this->mediaDirectory->getAbsolutePath($this->newFile));
             }
         }

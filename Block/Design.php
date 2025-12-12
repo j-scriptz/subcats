@@ -76,7 +76,6 @@ class Design extends Template
         $hoverShadowPreset = $this->configHelper->getDesignCardHoverShadow();
         $hoverScalePreset  = $this->configHelper->getDesignCardHoverScale();
 
-
         // Map shadow preset → actual box-shadow value
         switch ($hoverShadowPreset) {
             case 'light':
@@ -215,7 +214,8 @@ class Design extends Template
                 }
             }
         } catch (\Exception $e) {
-            // If anything goes wrong, just fall back to the global config
+            // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
+            unset($e); // If anything goes wrong, just fall back to the global config
         }
 
         if ($desktopSpan > 0) {

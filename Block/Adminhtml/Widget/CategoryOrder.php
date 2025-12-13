@@ -7,7 +7,7 @@ use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
 use Magento\Framework\Data\Form\Element\AbstractElement as Element;
 use Magento\Framework\Data\Form\Element\Factory as ElementFactory;
-use Magento\Framework\UrlInterface;
+use Magento\Framework\Registry;
 use Jscriptz\Subcats\Model\Config\Source\CategoryMultiselect;
 
 /**
@@ -32,6 +32,11 @@ class CategoryOrder extends Template
     private $categorySource;
 
     /**
+     * @var Registry
+     */
+    private $registry;
+
+    /**
      * @var Element
      */
     private $element;
@@ -42,16 +47,19 @@ class CategoryOrder extends Template
      * @param Context $context
      * @param ElementFactory $elementFactory
      * @param CategoryMultiselect $categorySource
+     * @param Registry $registry
      * @param array $data
      */
     public function __construct(
         Context             $context,
         ElementFactory      $elementFactory,
         CategoryMultiselect $categorySource,
+        Registry            $registry,
         array               $data = []
     ) {
         $this->elementFactory = $elementFactory;
         $this->categorySource = $categorySource;
+        $this->registry = $registry;
         parent::__construct($context, $data);
     }
 
@@ -105,38 +113,18 @@ class CategoryOrder extends Template
     }
 
     /**
-     * Get the saved store_filter value from the widget form.
+     * Get the saved store_filter value from the widget instance.
      *
      * @return int|null
      */
     private function getSavedStoreFilter(): ?int
     {
-        if (!$this->element) {
-            return null;
-        }
-
-        $form = $this->element->getForm();
-        if (!$form) {
-            return null;
-        }
-
-        // Look for the store_filter element in the form
-        $storeFilterElement = $form->getElement('parameters[store_filter]');
-        if (!$storeFilterElement) {
-            // Try alternative naming patterns
-            foreach ($form->getElements() as $element) {
-                $name = $element->getName();
-                if ($name && strpos($name, 'store_filter') !== false) {
-                    $storeFilterElement = $element;
-                    break;
-                }
-            }
-        }
-
-        if ($storeFilterElement) {
-            $value = $storeFilterElement->getValue();
-            if ($value !== null && $value !== '') {
-                return (int) $value;
+        // Get the widget instance from registry (set by Magento when editing a widget)
+        $widgetInstance = $this->registry->registry('current_widget_instance');
+        if ($widgetInstance) {
+            $params = $widgetInstance->getWidgetParameters();
+            if (isset($params['store_filter']) && $params['store_filter'] !== '') {
+                return (int) $params['store_filter'];
             }
         }
 

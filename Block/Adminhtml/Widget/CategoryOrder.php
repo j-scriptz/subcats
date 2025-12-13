@@ -100,7 +100,47 @@ class CategoryOrder extends Template
      */
     public function getOptions(): array
     {
-        return $this->categorySource->toOptionArray();
+        $storeId = $this->getSavedStoreFilter();
+        return $this->categorySource->toOptionArray($storeId);
+    }
+
+    /**
+     * Get the saved store_filter value from the widget form.
+     *
+     * @return int|null
+     */
+    private function getSavedStoreFilter(): ?int
+    {
+        if (!$this->element) {
+            return null;
+        }
+
+        $form = $this->element->getForm();
+        if (!$form) {
+            return null;
+        }
+
+        // Look for the store_filter element in the form
+        $storeFilterElement = $form->getElement('parameters[store_filter]');
+        if (!$storeFilterElement) {
+            // Try alternative naming patterns
+            foreach ($form->getElements() as $element) {
+                $name = $element->getName();
+                if ($name && strpos($name, 'store_filter') !== false) {
+                    $storeFilterElement = $element;
+                    break;
+                }
+            }
+        }
+
+        if ($storeFilterElement) {
+            $value = $storeFilterElement->getValue();
+            if ($value !== null && $value !== '') {
+                return (int) $value;
+            }
+        }
+
+        return null;
     }
 
     /**

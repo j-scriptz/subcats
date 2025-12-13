@@ -76,7 +76,7 @@
                         <item name="4_column" xsi:type="number">3</item>
                         <item name="6_column" xsi:type="number">2</item>
                     </item>
-                    <item name="default" xsi:type="number">4</item>
+                    <item name="default" xsi:type="number">0</item>
                     <item name="sortOrder" xsi:type="number">24</item>
                 </item>
             </argument>
@@ -98,7 +98,7 @@
                         <item name="4_column" xsi:type="number">3</item>
                         <item name="6_column" xsi:type="number">2</item>
                     </item>
-                    <item name="default" xsi:type="number">6</item>
+                    <item name="default" xsi:type="number">0</item>
                     <item name="sortOrder" xsi:type="number">25</item>
                 </item>
             </argument>
@@ -120,7 +120,7 @@
                         <item name="4_column" xsi:type="number">3</item>
                         <item name="6_column" xsi:type="number">2</item>
                     </item>
-                    <item name="default" xsi:type="number">12</item>
+                    <item name="default" xsi:type="number">0</item>
                     <item name="sortOrder" xsi:type="number">30</item>
                 </item>
             </argument>

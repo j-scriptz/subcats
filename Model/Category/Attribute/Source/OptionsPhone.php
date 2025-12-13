@@ -38,6 +38,7 @@ class OptionsPhone extends \Magento\Eav\Model\Entity\Attribute\Source\AbstractSo
     {
         if ($this->_options === null) {
             $this->_options = [
+                ['value' => 0,  'label' => __('Use Global Config')],
                 ['value' => 12, 'label' => __('1 Column')],
                 ['value' => 6,  'label' => __('2 Columns')],
                 ['value' => 4,  'label' => __('3 Columns')],

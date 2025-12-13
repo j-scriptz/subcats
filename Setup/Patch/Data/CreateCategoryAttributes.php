@@ -211,6 +211,7 @@ class CreateCategoryAttributes implements DataPatchInterface
                         'source' => OptionsTablet::class,
                         'required' => false,
                         'sort_order' => 5,
+                        'default' => 0,
                         'global' => ScopedAttributeInterface::SCOPE_STORE,
                         'group' => 'Jscriptz Subcats',
                     ]
@@ -232,6 +233,7 @@ class CreateCategoryAttributes implements DataPatchInterface
                         'source' => OptionsPhone::class,
                         'required' => false,
                         'sort_order' => 6,
+                        'default' => 0,
                         'global' => ScopedAttributeInterface::SCOPE_STORE,
                         'group' => 'Jscriptz Subcats',
                     ]
@@ -254,6 +256,7 @@ class CreateCategoryAttributes implements DataPatchInterface
                         'backend' => ArrayBackend::class,
                         'required' => false,
                         'sort_order' => 30,
+                        'default' => 0,
                         'global' => ScopedAttributeInterface::SCOPE_STORE,
                         'visible' => true,
                         'group' => 'Jscriptz Subcats',

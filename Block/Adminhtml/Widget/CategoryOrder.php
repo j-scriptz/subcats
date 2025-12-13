@@ -7,6 +7,7 @@ use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
 use Magento\Framework\Data\Form\Element\AbstractElement as Element;
 use Magento\Framework\Data\Form\Element\Factory as ElementFactory;
+use Magento\Framework\UrlInterface;
 use Jscriptz\Subcats\Model\Config\Source\CategoryMultiselect;
 
 /**
@@ -100,6 +101,16 @@ class CategoryOrder extends Template
     public function getOptions(): array
     {
         return $this->categorySource->toOptionArray();
+    }
+
+    /**
+     * Get AJAX URL for fetching categories by store.
+     *
+     * @return string
+     */
+    public function getCategoriesAjaxUrl(): string
+    {
+        return $this->getUrl('jscriptz_subcats/widget/categories');
     }
 
     /**

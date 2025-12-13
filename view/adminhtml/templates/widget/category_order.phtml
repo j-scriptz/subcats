@@ -10,13 +10,13 @@
  * of IDs from the right-hand list.
  *
  * @var $block \Jscriptz\Subcats\Block\Adminhtml\Widget\CategoryOrder
- * @var $escaper \Magento\Framework\Escaper
  */
 
 $element     = $block->getElement();
 $hiddenId    = $element->getId();
 $selectedIds = $block->getSelectedIds();
 $options     = $block->getOptions();
+$ajaxUrl     = $block->getCategoriesAjaxUrl();
 
 // Build a simple id => label map so we can
 // render the Final Order box in saved order.
@@ -248,6 +248,93 @@ $uid = uniqid('js-subcats-catorder-');
 
             // Initial sync
             syncHidden();
+
+            // AJAX URL for reloading categories by store
+            var ajaxUrl = <?= /* @noEscape */ json_encode($ajaxUrl, JSON_HEX_TAG | JSON_HEX_AMP |
+                                                          JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+
+            /**
+             * Reload categories for a specific store ID via AJAX.
+             */
+            function reloadCategoriesForStore(storeId) {
+                if (!storeId || storeId <= 0) {
+                    return;
+                }
+
+                $.ajax({
+                    url: ajaxUrl,
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { store_id: storeId },
+                    showLoader: true,
+                    success: function(response) {
+                        if (response.success && response.options) {
+                            // Get currently selected IDs from hidden field
+                            var currentSelectedIds = $hidden.val()
+                                ? $hidden.val().split(',').map(function(v) { return parseInt(v, 10); })
+                                : [];
+
+                            // Clear both select lists
+                            $available.empty();
+                            $selected.empty();
+
+                            // Populate the lists with new options
+                            $.each(response.options, function(i, opt) {
+                                var val = parseInt(opt.value, 10);
+                                if (val <= 0) {
+                                    return; // skip invalid values
+                                }
+
+                                var $option = $('<option>')
+                                    .val(val)
+                                    .text(opt.label);
+
+                                // If this ID was previously selected and still exists in new store
+                                if (currentSelectedIds.indexOf(val) !== -1) {
+                                    $option.appendTo($selected);
+                                } else {
+                                    $option.appendTo($available);
+                                }
+                            });
+
+                            // Re-sync hidden field (removes any IDs that no longer exist)
+                            syncHidden();
+                        }
+                    },
+                    error: function() {
+                        console.error('Failed to load categories for store ' + storeId);
+                    }
+                });
+            }
+
+            /**
+             * Find the store_filter select element in the widget form.
+             * The field name pattern is: parameters[store_filter]
+             */
+            function findStoreFilterField() {
+                // Look for select with name containing "store_filter"
+                return $('select[name*="store_filter"]');
+            }
+
+            // Watch for changes to the store_filter field
+            $(document).on('change', 'select[name*="store_filter"]', function() {
+                var storeId = parseInt($(this).val(), 10);
+                if (storeId > 0) {
+                    reloadCategoriesForStore(storeId);
+                }
+            });
+
+            // On initial load, if store_filter already has a value, load those categories
+            setTimeout(function() {
+                var $storeFilter = findStoreFilterField();
+                if ($storeFilter.length) {
+                    var storeId = parseInt($storeFilter.val(), 10);
+                    // Only reload if we have a store selected and no categories currently loaded
+                    if (storeId > 0 && $available.find('option').length === 0 && $selected.find('option').length === 0) {
+                        reloadCategoriesForStore(storeId);
+                    }
+                }
+            }, 500);
         })();
     });
 </script>

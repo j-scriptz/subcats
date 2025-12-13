@@ -42,13 +42,18 @@ class CategoryMultiselect implements ArrayInterface
     /**
      * Return options array for multiselect.
      *
+     * @param int|null $forStoreId Optional store ID to filter categories by.
      * @return array[]
      */
-    public function toOptionArray(): array
+    public function toOptionArray($forStoreId = null): array
     {
         $options = [];
 
-        $store   = $this->storeManager->getStore();
+        if ($forStoreId !== null && $forStoreId > 0) {
+            $store = $this->storeManager->getStore($forStoreId);
+        } else {
+            $store = $this->storeManager->getStore();
+        }
         $storeId = (int) $store->getId();
         $rootId  = (int) $store->getRootCategoryId();
 

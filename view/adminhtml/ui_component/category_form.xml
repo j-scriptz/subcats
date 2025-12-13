@@ -54,7 +54,7 @@
                     <item name="sortOrder" xsi:type="number">10</item>
                     <item name="additionalClasses" xsi:type="string">subcat-admin-image</item>
                     <item name="uploaderConfig" xsi:type="array">
-                        <item name="url" xsi:type="url" path="ait/image/upload"/>
+                        <item name="url" xsi:type="url" path="jscriptz_subcats/image/upload"/>
                     </item>
                 </item>
             </argument>

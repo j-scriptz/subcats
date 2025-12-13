@@ -37,6 +37,17 @@
                 </description>
             </parameter>
 
+            <parameter name="store_filter"
+                       xsi:type="select"
+                       visible="true"
+                       required="true"
+                       sort_order="35"
+                       source_model="Jscriptz\Subcats\Model\Config\Source\StoreViews">
+                <label translate="true">Store View (for category list)</label>
+                <description translate="true">
+                    Select a store view to filter the available categories below. Categories will be loaded from this store's root category.
+                </description>
+            </parameter>
             <parameter name="category_ids"
                        xsi:type="block"
                        visible="true"

@@ -6,7 +6,7 @@
              instance="Jscriptz\Subcats\Cron\LicenseSync"
              method="execute">
             <!-- Every 3 hours; adjust as needed -->
-            <schedule>*/5 * * * *</schedule>
+            <schedule>0 */3 * * *</schedule>
         </job>
     </group>
 </config>

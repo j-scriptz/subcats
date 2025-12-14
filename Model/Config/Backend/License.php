@@ -24,13 +24,16 @@ declare(strict_types=1);
 namespace Jscriptz\Subcats\Model\Config\Backend;
 
 use Magento\Framework\App\Config\Value;
+use Magento\Framework\Component\ComponentRegistrarInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Filesystem\Driver\File as FileDriver;
 use Magento\Framework\HTTP\Client\Curl;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Module\ModuleListInterface;
+use Magento\Framework\Serialize\Serializer\Json;
 use Jscriptz\Subcats\Model\License\ApiClient;
 use JsonException;
 
@@ -66,10 +69,25 @@ class License extends Value
      */
     private $moduleList;
 
-/**
- * @var ApiClient|null
- */
+    /**
+     * @var ApiClient|null
+     */
     private $apiClient = null;
+
+    /**
+     * @var ComponentRegistrarInterface|null
+     */
+    private $componentRegistrar;
+
+    /**
+     * @var FileDriver|null
+     */
+    private $fileDriver;
+
+    /**
+     * @var Json|null
+     */
+    private $jsonSerializer;
 
     /**
      * Lazily get Curl client.
@@ -139,12 +157,75 @@ class License extends Value
     }
 
     /**
-     * Get local module version for Jscriptz_Subcats.
+     * Lazily get component registrar.
+     *
+     * @return ComponentRegistrarInterface
+     */
+    private function getComponentRegistrar(): ComponentRegistrarInterface
+    {
+        if ($this->componentRegistrar === null) {
+            $this->componentRegistrar = ObjectManager::getInstance()->get(ComponentRegistrarInterface::class);
+        }
+        return $this->componentRegistrar;
+    }
+
+    /**
+     * Lazily get file driver.
+     *
+     * @return FileDriver
+     */
+    private function getFileDriver(): FileDriver
+    {
+        if ($this->fileDriver === null) {
+            $this->fileDriver = ObjectManager::getInstance()->get(FileDriver::class);
+        }
+        return $this->fileDriver;
+    }
+
+    /**
+     * Lazily get JSON serializer.
+     *
+     * @return Json
+     */
+    private function getJsonSerializer(): Json
+    {
+        if ($this->jsonSerializer === null) {
+            $this->jsonSerializer = ObjectManager::getInstance()->get(Json::class);
+        }
+        return $this->jsonSerializer;
+    }
+
+    /**
+     * Get local module version for Jscriptz_Subcats from composer.json.
      *
      * @return string|null
      */
     private function getLocalVersion(): ?string
     {
+        try {
+            $modulePath = $this->getComponentRegistrar()->getPath(
+                ComponentRegistrarInterface::MODULE,
+                'Jscriptz_Subcats'
+            );
+
+            if ($modulePath) {
+                $composerFile = $modulePath . '/composer.json';
+                $fileDriver = $this->getFileDriver();
+                // phpcs:ignore Magento2.Functions.DiscouragedFunction
+                if ($fileDriver->isExists($composerFile)) {
+                    $content = $fileDriver->fileGetContents($composerFile);
+                    $data = $this->getJsonSerializer()->unserialize($content);
+                    if (is_array($data) && !empty($data['version'])) {
+                        return (string)$data['version'];
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
+            unset($e); // Fall through to module list fallback
+        }
+
+        // Fallback to module list (setup_module table)
         try {
             $info = $this->getModuleList()->getOne('Jscriptz_Subcats');
             if (is_array($info) && isset($info['setup_version'])) {

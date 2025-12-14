@@ -24,6 +24,8 @@ namespace Jscriptz\Subcats\Model\License;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\Component\ComponentRegistrarInterface;
+use Magento\Framework\Filesystem\Driver\File as FileDriver;
 use Magento\Framework\HTTP\Client\Curl;
 use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
 use Magento\Framework\Module\ModuleListInterface;
@@ -103,6 +105,16 @@ class ApiClient
     private ModuleListInterface $moduleList;
 
     /**
+     * @var ComponentRegistrarInterface
+     */
+    private ComponentRegistrarInterface $componentRegistrar;
+
+    /**
+     * @var FileDriver
+     */
+    private FileDriver $fileDriver;
+
+    /**
      * Constructor.
      *
      * @param ScopeConfigInterface $scopeConfig
@@ -114,6 +126,8 @@ class ApiClient
      * @param Json $json
      * @param LoggerInterface $logger
      * @param ModuleListInterface $moduleList
+     * @param ComponentRegistrarInterface $componentRegistrar
+     * @param FileDriver $fileDriver
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -124,7 +138,9 @@ class ApiClient
         Curl $curl,
         Json $json,
         LoggerInterface $logger,
-        ModuleListInterface $moduleList
+        ModuleListInterface $moduleList,
+        ComponentRegistrarInterface $componentRegistrar,
+        FileDriver $fileDriver
     ) {
         $this->scopeConfig  = $scopeConfig;
         $this->configWriter = $configWriter;
@@ -132,6 +148,8 @@ class ApiClient
         $this->json         = $json;
         $this->logger       = $logger;
         $this->moduleList = $moduleList;
+        $this->componentRegistrar = $componentRegistrar;
+        $this->fileDriver = $fileDriver;
         $this->storeManager  = $storeManager;
         $this->remoteAddress = $remoteAddress;
         $this->userFactory   = $userFactory;
@@ -674,12 +692,36 @@ class ApiClient
     }
 
     /**
-     * Get installed version of the module.
+     * Get installed version of the module from composer.json.
      *
      * @return string
      */
     private function getInstalledVersion(): string
     {
+        try {
+            $modulePath = $this->componentRegistrar->getPath(
+                ComponentRegistrarInterface::MODULE,
+                self::MODULE_NAME
+            );
+
+            if ($modulePath) {
+                $composerFile = $modulePath . '/composer.json';
+                // phpcs:ignore Magento2.Functions.DiscouragedFunction
+                if ($this->fileDriver->isExists($composerFile)) {
+                    $content = $this->fileDriver->fileGetContents($composerFile);
+                    $data = $this->json->unserialize($content);
+                    if (is_array($data) && !empty($data['version'])) {
+                        return (string)$data['version'];
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            $this->logger->warning(
+                'Jscriptz_Subcats: Could not read composer.json version: ' . $e->getMessage()
+            );
+        }
+
+        // Fallback to module list (setup_module table) if composer.json read fails
         try {
             $info = $this->moduleList->getOne(self::MODULE_NAME);
             if (is_array($info) && !empty($info['setup_version'])) {
@@ -689,6 +731,7 @@ class ApiClient
             // Intentionally empty - fallback behavior
             unset($e);
         }
+
         return '';
     }
 

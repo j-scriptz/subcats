@@ -1,0 +1,178 @@
+<?php
+declare(strict_types=1);
+
+namespace Jscriptz\Subcats\Block\Adminhtml\Widget;
+
+use Magento\Backend\Block\Template;
+use Magento\Backend\Block\Template\Context;
+use Magento\Framework\Data\Form\Element\AbstractElement as Element;
+use Magento\Framework\Data\Form\Element\Factory as ElementFactory;
+use Magento\Framework\Registry;
+use Jscriptz\Subcats\Model\Config\Source\CategoryMultiselect;
+
+/**
+ * Widget parameter renderer for Subcats category selection with ordering.
+ *
+ * Renders:
+ *  - A hidden text input (the real widget param, comma-separated IDs)
+ *  - A dual-list UI:
+ *      * Available categories (full paths)
+ *      * Final order (selected categories) with Move Up / Move Down
+ */
+class CategoryOrder extends Template
+{
+    /**
+     * @var ElementFactory
+     */
+    private $elementFactory;
+
+    /**
+     * @var CategoryMultiselect
+     */
+    private $categorySource;
+
+    /**
+     * @var Registry
+     */
+    private $registry;
+
+    /**
+     * @var Element
+     */
+    private $element;
+
+    /**
+     * Constructor.
+     *
+     * @param Context $context
+     * @param ElementFactory $elementFactory
+     * @param CategoryMultiselect $categorySource
+     * @param Registry $registry
+     * @param array $data
+     */
+    public function __construct(
+        Context             $context,
+        ElementFactory      $elementFactory,
+        CategoryMultiselect $categorySource,
+        Registry            $registry,
+        array               $data = []
+    ) {
+        $this->elementFactory = $elementFactory;
+        $this->categorySource = $categorySource;
+        $this->registry = $registry;
+        parent::__construct($context, $data);
+    }
+
+    /**
+     * Magento calls this to let us replace the standard field with our own UI.
+     *
+     * @param Element $element
+     * @return Element
+     */
+    public function prepareElementHtml(Element $element): Element
+    {
+        $this->element = $element;
+
+        // Hidden text input that actually stores the comma-separated IDs
+        /** @var \Magento\Framework\Data\Form\Element\Text $input */
+        $input = $this->elementFactory->create('text', ['data' => $element->getData()]);
+        $input->setId($element->getId());
+        $input->setForm($element->getForm());
+        $input->setClass('widget-option input-text admin__control-text');
+        if ($element->getRequired()) {
+            $input->addClass('required-entry');
+        }
+        // Hide it – we only use it as the backing store for the widget parameter.
+        $input->setData('style', 'display:none;');
+
+        $this->setTemplate('Jscriptz_Subcats::widget/category_order.phtml');
+
+        $html = $input->getElementHtml() . $this->toHtml();
+        $element->setData('after_element_html', $html);
+
+        return $element;
+    }
+
+    /**
+     * Expose the element to the template.
+     */
+    public function getElement(): Element
+    {
+        return $this->element;
+    }
+
+    /**
+     * Options for the category list (flattened tree with full path labels).
+     *
+     * @return array[]
+     */
+    public function getOptions(): array
+    {
+        $storeId = $this->getSavedStoreFilter();
+        return $this->categorySource->toOptionArray($storeId);
+    }
+
+    /**
+     * Get the saved store_filter value from the widget instance.
+     *
+     * @return int|null
+     */
+    private function getSavedStoreFilter(): ?int
+    {
+        // Get the widget instance from registry (set by Magento when editing a widget)
+        $widgetInstance = $this->registry->registry('current_widget_instance');
+        if ($widgetInstance) {
+            $params = $widgetInstance->getWidgetParameters();
+            if (isset($params['store_filter']) && $params['store_filter'] !== '') {
+                return (int) $params['store_filter'];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get AJAX URL for fetching categories by store.
+     *
+     * @return string
+     */
+    public function getCategoriesAjaxUrl(): string
+    {
+        return $this->getUrl('jscriptz_subcats/widget/categories');
+    }
+
+    /**
+     * Returns selected IDs from the widget param (comma-separated).
+     *
+     * @return int[]
+     */
+    public function getSelectedIds(): array
+    {
+        if (!$this->element) {
+            return [];
+        }
+
+        $value = $this->element->getValue();
+
+        // Case 1: comma-separated string from stored widget config
+        if (is_string($value)) {
+            $value = trim($value);
+            if ($value === '') {
+                return [];
+            }
+            $ids = array_map('intval', explode(',', $value));
+        } elseif (is_array($value)) {
+            // Case 2: array from POST / form context
+            $ids = array_map('intval', $value);
+        } else {
+            // Anything else (null, bool, etc.) → nothing selected
+            return [];
+        }
+
+        $ids = array_values(array_filter($ids, static function (int $id): bool {
+            return $id > 0;
+        }));
+
+        return $ids;
+    }
+}

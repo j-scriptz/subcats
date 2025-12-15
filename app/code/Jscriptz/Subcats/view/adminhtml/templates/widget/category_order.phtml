@@ -1,0 +1,340 @@
+<?php
+/**
+ * Dual-list category selector for the Jscriptz_Subcats widget.
+ *
+ * Left:  Available categories (full paths)
+ * Middle: Add ▶ / ◀ Remove
+ * Right: Final order (selected categories) + Move Up / Move Down
+ *
+ * The hidden widget param "category_ids" always stores the ordered list
+ * of IDs from the right-hand list.
+ *
+ * @var $block \Jscriptz\Subcats\Block\Adminhtml\Widget\CategoryOrder
+ */
+
+$element     = $block->getElement();
+$hiddenId    = $element->getId();
+$selectedIds = $block->getSelectedIds();
+$options     = $block->getOptions();
+$ajaxUrl     = $block->getCategoriesAjaxUrl();
+
+// Build a simple id => label map so we can
+// render the Final Order box in saved order.
+$optionsById = [];
+foreach ($options as $opt) {
+    $value = (int) ($opt['value'] ?? 0);
+    if ($value <= 0) {
+        continue;
+    }
+    $optionsById[$value] = (string) ($opt['label'] ?? '');
+}
+
+$uid = uniqid('js-subcats-catorder-');
+?>
+<div class="js-subcats-widget-category-order">
+    <div class="admin__field">
+        <!-- Use Magento's main label column ("Categories *"), but pull the control
+             section left so we can use the full width of the form. -->
+        <div class="admin__field-control"
+             style="margin-left:-220px; width:calc(100% + 220px);">
+
+            <!-- Single row: Available | Buttons | Final Order -->
+            <div class="admin__control-fields"
+                 style="margin-top: 15px; display:flex; gap:24px; align-items:flex-start;
+                 flex-wrap:nowrap; width:100%;">
+
+                <!-- Available categories (about half width) -->
+                <div class="js-subcats-widget-col js-subcats-widget-col--available"
+                     style="flex:1 1 0; min-width:0;">
+                    <div class="admin__field">
+                        <label class="admin__field-label"
+                               for="<?= $escaper->escapeHtmlAttr($uid . '_available') ?>">
+                            <?= $escaper->escapeHtml(__('Available Categories')) ?>
+                        </label>
+                        <div class="admin__field-control">
+                            <select id="<?= $escaper->escapeHtmlAttr($uid . '_available') ?>"
+                                    class="admin__control-multiselect"
+                                    multiple="multiple"
+                                    size="12"
+                                    style="width:100%;">
+                                <?php foreach ($options as $opt): ?>
+                                    <?php
+                                    $value = (int) ($opt['value'] ?? 0);
+                                    $label = (string) ($opt['label'] ?? '');
+                                    if (in_array($value, $selectedIds, true)) {
+                                        // Selected ones go to the "Final order" box instead
+                                        continue;
+                                    }
+                                    ?>
+                                    <option value="<?= $escaper->escapeHtmlAttr((string) $value) ?>">
+                                        <?= $escaper->escapeHtml($label) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transfer buttons (fixed narrow column so text doesn't wrap) -->
+                <div class="js-subcats-widget-col js-subcats-widget-col--controls"
+                     style="display:flex; flex-direction:column; gap:6px; margin-top:26px; flex:0 0 90px;">
+                    <button type="button"
+                            class="action-default"
+                            id="<?= $escaper->escapeHtmlAttr($uid . '_add') ?>"
+                            style="white-space:nowrap;">
+                        <span><?= $escaper->escapeHtml(__('Add ▶')) ?></span>
+                    </button>
+                    <button type="button"
+                            class="action-default"
+                            id="<?= $escaper->escapeHtmlAttr($uid . '_remove') ?>"
+                            style="white-space:nowrap;">
+                        <span><?= $escaper->escapeHtml(__('◀ Remove')) ?></span>
+                    </button>
+                </div>
+
+                <!-- Final order (other half width) -->
+                <div class="js-subcats-widget-col js-subcats-widget-col--selected"
+                     style="flex:1 1 0; min-width:0;">
+                    <div class="admin__field">
+                        <label class="admin__field-label"
+                               for="<?= $escaper->escapeHtmlAttr($uid . '_selected') ?>">
+                            <?= $escaper->escapeHtml(__('Final Order')) ?>
+                        </label>
+                        <div class="admin__field-control">
+                            <select id="<?= $escaper->escapeHtmlAttr($uid . '_selected') ?>"
+                                    class="admin__control-multiselect"
+                                    multiple="multiple"
+                                    size="12"
+                                    style="width:100%;">
+                                <?php foreach ($selectedIds as $id): ?>
+                                    <?php
+                                    $value = (int) $id;
+                                    if ($value <= 0 || !isset($optionsById[$value])) {
+                                        continue;
+                                    }
+                                    $label = $optionsById[$value];
+                                    ?>
+                                    <option value="<?= $escaper->escapeHtmlAttr((string) $value) ?>">
+                                        <?= $escaper->escapeHtml($label) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+
+                            <div class="js-subcats-widget-order-buttons" style="margin-top:6px;white-space:nowrap">
+                                <button type="button"
+                                        class="action-default"
+                                        id="<?= $escaper->escapeHtmlAttr($uid . '_up') ?>"
+                                        style="margin-right:6px;">
+                                    <span><?= $escaper->escapeHtml(__('Move Up')) ?></span>
+                                </button>
+                                <button type="button"
+                                        class="action-default"
+                                        id="<?= $escaper->escapeHtmlAttr($uid . '_down') ?>">
+                                    <span><?= $escaper->escapeHtml(__('Move Down')) ?></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <p class="note" style="margin-top:20px;">
+                <?= $escaper->escapeHtml(
+                    __('Select categories from "Available Categories", click "Add" to move them into "Final Order", 
+                    then use the arrows to adjust the display order. Only the categories in "Final Order" are 
+                      rendered by the widget.')
+                ) ?>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    require(['jquery'], function ($) {
+        (function () {
+            var uid       = <?= /* @noEscape */ json_encode($uid, JSON_HEX_TAG | JSON_HEX_AMP |
+                                                            JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+            var hiddenId  = <?= /* @noEscape */ json_encode($hiddenId, JSON_HEX_TAG | JSON_HEX_AMP
+                                                            | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+            var availableId = uid + '_available';
+            var selectedId  = uid + '_selected';
+
+            function jqid(id) {
+                return '#' + id.replace(/(:|\.|\[|\]|,|=|@)/g, '\\$1');
+            }
+
+            var $available = $(jqid(availableId));
+            var $selected  = $(jqid(selectedId));
+            var $hidden    = $(jqid(hiddenId));
+
+            function syncHidden() {
+                var ordered = [];
+                $selected.find('option').each(function () {
+                    ordered.push($(this).val());
+                });
+                $hidden.val(ordered.join(','));
+            }
+
+            var $btnAdd    = $('#' + uid + '_add');
+            var $btnRemove = $('#' + uid + '_remove');
+            var $btnUp     = $('#' + uid + '_up');
+            var $btnDown   = $('#' + uid + '_down');
+
+            // Add ▶
+            $btnAdd.on('click', function (e) {
+                e.preventDefault();
+                $available.find('option:selected').each(function () {
+                    var $opt = $(this);
+                    $opt.prop('selected', false);
+                    $opt.appendTo($selected);
+                });
+                syncHidden();
+            });
+
+            // ◀ Remove
+            $btnRemove.on('click', function (e) {
+                e.preventDefault();
+                $selected.find('option:selected').each(function () {
+                    var $opt = $(this);
+                    $opt.prop('selected', false);
+                    $opt.appendTo($available);
+                });
+                syncHidden();
+            });
+
+            // Move Up within "Final Order"
+            $btnUp.on('click', function (e) {
+                e.preventDefault();
+                var options = $selected.find('option:selected');
+                options.each(function () {
+                    var $opt  = $(this);
+                    var $prev = $opt.prev();
+                    if ($prev.length && !$prev.is(':selected')) {
+                        $opt.insertBefore($prev);
+                    }
+                });
+                syncHidden();
+            });
+
+            // Move Down within "Final Order"
+            $btnDown.on('click', function (e) {
+                e.preventDefault();
+                var options = $selected.find('option:selected').get().reverse();
+                $(options).each(function () {
+                    var $opt  = $(this);
+                    var $next = $opt.next();
+                    if ($next.length && !$next.is(':selected')) {
+                        $opt.insertAfter($next);
+                    }
+                });
+                syncHidden();
+            });
+
+            // Double-click convenience
+            $available.on('dblclick', 'option', function () {
+                var $opt = $(this);
+                $opt.prop('selected', false);
+                $opt.appendTo($selected);
+                syncHidden();
+            });
+
+            $selected.on('dblclick', 'option', function () {
+                var $opt = $(this);
+                $opt.prop('selected', false);
+                $opt.appendTo($available);
+                syncHidden();
+            });
+
+            // Initial sync
+            syncHidden();
+
+            // AJAX URL for reloading categories by store
+            var ajaxUrl = <?= /* @noEscape */ json_encode($ajaxUrl, JSON_HEX_TAG | JSON_HEX_AMP |
+                                                          JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
+
+            /**
+             * Reload categories for a specific store ID via AJAX.
+             */
+            function reloadCategoriesForStore(storeId) {
+                if (!storeId || storeId <= 0) {
+                    return;
+                }
+
+                $.ajax({
+                    url: ajaxUrl,
+                    type: 'GET',
+                    dataType: 'json',
+                    data: { store_id: storeId },
+                    showLoader: true,
+                    success: function(response) {
+                        if (response.success && response.options) {
+                            // Get currently selected IDs from hidden field
+                            var currentSelectedIds = $hidden.val()
+                                ? $hidden.val().split(',').map(function(v) { return parseInt(v, 10); })
+                                : [];
+
+                            // Clear both select lists
+                            $available.empty();
+                            $selected.empty();
+
+                            // Populate the lists with new options
+                            $.each(response.options, function(i, opt) {
+                                var val = parseInt(opt.value, 10);
+                                if (val <= 0) {
+                                    return; // skip invalid values
+                                }
+
+                                var $option = $('<option>')
+                                    .val(val)
+                                    .text(opt.label);
+
+                                // If this ID was previously selected and still exists in new store
+                                if (currentSelectedIds.indexOf(val) !== -1) {
+                                    $option.appendTo($selected);
+                                } else {
+                                    $option.appendTo($available);
+                                }
+                            });
+
+                            // Re-sync hidden field (removes any IDs that no longer exist)
+                            syncHidden();
+                        }
+                    },
+                    error: function() {
+                        console.error('Failed to load categories for store ' + storeId);
+                    }
+                });
+            }
+
+            /**
+             * Find the store_filter select element in the widget form.
+             * The field name pattern is: parameters[store_filter]
+             */
+            function findStoreFilterField() {
+                // Look for select with name containing "store_filter"
+                return $('select[name*="store_filter"]');
+            }
+
+            // Watch for changes to the store_filter field
+            $(document).on('change', 'select[name*="store_filter"]', function() {
+                var storeId = parseInt($(this).val(), 10);
+                if (storeId > 0) {
+                    reloadCategoriesForStore(storeId);
+                }
+            });
+
+            // On initial load, if store_filter already has a value, load those categories
+            setTimeout(function() {
+                var $storeFilter = findStoreFilterField();
+                if ($storeFilter.length) {
+                    var storeId = parseInt($storeFilter.val(), 10);
+                    // Only reload if we have a store selected and no categories currently loaded
+                    if (storeId > 0 && $available.find('option').length === 0 && $selected.find('option').length === 0) {
+                        reloadCategoriesForStore(storeId);
+                    }
+                }
+            }, 500);
+        })();
+    });
+</script>

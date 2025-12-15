@@ -1,0 +1,98 @@
+<!-- ko if: visible() -->
+<div class="admin__field-control js-subcats-field">
+    <div class="admin__control-multiselect">
+        <select class="admin__control-select"
+                multiple="multiple"
+                data-bind="
+                    attr: {
+                        id: uid,
+                        'data-role': 'subcats-children',
+                        'data-ui-id': 'multiselect-' + index
+                    },
+                    options: options,
+                    optionsValue: 'value',
+                    optionsText: 'label',
+                    selectedOptions: value">
+        </select>
+    </div>
+
+    <div class="js-subcats-selected-wrapper" data-bind="visible: value().length">
+        <ul class="js-subcats-selected" data-bind="foreach: value">
+            <li class="js-subcats-selected-item"
+                data-bind="attr: {'data-id': $data}">
+
+                <!-- Move up -->
+                <button type="button"
+                        class="js-subcats-move js-subcats-move-up"
+                        title="Move up"
+                        data-bind="click: function () {
+                            var parent = $parent,
+                                obs    = parent.value,
+                                arr    = obs ? (obs() || []).slice(0) : [],
+                                id     = $data,
+                                idx    = -1,
+                                i;
+
+                            for (i = 0; i < arr.length; i++) {
+                                if (String(arr[i]) === String(id)) {
+                                    idx = i;
+                                    break;
+                                }
+                            }
+
+                            if (idx > 0) {
+                                var tmp       = arr[idx - 1];
+                                arr[idx - 1]  = arr[idx];
+                                arr[idx]      = tmp;
+                                obs(arr);
+                            }
+                        }">↑</button>
+
+                <!-- Move down -->
+                <button type="button"
+                        class="js-subcats-move js-subcats-move-down"
+                        title="Move down"
+                        data-bind="click: function () {
+                            var parent = $parent,
+                                obs    = parent.value,
+                                arr    = obs ? (obs() || []).slice(0) : [],
+                                id     = $data,
+                                idx    = -1,
+                                i;
+
+                            for (i = 0; i < arr.length; i++) {
+                                if (String(arr[i]) === String(id)) {
+                                    idx = i;
+                                    break;
+                                }
+                            }
+
+                            if (idx > -1 && idx < arr.length - 1) {
+                                var tmp       = arr[idx + 1];
+                                arr[idx + 1]  = arr[idx];
+                                arr[idx]      = tmp;
+                                obs(arr);
+                            }
+                        }">↓</button>
+
+                <!-- Label lookup -->
+                <span class="label"
+                      data-bind="text: (function(){
+                          var parent = $parent,
+                              opts   = parent.options ? parent.options() || [] : [],
+                              i;
+                          for (i = 0; i < opts.length; i++) {
+                              if (String(opts[i].value) === String($data)) {
+                                  return opts[i].label;
+                              }
+                          }
+                          return $data;
+                      })()"></span>
+            </li>
+        </ul>
+        <p class="note">
+            <span data-bind="i18n: 'Use the ↑ and ↓ buttons to change the display order of selected subcategories.'"></span>
+        </p>
+    </div>
+</div>
+<!-- /ko -->

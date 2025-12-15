@@ -1,0 +1,44 @@
+<?php
+/** @var $block \Jscriptz\Subcats\Block\Adminhtml\Category\SubcatsChildren */
+/** @var $escaper \Magento\Framework\Escaper */
+
+$element    = $block->getElement();
+$value      = (string)$element->getValue();
+$categories = $block->getSelectedCategories();
+$inputId    = $element->getHtmlId();
+$inputName  = $element->getName();
+?>
+
+<div class="js-subcats-selected-wrapper">
+    <ul id="<?= $escaper->escapeHtmlAttr($inputId); ?>_sortable"
+        class="js-subcats-selected">
+        <?php foreach ($categories as $category): ?>
+            <li class="js-subcats-selected-item"
+                data-id="<?= (int)$category->getId(); ?>">
+                <span class="drag-handle" title="<?= $escaper->escapeHtmlAttr(__('Drag to reorder')); ?>">⇅</span>
+                <span class="label"><?= $escaper->escapeHtml($category->getName()); ?></span>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+
+    <!-- Hidden input storing the ordered list of IDs -->
+    <input type="hidden"
+           id="<?= $escaper->escapeHtmlAttr($inputId); ?>"
+           name="<?= $escaper->escapeHtmlAttr($inputName); ?>"
+           value="<?= $escaper->escapeHtmlAttr($value); ?>" />
+    <p class="note">
+        <span>
+            <?= /* @noEscape */ __('Drag the items above to change the display order of selected subcategories.'); ?>
+        </span>
+    </p>
+</div>
+
+<script type="text/x-magento-init">
+{
+    "#<?= $escaper->escapeHtmlAttr($inputId); ?>_sortable": {
+        "Jscriptz_Subcats/js/subcats-sortable": {
+            "inputSelector": "#<?= $escaper->escapeHtmlAttr($inputId); ?>"
+        }
+    }
+}
+</script>

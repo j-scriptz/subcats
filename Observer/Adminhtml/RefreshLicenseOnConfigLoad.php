@@ -13,13 +13,15 @@ declare(strict_types=1);
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP version 7
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
-
 
 namespace Jscriptz\Subcats\Observer\Adminhtml;
 
@@ -34,36 +36,47 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Observer RefreshLicenseOnConfigLoad
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class RefreshLicenseOnConfigLoad implements ObserverInterface
 {
     /**
+     * Request interface
+     *
      * @var RequestInterface
      */
-    private RequestInterface $request;
+    private RequestInterface $_request;
 
     /**
+     * API client instance
+     *
      * @var ApiClient
      */
-    private ApiClient $apiClient;
+    private ApiClient $_apiClient;
 
     /**
+     * Logger interface
+     *
      * @var LoggerInterface
      */
-    private LoggerInterface $logger;
+    private LoggerInterface $_logger;
 
     /**
+     * Store manager interface
+     *
      * @var StoreManagerInterface
      */
-    private StoreManagerInterface $storeManager;
+    private StoreManagerInterface $_storeManager;
 
     /**
      * Constructor.
      *
-     * @param RequestInterface $request
-     * @param ApiClient $apiClient
-     * @param LoggerInterface $logger
-     * @param StoreManagerInterface $storeManager
+     * @param RequestInterface      $request      Request interface
+     * @param ApiClient             $apiClient    API client instance
+     * @param LoggerInterface       $logger       Logger interface
+     * @param StoreManagerInterface $storeManager Store manager interface
      */
     public function __construct(
         RequestInterface $request,
@@ -71,41 +84,44 @@ class RefreshLicenseOnConfigLoad implements ObserverInterface
         LoggerInterface $logger,
         StoreManagerInterface $storeManager
     ) {
-        $this->request      = $request;
-        $this->apiClient    = $apiClient;
-        $this->logger       = $logger;
-        $this->storeManager = $storeManager;
+        $this->_request = $request;
+        $this->_apiClient = $apiClient;
+        $this->_logger = $logger;
+        $this->_storeManager = $storeManager;
     }
 
     /**
      * Execute.
      *
-     * @param Observer $observer
+     * @param Observer $observer Event observer
+     *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function execute(Observer $observer): void
     {
         // Only for the Jscriptz section (<section id="jscriptz">)
-        $section = (string)$this->request->getParam('section');
+        $section = (string)$this->_request->getParam('section');
         if ($section !== 'jscriptz') {
             return;
         }
 
         // Only when viewing the page, not saving
-        if (strtoupper($this->request->getMethod()) !== 'GET') {
+        if (strtoupper($this->_request->getMethod()) !== 'GET') {
             return;
         }
 
-        [$scopeType, $scopeId] = $this->resolveScope();
+        [$scopeType, $scopeId] = $this->_resolveScope();
 
         try {
             // Update + News (Version Status / Jscriptz News & Updates)
-            $this->apiClient->syncUpdateInfo($scopeType, $scopeId);
+            $this->_apiClient->syncUpdateInfo($scopeType, $scopeId);
 
             // Verify (License Status / Last Verify Response)
-            $this->apiClient->syncVerifyInfo($scopeType, $scopeId);
+            $this->_apiClient->syncVerifyInfo($scopeType, $scopeId);
         } catch (\Throwable $e) {
-            $this->logger->error(
+            $this->_logger->error(
                 'Jscriptz_Subcats: license refresh on config load failed: ' . $e->getMessage(),
                 ['exception' => $e]
             );
@@ -117,15 +133,15 @@ class RefreshLicenseOnConfigLoad implements ObserverInterface
      *
      * @return array{0:string,1:int} [$scopeType, $scopeId]
      */
-    private function resolveScope(): array
+    private function _resolveScope(): array
     {
-        $storeCode   = (string)$this->request->getParam('store');
-        $websiteCode = (string)$this->request->getParam('website');
+        $storeCode   = (string)$this->_request->getParam('store');
+        $websiteCode = (string)$this->_request->getParam('website');
 
         // Store view scope (e.g. ?store=default)
         if ($storeCode !== '') {
             try {
-                $store = $this->storeManager->getStore($storeCode);
+                $store = $this->_storeManager->getStore($storeCode);
                 return [ScopeInterface::SCOPE_STORE, (int)$store->getId()];
             } catch (\Throwable $e) {
                 // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch
@@ -136,7 +152,7 @@ class RefreshLicenseOnConfigLoad implements ObserverInterface
         // Website scope (e.g. ?website=base)
         if ($websiteCode !== '') {
             try {
-                $website = $this->storeManager->getWebsite($websiteCode);
+                $website = $this->_storeManager->getWebsite($websiteCode);
                 return [ScopeInterface::SCOPE_WEBSITE, (int)$website->getId()];
             } catch (\Throwable $e) {
                 // phpcs:ignore Magento2.CodeAnalysis.EmptyBlock.DetectedCatch

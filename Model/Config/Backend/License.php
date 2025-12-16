@@ -13,13 +13,15 @@ declare(strict_types=1);
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP version 7
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
-
 
 namespace Jscriptz\Subcats\Model\Config\Backend;
 
@@ -30,169 +32,151 @@ use Magento\Framework\Filesystem\Driver\File as FileDriver;
 use Magento\Framework\HTTP\Client\Curl;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Config\Storage\WriterInterface;
-use Magento\Framework\UrlInterface;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Module\ModuleListInterface;
 use Magento\Framework\Serialize\Serializer\Json;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Registry;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Data\Collection\AbstractDb;
 use Jscriptz\Subcats\Model\License\ApiClient;
 use JsonException;
 
 /**
  * Backend model for validating and storing Jscriptz Subcats license key,
  * handling free trial countdown, version check, and server-driven news.
+ *
+ * @category Jscriptz
+ * @package  Jscriptz_Subcats
+ * @author   Jason Lotzer <jasonlotzer@gmail.com>
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class License extends Value
 {
-    public const VERIFY_URL = 'https://mage.jscriptz.com/rest/V1/jscriptz/license/verify';
-    public const UPDATE_URL = 'https://mage.jscriptz.com/rest/V1/jscriptz/license/update';
+    public const VERIFY_URL
+        = 'https://mage.jscriptz.com/rest/V1/jscriptz/license/verify';
+    public const UPDATE_URL
+        = 'https://mage.jscriptz.com/rest/V1/jscriptz/license/update';
     public const MODULE_CODE = 'jscriptz_subcats';
     public const TRIAL_DAYS = 30;
-    public const LICENSE_ACCOUNT_URL = 'https://mage.jscriptz.com/jscriptz_license/account/';
+    public const LICENSE_ACCOUNT_URL
+        = 'https://mage.jscriptz.com/jscriptz_license/account/';
 
     /**
-     * @var Curl|null
-     */
-    private $curl;
-
-    /**
-     * @var StoreManagerInterface|null
-     */
-    private $storeManager;
-
-    /**
-     * @var WriterInterface|null
-     */
-    private $configWriter;
-
-    /**
-     * @var ModuleListInterface|null
-     */
-    private $moduleList;
-
-    /**
-     * @var ApiClient|null
-     */
-    private $apiClient = null;
-
-    /**
-     * @var ComponentRegistrarInterface|null
-     */
-    private $componentRegistrar;
-
-    /**
-     * @var FileDriver|null
-     */
-    private $fileDriver;
-
-    /**
-     * @var Json|null
-     */
-    private $jsonSerializer;
-
-    /**
-     * Lazily get Curl client.
+     * Curl client.
      *
-     * @return Curl
+     * @var Curl
      */
-    private function getCurl(): Curl
-    {
-        if ($this->curl === null) {
-            $this->curl = ObjectManager::getInstance()->get(Curl::class);
-        }
-        return $this->curl;
-    }
+    private Curl $_curl;
 
     /**
-     * Lazily get the shared ApiClient.
+     * Store manager.
      *
-     * @return ApiClient
+     * @var StoreManagerInterface
      */
-    private function getApiClient(): ApiClient
-    {
-        if ($this->apiClient === null) {
-            $this->apiClient = \Magento\Framework\App\ObjectManager::getInstance()
-                ->get(ApiClient::class);
-        }
-
-        return $this->apiClient;
-    }
+    private StoreManagerInterface $_storeManager;
 
     /**
-     * Lazily get StoreManager.
+     * Config writer.
      *
-     * @return StoreManagerInterface
+     * @var WriterInterface
      */
-    private function getStoreManager(): StoreManagerInterface
-    {
-        if ($this->storeManager === null) {
-            $this->storeManager = ObjectManager::getInstance()->get(StoreManagerInterface::class);
-        }
-        return $this->storeManager;
-    }
+    private WriterInterface $_configWriter;
 
     /**
-     * Lazily get config writer.
+     * Module list.
      *
-     * @return WriterInterface
+     * @var ModuleListInterface
      */
-    private function getConfigWriter(): WriterInterface
-    {
-        if ($this->configWriter === null) {
-            $this->configWriter = ObjectManager::getInstance()->get(WriterInterface::class);
-        }
-        return $this->configWriter;
-    }
+    private ModuleListInterface $_moduleList;
 
     /**
-     * Lazily get module list.
+     * API client.
      *
-     * @return ModuleListInterface
+     * @var ApiClient
      */
-    private function getModuleList(): ModuleListInterface
-    {
-        if ($this->moduleList === null) {
-            $this->moduleList = ObjectManager::getInstance()->get(ModuleListInterface::class);
-        }
-        return $this->moduleList;
-    }
+    private ApiClient $_apiClient;
 
     /**
-     * Lazily get component registrar.
+     * Component registrar.
      *
-     * @return ComponentRegistrarInterface
+     * @var ComponentRegistrarInterface
      */
-    private function getComponentRegistrar(): ComponentRegistrarInterface
-    {
-        if ($this->componentRegistrar === null) {
-            $this->componentRegistrar = ObjectManager::getInstance()->get(ComponentRegistrarInterface::class);
-        }
-        return $this->componentRegistrar;
-    }
+    private ComponentRegistrarInterface $_componentRegistrar;
 
     /**
-     * Lazily get file driver.
+     * File driver.
      *
-     * @return FileDriver
+     * @var FileDriver
      */
-    private function getFileDriver(): FileDriver
-    {
-        if ($this->fileDriver === null) {
-            $this->fileDriver = ObjectManager::getInstance()->get(FileDriver::class);
-        }
-        return $this->fileDriver;
-    }
+    private FileDriver $_fileDriver;
 
     /**
-     * Lazily get JSON serializer.
+     * JSON serializer.
      *
-     * @return Json
+     * @var Json
      */
-    private function getJsonSerializer(): Json
-    {
-        if ($this->jsonSerializer === null) {
-            $this->jsonSerializer = ObjectManager::getInstance()->get(Json::class);
-        }
-        return $this->jsonSerializer;
+    private Json $_jsonSerializer;
+
+    /**
+     * Constructor.
+     *
+     * @param Context                     $context             Context instance
+     * @param Registry                    $registry            Registry instance
+     * @param ScopeConfigInterface        $config              Scope config
+     * @param TypeListInterface           $cacheTypeList       Cache type list
+     * @param Curl                        $curl                Curl client
+     * @param StoreManagerInterface       $storeManager        Store manager
+     * @param WriterInterface             $configWriter        Config writer
+     * @param ModuleListInterface         $moduleList          Module list
+     * @param ApiClient                   $apiClient           API client
+     * @param ComponentRegistrarInterface $componentRegistrar  Component registrar
+     * @param FileDriver                  $fileDriver          File driver
+     * @param Json                        $jsonSerializer      JSON serializer
+     * @param AbstractResource|null       $resource            Resource model
+     * @param AbstractDb|null             $resourceCollection  Resource collection
+     * @param array                       $data                Additional data
+     *
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     */
+    public function __construct(
+        Context $context,
+        Registry $registry,
+        ScopeConfigInterface $config,
+        TypeListInterface $cacheTypeList,
+        Curl $curl,
+        StoreManagerInterface $storeManager,
+        WriterInterface $configWriter,
+        ModuleListInterface $moduleList,
+        ApiClient $apiClient,
+        ComponentRegistrarInterface $componentRegistrar,
+        FileDriver $fileDriver,
+        Json $jsonSerializer,
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null,
+        array $data = []
+    ) {
+        parent::__construct(
+            $context,
+            $registry,
+            $config,
+            $cacheTypeList,
+            $resource,
+            $resourceCollection,
+            $data
+        );
+        $this->_curl = $curl;
+        $this->_storeManager = $storeManager;
+        $this->_configWriter = $configWriter;
+        $this->_moduleList = $moduleList;
+        $this->_apiClient = $apiClient;
+        $this->_componentRegistrar = $componentRegistrar;
+        $this->_fileDriver = $fileDriver;
+        $this->_jsonSerializer = $jsonSerializer;
     }
 
     /**
@@ -200,21 +184,20 @@ class License extends Value
      *
      * @return string|null
      */
-    private function getLocalVersion(): ?string
+    private function _getLocalVersion(): ?string
     {
         try {
-            $modulePath = $this->getComponentRegistrar()->getPath(
+            $modulePath = $this->_componentRegistrar->getPath(
                 ComponentRegistrarInterface::MODULE,
                 'Jscriptz_Subcats'
             );
 
             if ($modulePath) {
                 $composerFile = $modulePath . '/composer.json';
-                $fileDriver = $this->getFileDriver();
                 // phpcs:ignore Magento2.Functions.DiscouragedFunction
-                if ($fileDriver->isExists($composerFile)) {
-                    $content = $fileDriver->fileGetContents($composerFile);
-                    $data = $this->getJsonSerializer()->unserialize($content);
+                if ($this->_fileDriver->isExists($composerFile)) {
+                    $content = $this->_fileDriver->fileGetContents($composerFile);
+                    $data = $this->_jsonSerializer->unserialize($content);
                     if (is_array($data) && !empty($data['version'])) {
                         return (string)$data['version'];
                     }
@@ -227,7 +210,7 @@ class License extends Value
 
         // Fallback to module list (setup_module table)
         try {
-            $info = $this->getModuleList()->getOne('Jscriptz_Subcats');
+            $info = $this->_moduleList->getOne('Jscriptz_Subcats');
             if (is_array($info) && isset($info['setup_version'])) {
                 return (string)$info['setup_version'];
             }
@@ -244,7 +227,7 @@ class License extends Value
      *
      * @return \DateTimeImmutable
      */
-    private function ensureTrialStart(): \DateTimeImmutable
+    private function _ensureTrialStart(): \DateTimeImmutable
     {
         $configPath = 'jscriptz_subcats/license/trial_start';
 
@@ -265,7 +248,7 @@ class License extends Value
 
         $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
 
-        $this->getConfigWriter()->save(
+        $this->_configWriter->save(
             $configPath,
             $now->format('Y-m-d'),
             $this->getScope(),
@@ -280,9 +263,9 @@ class License extends Value
      *
      * @return int
      */
-    private function getTrialDaysRemaining(): int
+    private function _getTrialDaysRemaining(): int
     {
-        $start = $this->ensureTrialStart();
+        $start = $this->_ensureTrialStart();
         $now   = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
 
         $daysUsed = (int)$now->diff($start)->format('%a');
@@ -293,10 +276,11 @@ class License extends Value
     /**
      * Call mage.jscriptz.com to check for updates + news.
      *
-     * @param string|null $localVersion
+     * @param string|null $localVersion Local version of the module
+     *
      * @return array
      */
-    private function checkForUpdates(?string $localVersion): array
+    private function _checkForUpdates(?string $localVersion): array
     {
         $result = [
             'latestVersion'   => null,
@@ -315,22 +299,18 @@ class License extends Value
                 'currentVersion' => $localVersion,
             ];
 
-            $curl = $this->getCurl();
-            $curl->setTimeout(5);
-            $curl->addHeader('Content-Type', 'application/json');
-            $curl->post(self::UPDATE_URL, json_encode($payload));
+            $this->_curl->setTimeout(5);
+            $this->_curl->addHeader('Content-Type', 'application/json');
+            $this->_curl->post(self::UPDATE_URL, json_encode($payload));
 
-            if ($curl->getStatus() !== 200) {
+            if ($this->_curl->getStatus() !== 200) {
                 return $result;
             }
 
-            $body = (string) $curl->getBody();
+            $body = (string) $this->_curl->getBody();
             try {
                 $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
             } catch (JsonException $e) {
-                return $result;
-            }
-            if (!is_array($data)) {
                 return $result;
             }
             if (!is_array($data)) {
@@ -352,6 +332,7 @@ class License extends Value
      * Validate / verify license key, manage trial, and ping update API.
      *
      * @return $this
+     *
      * @throws LocalizedException
      */
     public function afterSave()
@@ -366,14 +347,12 @@ class License extends Value
         $scopeType = $this->getScope();
         $scopeId   = (int)$this->getScopeId();
 
-        $apiClient = $this->getApiClient();
-
         // Always sync update info (handles trial + version + news).
-        $apiClient->syncUpdateInfo($scopeType, $scopeId);
+        $this->_apiClient->syncUpdateInfo($scopeType, $scopeId);
 
         // Only verify when a real license key is configured.
         if ($licenseKey !== '') {
-            $apiClient->syncVerifyInfo($scopeType, $scopeId);
+            $this->_apiClient->syncVerifyInfo($scopeType, $scopeId);
         }
 
         return parent::afterSave();

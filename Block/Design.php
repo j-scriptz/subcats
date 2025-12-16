@@ -13,11 +13,14 @@ declare(strict_types=1);
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP version 7
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
 
 
@@ -30,27 +33,40 @@ use Magento\Catalog\Api\CategoryRepositoryInterface;
 
 /**
  * Block Design
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class Design extends Template
 {
     /**
+     * Config helper
+     *
      * @var ConfigHelper
      */
-    private $configHelper;
+    private $_configHelper;
 
-    /** @var ScopeConfigInterface */
+    /**
+     * Scope config interface
+     *
+     * @var ScopeConfigInterface
+     */
     protected $scopeConfig;
 
-    /** @var CategoryRepositoryInterface */
-    private $categoryRepository;
+    /**
+     * Category repository
+     *
+     * @var CategoryRepositoryInterface
+     */
+    private $_categoryRepository;
 
     /**
      * Constructor.
      *
-     * @param Template\Context $context
-     * @param ConfigHelper $configHelper
-     * @param CategoryRepositoryInterface $categoryRepository
-     * @param array $data
+     * @param Template\Context            $context            Template context
+     * @param ConfigHelper                $configHelper       Configuration helper
+     * @param CategoryRepositoryInterface $categoryRepository Category repository
+     * @param array                       $data               Block data
      */
     public function __construct(
         Template\Context $context,
@@ -59,9 +75,9 @@ class Design extends Template
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->configHelper = $configHelper;
+        $this->_configHelper = $configHelper;
         $this->scopeConfig  = $context->getScopeConfig();
-        $this->categoryRepository = $categoryRepository;
+        $this->_categoryRepository = $categoryRepository;
     }
 
     /**
@@ -71,10 +87,10 @@ class Design extends Template
      */
     public function getCss()
     {
-        $preset = $this->configHelper->getDesignPreset();
+        $preset = $this->_configHelper->getDesignPreset();
         $vars   = [];
-        $hoverShadowPreset = $this->configHelper->getDesignCardHoverShadow();
-        $hoverScalePreset  = $this->configHelper->getDesignCardHoverScale();
+        $hoverShadowPreset = $this->_configHelper->getDesignCardHoverShadow();
+        $hoverScalePreset  = $this->_configHelper->getDesignCardHoverScale();
 
         // Map shadow preset → actual box-shadow value
         switch ($hoverShadowPreset) {
@@ -158,46 +174,46 @@ class Design extends Template
         }
 
         // Explicit overrides from design config
-        if (($color = $this->configHelper->getDesignLinkColor()) !== null) {
+        if (($color = $this->_configHelper->getDesignLinkColor()) !== null) {
             $vars['--js-subcats-link-color'] = $color;
         }
-        if (($radius = $this->configHelper->getDesignCardRadius()) !== null) {
+        if (($radius = $this->_configHelper->getDesignCardRadius()) !== null) {
             $vars['--js-subcats-card-radius'] = $radius;
         }
-        if (($border = $this->configHelper->getDesignCardBorder()) !== null) {
+        if (($border = $this->_configHelper->getDesignCardBorder()) !== null) {
             $vars['--js-subcats-card-border'] = $border;
         }
-        if (($padding = $this->configHelper->getDesignCardPadding()) !== null) {
+        if (($padding = $this->_configHelper->getDesignCardPadding()) !== null) {
             $vars['--js-subcats-card-spacing'] = $padding;
         }
-        if (($bg = $this->configHelper->getDesignCardBackground()) !== null) {
+        if (($bg = $this->_configHelper->getDesignCardBackground()) !== null) {
             $vars['--js-subcats-card-background'] = $bg;
         }
-        if (($imgBorder = $this->configHelper->getDesignImageBorder()) !== null) {
+        if (($imgBorder = $this->_configHelper->getDesignImageBorder()) !== null) {
             $vars['--js-subcats-image-border'] = $imgBorder;
         }
-        if (($shadow = $this->configHelper->getDesignCardShadow()) !== null) {
+        if (($shadow = $this->_configHelper->getDesignCardShadow()) !== null) {
             $vars['--js-subcats-card-shadow'] = $shadow;
         }
-        if (($nameSize = $this->configHelper->getDesignNameFontSize()) !== null) {
+        if (($nameSize = $this->_configHelper->getDesignNameFontSize()) !== null) {
             $vars['--js-subcats-name-font-size'] = $nameSize;
         }
-        if (($nameWeight = $this->configHelper->getDesignNameFontWeight()) !== null) {
+        if (($nameWeight = $this->_configHelper->getDesignNameFontWeight()) !== null) {
             $vars['--js-subcats-name-font-weight'] = $nameWeight;
         }
-        if (($descSize = $this->configHelper->getDesignDescriptionFontSize()) !== null) {
+        if (($descSize = $this->_configHelper->getDesignDescriptionFontSize()) !== null) {
             $vars['--js-subcats-description-font-size'] = $descSize;
         }
 
-        $desktopSpan = (int)$this->configHelper->getOptionDesktop();
-        $tabletSpan  = (int)$this->configHelper->getOptionTablet();
-        $phoneSpan   = (int)$this->configHelper->getOptionPhone();
+        $desktopSpan = (int)$this->_configHelper->getOptionDesktop();
+        $tabletSpan  = (int)$this->_configHelper->getOptionTablet();
+        $phoneSpan   = (int)$this->_configHelper->getOptionPhone();
 
         try {
             $categoryId = (int)$this->getRequest()->getParam('id'); // catalog/category/view?id=...
             if ($categoryId) {
                 $storeId  = (int)$this->_storeManager->getStore()->getId();
-                $category = $this->categoryRepository->get($categoryId, $storeId);
+                $category = $this->_categoryRepository->get($categoryId, $storeId);
 
                 $catDesktop = (int)$category->getData('subcat_cols_desktop');
                 $catTablet  = (int)$category->getData('subcat_cols_tablet');
@@ -292,12 +308,12 @@ class Design extends Template
             }
         }
 
-        if (($shadow = $this->configHelper->getDesignCardShadow()) !== null) {
+        if (($shadow = $this->_configHelper->getDesignCardShadow()) !== null) {
             $vars['--js-subcats-card-shadow'] = $shadow;
         }
 
         // Hover shadow preset
-        if (($hoverShadowPreset = $this->configHelper->getDesignCardHoverShadow()) !== null) {
+        if (($hoverShadowPreset = $this->_configHelper->getDesignCardHoverShadow()) !== null) {
             switch ($hoverShadowPreset) {
                 case 'light':
                     $vars['--js-subcats-hover-shadow'] = '0 4px 12px rgba(0,0,0,0.15)';
@@ -316,7 +332,7 @@ class Design extends Template
         }
 
         // Hover scale preset
-        if (($hoverScalePreset = $this->configHelper->getDesignCardHoverScale()) !== null) {
+        if (($hoverScalePreset = $this->_configHelper->getDesignCardHoverScale()) !== null) {
             switch ($hoverScalePreset) {
                 case 'subtle':
                     $vars['--js-subcats-hover-scale'] = '1.02';
@@ -335,15 +351,15 @@ class Design extends Template
         }
 
         // Transitions are always driven by config toggles
-        $vars['--js-subcats-transition-card'] = $this->configHelper->isDesignTransitionCardEnabled()
+        $vars['--js-subcats-transition-card'] = $this->_configHelper->isDesignTransitionCardEnabled()
             ? 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out'
             : 'none';
 
-        $vars['--js-subcats-transition-image'] = $this->configHelper->isDesignTransitionImageEnabled()
+        $vars['--js-subcats-transition-image'] = $this->_configHelper->isDesignTransitionImageEnabled()
             ? 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out'
             : 'none';
 
-        $vars['--js-subcats-transition-text'] = $this->configHelper->isDesignTransitionTextEnabled()
+        $vars['--js-subcats-transition-text'] = $this->_configHelper->isDesignTransitionTextEnabled()
             ? 'color 0.2s ease-in-out'
             : 'none';
 

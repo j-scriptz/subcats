@@ -1,4 +1,15 @@
 <?php
+/**
+ * CategoryOrder widget parameter renderer file.
+ *
+ * PHP version 7
+ *
+ * @category Jscriptz
+ * @package  Jscriptz_Subcats
+ * @author   Jscriptz <support@jscriptz.com>
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     https://jscriptz.com
+ */
 declare(strict_types=1);
 
 namespace Jscriptz\Subcats\Block\Adminhtml\Widget;
@@ -18,37 +29,48 @@ use Jscriptz\Subcats\Model\Config\Source\CategoryMultiselect;
  *  - A dual-list UI:
  *      * Available categories (full paths)
  *      * Final order (selected categories) with Move Up / Move Down
+ *
+ * @license  https://opensource.org/licenses/MIT MIT License
+ * @link     https://jscriptz.com
  */
 class CategoryOrder extends Template
 {
     /**
+     * Element factory for creating form elements.
+     *
      * @var ElementFactory
      */
-    private $elementFactory;
+    private $_elementFactory;
 
     /**
+     * Category multiselect source model.
+     *
      * @var CategoryMultiselect
      */
-    private $categorySource;
+    private $_categorySource;
 
     /**
+     * Registry for accessing current widget instance.
+     *
      * @var Registry
      */
-    private $registry;
+    private $_registry;
 
     /**
+     * Current form element being rendered.
+     *
      * @var Element
      */
-    private $element;
+    private $_element;
 
     /**
      * Constructor.
      *
-     * @param Context $context
-     * @param ElementFactory $elementFactory
-     * @param CategoryMultiselect $categorySource
-     * @param Registry $registry
-     * @param array $data
+     * @param Context             $context        Template context
+     * @param ElementFactory      $elementFactory Element factory instance
+     * @param CategoryMultiselect $categorySource Category source model
+     * @param Registry            $registry       Registry instance
+     * @param array               $data           Block data
      */
     public function __construct(
         Context             $context,
@@ -57,32 +79,39 @@ class CategoryOrder extends Template
         Registry            $registry,
         array               $data = []
     ) {
-        $this->elementFactory = $elementFactory;
-        $this->categorySource = $categorySource;
-        $this->registry = $registry;
+        $this->_elementFactory = $elementFactory;
+        $this->_categorySource = $categorySource;
+        $this->_registry = $registry;
         parent::__construct($context, $data);
     }
 
     /**
      * Magento calls this to let us replace the standard field with our own UI.
      *
-     * @param Element $element
+     * @param Element $element The form element to prepare
+     *
      * @return Element
      */
     public function prepareElementHtml(Element $element): Element
     {
-        $this->element = $element;
+        $this->_element = $element;
 
-        // Hidden text input that actually stores the comma-separated IDs
-        /** @var \Magento\Framework\Data\Form\Element\Text $input */
-        $input = $this->elementFactory->create('text', ['data' => $element->getData()]);
+        /**
+         * Hidden text input that stores the comma-separated IDs.
+         *
+         * @var \Magento\Framework\Data\Form\Element\Text $input
+         */
+        $input = $this->_elementFactory->create(
+            'text',
+            ['data' => $element->getData()]
+        );
         $input->setId($element->getId());
         $input->setForm($element->getForm());
         $input->setClass('widget-option input-text admin__control-text');
         if ($element->getRequired()) {
             $input->addClass('required-entry');
         }
-        // Hide it – we only use it as the backing store for the widget parameter.
+        // Hide it - backing store for the widget parameter.
         $input->setData('style', 'display:none;');
 
         $this->setTemplate('Jscriptz_Subcats::widget/category_order.phtml');
@@ -95,10 +124,12 @@ class CategoryOrder extends Template
 
     /**
      * Expose the element to the template.
+     *
+     * @return Element
      */
     public function getElement(): Element
     {
-        return $this->element;
+        return $this->_element;
     }
 
     /**
@@ -108,8 +139,8 @@ class CategoryOrder extends Template
      */
     public function getOptions(): array
     {
-        $storeId = $this->getSavedStoreFilter();
-        return $this->categorySource->toOptionArray($storeId);
+        $storeId = $this->_getSavedStoreFilter();
+        return $this->_categorySource->toOptionArray($storeId);
     }
 
     /**
@@ -117,13 +148,17 @@ class CategoryOrder extends Template
      *
      * @return int|null
      */
-    private function getSavedStoreFilter(): ?int
+    private function _getSavedStoreFilter(): ?int
     {
-        // Get the widget instance from registry (set by Magento when editing a widget)
-        $widgetInstance = $this->registry->registry('current_widget_instance');
+        // Get widget instance from registry
+        $widgetInstance = $this->_registry->registry(
+            'current_widget_instance'
+        );
         if ($widgetInstance) {
             $params = $widgetInstance->getWidgetParameters();
-            if (isset($params['store_filter']) && $params['store_filter'] !== '') {
+            if (isset($params['store_filter'])
+                && $params['store_filter'] !== ''
+            ) {
                 return (int) $params['store_filter'];
             }
         }
@@ -148,11 +183,11 @@ class CategoryOrder extends Template
      */
     public function getSelectedIds(): array
     {
-        if (!$this->element) {
+        if (!$this->_element) {
             return [];
         }
 
-        $value = $this->element->getValue();
+        $value = $this->_element->getValue();
 
         // Case 1: comma-separated string from stored widget config
         if (is_string($value)) {
@@ -169,9 +204,14 @@ class CategoryOrder extends Template
             return [];
         }
 
-        $ids = array_values(array_filter($ids, static function (int $id): bool {
-            return $id > 0;
-        }));
+        $ids = array_values(
+            array_filter(
+                $ids,
+                static function (int $id): bool {
+                    return $id > 0;
+                }
+            )
+        );
 
         return $ids;
     }

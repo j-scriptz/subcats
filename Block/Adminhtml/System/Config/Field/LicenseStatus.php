@@ -13,11 +13,14 @@ declare(strict_types=1);
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP version 7
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
 
 
@@ -28,13 +31,17 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 
 /**
  * Block LicenseStatus
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class LicenseStatus extends Field
 {
     /**
      * Render field.
      *
-     * @param AbstractElement $element
+     * @param AbstractElement $element Form element
+     *
      * @return string
      */
     public function render(AbstractElement $element)
@@ -47,9 +54,11 @@ class LicenseStatus extends Field
     /**
      * Get element HTML.
      *
-     * @param AbstractElement $element
+     * @param AbstractElement $element Form element
+     *
      * @return string
      */
+    // @codingStandardsIgnoreLine
     protected function _getElementHtml(AbstractElement $element)
     {
         $value = (string)$element->getValue();

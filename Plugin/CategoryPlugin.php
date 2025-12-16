@@ -13,13 +13,15 @@ declare(strict_types=1);
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP version 7
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
-
 
 namespace Jscriptz\Subcats\Plugin;
 
@@ -27,40 +29,48 @@ use Magento\Catalog\Model\Category as Subject;
 
 /**
  * Plugin CategoryPlugin
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class CategoryPlugin
 {
     /**
+     * Store manager
+     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    protected $storeManager;
 
     /**
+     * Helper
+     *
      * @var \Jscriptz\Subcats\Helper\Data
      */
-    protected $_helper;
+    protected $helper;
 
     /**
      * DataProviderPlugin constructor.
      *
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Jscriptz\Subcats\Helper\Data $helper
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager Store manager
+     * @param \Jscriptz\Subcats\Helper\Data              $helper       Helper
      */
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Jscriptz\Subcats\Helper\Data $helper
     ) {
-        $this->_storeManager = $storeManager;
-        $this->_helper = $helper;
+        $this->storeManager = $storeManager;
+        $this->helper = $helper;
     }
 
     /**
      * Around get data for preprocess image
      *
-     * @param Subject $subject
-     * @param \Closure $proceed
-     * @param string $key
-     * @param string|null $index
+     * @param Subject     $subject Category subject
+     * @param \Closure    $proceed Proceed callable
+     * @param string      $key     Data key
+     * @param string|null $index   Index
+     *
      * @return mixed|string
      */
     public function aroundGetData(
@@ -72,7 +82,7 @@ class CategoryPlugin
         if ($key == \Jscriptz\Subcats\Helper\Data::ATTRIBUTE_NAME) {
             $result = $proceed($key, $index);
             if ($result) {
-                return $this->_helper->getUrl($result);
+                return $this->helper->getUrl($result);
             } else {
                 return $result;
             }

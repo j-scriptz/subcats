@@ -1,4 +1,13 @@
 <?php
+/**
+ * Jscriptz Subcats
+ *
+ * @category Jscriptz
+ * @package  Jscriptz_Subcats
+ * @author   JScriptz <support@jscriptz.com>
+ * @license  https://jscriptz.com/license Proprietary License
+ * @link     https://jscriptz.com
+ */
 declare(strict_types=1);
 
 namespace Jscriptz\Subcats\Test\Unit\Helper;
@@ -12,17 +21,30 @@ use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Test for Image helper
+ *
+ * @license  https://jscriptz.com/license Proprietary License
+ * @link     https://jscriptz.com
+ */
 class ImageTest extends TestCase
 {
     /**
-     * Set a protected property on an object (used to bypass the helper Context constructor).
+     * Set a protected property on an object
      *
-     * @param object $object
-     * @param string $property
-     * @param mixed $value
+     * Used to bypass the helper Context constructor.
+     *
+     * @param object $object   The object to modify
+     * @param string $property The property name
+     * @param mixed  $value    The value to set
+     *
+     * @return void
      */
-    private function setProtectedProperty(object $object, string $property, $value): void
-    {
+    private function _setProtectedProperty(
+        object $object,
+        string $property,
+        $value
+    ): void {
         $ref = new \ReflectionClass($object);
         while ($ref && !$ref->hasProperty($property)) {
             $ref = $ref->getParentClass();
@@ -34,52 +56,97 @@ class ImageTest extends TestCase
         $prop->setValue($object, $value);
     }
 
+    /**
+     * Test resize builds expected cache path and returns media URL
+     *
+     * @return void
+     */
     public function testResizeBuildsExpectedCachePathAndReturnsMediaUrl(): void
     {
-        /** @var WriteInterface&MockObject $mediaDir */
+        /**
+         * Media directory mock
+         *
+         * @var WriteInterface&MockObject $mediaDir
+         */
         $mediaDir = $this->createMock(WriteInterface::class);
 
-        $mediaDir->method('getAbsolutePath')->willReturnCallback(function (string $path): string {
-            // Note: Magento usually returns a trailing slash here.
-            return '/pub/media/' . trim($path, '/') . '/';
-        });
+        $mediaDir->method('getAbsolutePath')->willReturnCallback(
+            function (string $path): string {
+                // Note: Magento usually returns a trailing slash here.
+                return '/pub/media/' . trim($path, '/') . '/';
+            }
+        );
 
         // cache doesn't exist, original exists -> should resize
-        $mediaDir->method('isFile')->willReturnCallback(function (string $filename): bool {
-            if (strpos($filename, 'catalog/category/cache/100x200/') !== false) {
+        $mediaDir->method('isFile')->willReturnCallback(
+            function (string $filename): bool {
+                $cachePattern = 'catalog/category/cache/100x200/';
+                if (strpos($filename, $cachePattern) !== false) {
+                    return false;
+                }
+                $mediaPattern = '/pub/media/catalog/category/';
+                if (strpos($filename, $mediaPattern) !== false) {
+                    return true;
+                }
                 return false;
             }
-            if (strpos($filename, '/pub/media/catalog/category/') !== false) {
-                return true;
-            }
-            return false;
-        });
+        );
 
-        /** @var AbstractAdapter&MockObject $adapter */
+        /**
+         * Image adapter mock
+         *
+         * @var AbstractAdapter&MockObject $adapter
+         */
         $adapter = $this->createMock(AbstractAdapter::class);
-        $adapter->expects($this->once())->method('open')->with('/pub/media/catalog/category//c/a/cat.jpg');
-        $adapter->expects($this->once())->method('save')->with('/pub/media/catalog/category/cache/100x200//c/a/cat.jpg');
+        $adapter->expects($this->once())->method('open')
+            ->with('/pub/media/catalog/category//c/a/cat.jpg');
+        $adapter->expects($this->once())->method('save')
+            ->with('/pub/media/catalog/category/cache/100x200//c/a/cat.jpg');
 
-        /** @var AdapterFactory&MockObject $imageFactory */
+        /**
+         * Image factory mock
+         *
+         * @var AdapterFactory&MockObject $imageFactory
+         */
         $imageFactory = $this->createMock(AdapterFactory::class);
-        $imageFactory->expects($this->once())->method('create')->willReturn($adapter);
+        $imageFactory->expects($this->once())->method('create')
+            ->willReturn($adapter);
 
-        /** @var Store&MockObject $store */
+        /**
+         * Store mock
+         *
+         * @var Store&MockObject $store
+         */
         $store = $this->createMock(Store::class);
-        $store->method('getBaseUrl')->willReturn('https://example.com/media/');
+        $store->method('getBaseUrl')
+            ->willReturn('https://example.com/media/');
 
-        /** @var StoreManagerInterface&MockObject $storeManager */
+        /**
+         * Store manager mock
+         *
+         * @var StoreManagerInterface&MockObject $storeManager
+         */
         $storeManager = $this->createMock(StoreManagerInterface::class);
         $storeManager->method('getStore')->willReturn($store);
 
         // Important: do NOT create a PHPUnit mock for the helper itself.
-        // A full mock will stub all methods (including resize()) and return null.
-        /** @var ImageHelper $helper */
-        $helper = (new \ReflectionClass(ImageHelper::class))->newInstanceWithoutConstructor();
+        // A full mock will stub all methods (including resize()) and
+        // return null.
+        /**
+         * Image helper instance
+         *
+         * @var ImageHelper $helper
+         */
+        $helperClass = new \ReflectionClass(ImageHelper::class);
+        $helper = $helperClass->newInstanceWithoutConstructor();
 
-        $this->setProtectedProperty($helper, '_mediaDirectory', $mediaDir);
-        $this->setProtectedProperty($helper, '_imageFactory', $imageFactory);
-        $this->setProtectedProperty($helper, '_storeManager', $storeManager);
+        $this->_setProtectedProperty($helper, '_mediaDirectory', $mediaDir);
+        $this->_setProtectedProperty($helper, '_imageFactory', $imageFactory);
+        $this->_setProtectedProperty(
+            $helper,
+            '_storeManager',
+            $storeManager
+        );
 
         $url = $helper->resize('/c/a/cat.jpg', 100, 200);
 
@@ -89,41 +156,85 @@ class ImageTest extends TestCase
         );
     }
 
+    /**
+     * Test resize does not recreate when cached file exists
+     *
+     * @return void
+     */
     public function testResizeDoesNotRecreateWhenCachedFileExists(): void
     {
-        /** @var WriteInterface&MockObject $mediaDir */
+        /**
+         * Media directory mock
+         *
+         * @var WriteInterface&MockObject $mediaDir
+         */
         $mediaDir = $this->createMock(WriteInterface::class);
 
-        $mediaDir->method('getAbsolutePath')->willReturnCallback(function (string $path): string {
-            return '/pub/media/' . trim($path, '/') . '/';
-        });
+        $mediaDir->method('getAbsolutePath')->willReturnCallback(
+            function (string $path): string {
+                return '/pub/media/' . trim($path, '/') . '/';
+            }
+        );
 
         // cache exists -> should NOT call imageFactory
-        $mediaDir->method('isFile')->willReturnCallback(function (string $filename): bool {
-            if (strpos($filename, 'catalog/category/cache/') !== false) {
+        $mediaDir->method('isFile')->willReturnCallback(
+            function (string $filename): bool {
+                $cachePattern = 'catalog/category/cache/';
+                if (strpos($filename, $cachePattern) !== false) {
+                    return true;
+                }
                 return true;
             }
-            return true;
-        });
+        );
 
-        /** @var AdapterFactory&MockObject $imageFactory */
+        /**
+         * Image factory mock
+         *
+         * @var AdapterFactory&MockObject $imageFactory
+         */
         $imageFactory = $this->createMock(AdapterFactory::class);
         $imageFactory->expects($this->never())->method('create');
 
-        /** @var Store&MockObject $store */
+        /**
+         * Store mock
+         *
+         * @var Store&MockObject $store
+         */
         $store = $this->createMock(Store::class);
-        $store->method('getBaseUrl')->willReturn('https://example.com/media/');
+        $store->method('getBaseUrl')
+            ->willReturn('https://example.com/media/');
 
-        /** @var StoreManagerInterface&MockObject $storeManager */
+        /**
+         * Store manager mock
+         *
+         * @var StoreManagerInterface&MockObject $storeManager
+         */
         $storeManager = $this->createMock(StoreManagerInterface::class);
         $storeManager->method('getStore')->willReturn($store);
 
-        /** @var ImageHelper $helper */
-        $helper = (new \ReflectionClass(ImageHelper::class))->newInstanceWithoutConstructor();
+        /**
+         * Image helper instance
+         *
+         * @var ImageHelper $helper
+         */
+        $helper = (new \ReflectionClass(ImageHelper::class))
+            ->newInstanceWithoutConstructor();
 
-        $this->setProtectedProperty($helper, '_mediaDirectory', $mediaDir);
-        $this->setProtectedProperty($helper, '_imageFactory', $imageFactory);
-        $this->setProtectedProperty($helper, '_storeManager', $storeManager);
+        $this->_setProtectedProperty(
+            $helper,
+            '_mediaDirectory',
+            $mediaDir
+        );
+        $this->_setProtectedProperty(
+            $helper,
+            '_imageFactory',
+            $imageFactory
+        );
+        $this->_setProtectedProperty(
+            $helper,
+            '_storeManager',
+            $storeManager
+        );
 
         $url = $helper->resize('/foo.jpg', null, null);
 

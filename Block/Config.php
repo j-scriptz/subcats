@@ -13,13 +13,18 @@ declare(strict_types=1);
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP version 7
+ *
+ * PHP version 7
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
+ * @link      https://mage.jscriptz.com
  */
-
 
 namespace Jscriptz\Subcats\Block;
 
@@ -29,10 +34,15 @@ use Jscriptz\Subcats\Helper\Data;
 
 /**
  * Block Config
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class Config extends Template
 {
     /**
+     * Helper data instance.
+     *
      * @var Data
      */
     protected $helper;
@@ -40,8 +50,8 @@ class Config extends Template
     /**
      * Constructor.
      *
-     * @param Context $context
-     * @param Data $helper
+     * @param Context $context Context instance
+     * @param Data    $helper  Helper instance
      */
     public function __construct(Context $context, Data $helper)
     {

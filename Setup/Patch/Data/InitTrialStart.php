@@ -13,13 +13,15 @@ declare(strict_types=1);
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP version 7
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
-
 
 namespace Jscriptz\Subcats\Setup\Patch\Data;
 
@@ -29,31 +31,38 @@ use Magento\Framework\App\Config\Storage\WriterInterface;
 
 /**
  * Setup InitTrialStart
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class InitTrialStart implements DataPatchInterface
 {
     /**
+     * Module data setup instance
+     *
      * @var ModuleDataSetupInterface
      */
-    private $moduleDataSetup;
+    private $_moduleDataSetup;
 
     /**
+     * Config writer instance
+     *
      * @var WriterInterface
      */
-    private $configWriter;
+    private $_configWriter;
 
     /**
      * Constructor.
      *
-     * @param ModuleDataSetupInterface $moduleDataSetup
-     * @param WriterInterface $configWriter
+     * @param ModuleDataSetupInterface $moduleDataSetup Module data setup instance
+     * @param WriterInterface          $configWriter    Config writer instance
      */
     public function __construct(
         ModuleDataSetupInterface $moduleDataSetup,
         WriterInterface $configWriter
     ) {
-        $this->moduleDataSetup = $moduleDataSetup;
-        $this->configWriter    = $configWriter;
+        $this->_moduleDataSetup = $moduleDataSetup;
+        $this->_configWriter    = $configWriter;
     }
 
     /**
@@ -63,10 +72,10 @@ class InitTrialStart implements DataPatchInterface
      */
     public function apply()
     {
-        $this->moduleDataSetup->getConnection()->startSetup();
+        $this->_moduleDataSetup->getConnection()->startSetup();
 
-        $connection = $this->moduleDataSetup->getConnection();
-        $configTable = $this->moduleDataSetup->getTable('core_config_data');
+        $connection = $this->_moduleDataSetup->getConnection();
+        $configTable = $this->_moduleDataSetup->getTable('core_config_data');
         $path = 'jscriptz_subcats/license/trial_start';
 
         // Check if we already have a value (default scope)
@@ -82,7 +91,7 @@ class InitTrialStart implements DataPatchInterface
             $now = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
 
             // This writes a row into core_config_data for default scope
-            $this->configWriter->save(
+            $this->_configWriter->save(
                 $path,
                 $now->format('Y-m-d'),
                 'default',
@@ -90,7 +99,7 @@ class InitTrialStart implements DataPatchInterface
             );
         }
 
-        $this->moduleDataSetup->getConnection()->endSetup();
+        $this->_moduleDataSetup->getConnection()->endSetup();
 
         return $this;
     }
@@ -107,6 +116,8 @@ class InitTrialStart implements DataPatchInterface
 
     /**
      * Get aliases.
+     *
+     * @return array
      */
     public function getAliases()
     {

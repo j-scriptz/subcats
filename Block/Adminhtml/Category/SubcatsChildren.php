@@ -13,11 +13,14 @@ declare(strict_types=1);
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP version 7
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
 
 
@@ -26,10 +29,14 @@ namespace Jscriptz\Subcats\Block\Adminhtml\Category;
 use Magento\Backend\Block\Template;
 use Magento\Framework\Data\Form\Element\Renderer\RendererInterface;
 use Magento\Framework\Data\Form\Element\AbstractElement;
-use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory
+    as CategoryCollectionFactory;
 
 /**
  * Block SubcatsChildren
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class SubcatsChildren extends Template implements RendererInterface
 {
@@ -38,19 +45,21 @@ class SubcatsChildren extends Template implements RendererInterface
      *
      * @var string
      */
-    protected $_template = 'Jscriptz_Subcats::category/subcats/children.phtml';
+    protected $_template = 'Jscriptz_Subcats::category/subcats/children.phtml'; // @codingStandardsIgnoreLine
 
     /**
+     * Category collection factory
+     *
      * @var CategoryCollectionFactory
      */
-    private $categoryCollectionFactory;
+    private $_categoryCollectionFactory;
 
     /**
      * SubcatsChildren constructor.
      *
-     * @param Template\Context $context
-     * @param CategoryCollectionFactory $categoryCollectionFactory
-     * @param array $data
+     * @param Template\Context          $context                   Context
+     * @param CategoryCollectionFactory $categoryCollectionFactory Factory
+     * @param array                     $data                      Block data
      */
     public function __construct(
         Template\Context $context,
@@ -58,13 +67,14 @@ class SubcatsChildren extends Template implements RendererInterface
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->categoryCollectionFactory = $categoryCollectionFactory;
+        $this->_categoryCollectionFactory = $categoryCollectionFactory;
     }
 
     /**
      * Render field using custom template.
      *
-     * @param AbstractElement $element
+     * @param AbstractElement $element Form element
+     *
      * @return string
      */
     public function render(AbstractElement $element)
@@ -86,7 +96,8 @@ class SubcatsChildren extends Template implements RendererInterface
     /**
      * Set form element.
      *
-     * @param AbstractElement $element
+     * @param AbstractElement $element Form element
+     *
      * @return $this
      */
     public function setElement(AbstractElement $element)
@@ -97,14 +108,16 @@ class SubcatsChildren extends Template implements RendererInterface
     /**
      * Load selected categories for preview / sorting in the admin UI.
      *
+     * Returns a collection of categories that are currently selected.
+     *
      * @return \Magento\Catalog\Model\ResourceModel\Category\Collection
      */
     public function getSelectedCategories()
     {
-        /** @var AbstractElement $element */
+        // Get the form element to retrieve selected category IDs
         $element = $this->getElement();
         if (!$element) {
-            return $this->categoryCollectionFactory->create();
+            return $this->_categoryCollectionFactory->create();
         }
 
         $rawValue = $element->getValue();
@@ -116,7 +129,7 @@ class SubcatsChildren extends Template implements RendererInterface
             $ids = array_filter(array_map('intval', explode(',', $value)));
         }
 
-        $collection = $this->categoryCollectionFactory->create();
+        $collection = $this->_categoryCollectionFactory->create();
 
         if (!$ids) {
             // Return empty collection if nothing is selected

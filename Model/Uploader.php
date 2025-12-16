@@ -13,11 +13,14 @@ declare(strict_types=1);
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP version 7
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
 
 
@@ -34,6 +37,9 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Model Uploader
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class Uploader
 {
@@ -43,41 +49,57 @@ class Uploader
     public const FILE_PATH = 'jscriptz_subcats/subcat/file';
 
     /**
+     * Core file storage database
+     *
      * @var \Magento\MediaStorage\Helper\File\Storage\Database
      */
     protected $coreFileStorageDatabase;
 
     /**
+     * Media directory
+     *
      * @var \Magento\Framework\Filesystem\Directory\WriteInterface
      */
     protected $mediaDirectory;
 
     /**
+     * Uploader factory
+     *
      * @var \Magento\MediaStorage\Model\File\UploaderFactory
      */
-    private $uploaderFactory;
+    private $_uploaderFactory;
 
     /**
+     * Store manager
+     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
 
     /**
+     * Logger
+     *
      * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 
     /**
+     * Base tmp path
+     *
      * @var string
      */
     protected $baseTmpPath;
 
     /**
+     * Base path
+     *
      * @var string
      */
     protected $basePath;
 
     /**
+     * Allowed extensions
+     *
      * @var string[]
      */
     protected $allowedExtensions;
@@ -85,14 +107,15 @@ class Uploader
     /**
      * Constructor.
      *
-     * @param Database $coreFileStorageDatabase
-     * @param Filesystem $filesystem
-     * @param UploaderFactory $uploaderFactory
-     * @param StoreManagerInterface $storeManager
-     * @param LoggerInterface $logger
-     * @param string $baseTmpPath
-     * @param string $basePath
-     * @param array $allowedExtensions
+     * @param Database              $coreFileStorageDatabase Core file storage
+     *                                                       database
+     * @param Filesystem            $filesystem              Filesystem instance
+     * @param UploaderFactory       $uploaderFactory         Uploader factory
+     * @param StoreManagerInterface $storeManager            Store manager
+     * @param LoggerInterface       $logger                  Logger instance
+     * @param string                $baseTmpPath             Base tmp path
+     * @param string                $basePath                Base path
+     * @param array                 $allowedExtensions       Allowed extensions
      */
     public function __construct(
         Database $coreFileStorageDatabase,
@@ -105,8 +128,10 @@ class Uploader
         $allowedExtensions = []
     ) {
         $this->coreFileStorageDatabase  = $coreFileStorageDatabase;
-        $this->mediaDirectory           = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
-        $this->uploaderFactory          = $uploaderFactory;
+        $this->mediaDirectory           = $filesystem->getDirectoryWrite(
+            DirectoryList::MEDIA
+        );
+        $this->_uploaderFactory         = $uploaderFactory;
         $this->storeManager             = $storeManager;
         $this->logger                   = $logger;
         $this->baseTmpPath              = $baseTmpPath;
@@ -117,7 +142,7 @@ class Uploader
     /**
      * Set base tmp path
      *
-     * @param string $baseTmpPath
+     * @param string $baseTmpPath Base tmp path
      *
      * @return void
      */
@@ -129,7 +154,7 @@ class Uploader
     /**
      * Set base path
      *
-     * @param string $basePath
+     * @param string $basePath Base path
      *
      * @return void
      */
@@ -141,7 +166,7 @@ class Uploader
     /**
      * Set allowed extensions
      *
-     * @param string[] $allowedExtensions
+     * @param string[] $allowedExtensions Allowed extensions
      *
      * @return void
      */
@@ -183,8 +208,8 @@ class Uploader
     /**
      * Retrieve path
      *
-     * @param string $path
-     * @param string $name
+     * @param string $path Path
+     * @param string $name Name
      *
      * @return string
      */
@@ -196,7 +221,7 @@ class Uploader
     /**
      * Checking file for moving and move it
      *
-     * @param string $name
+     * @param string $name File name
      *
      * @return string
      *
@@ -230,6 +255,8 @@ class Uploader
 
     /**
      * Get base url.
+     *
+     * @return string
      */
     public function getBaseUrl()
     {
@@ -242,7 +269,7 @@ class Uploader
     /**
      * Checking file for save and save it to tmp dir
      *
-     * @param string $fileId
+     * @param string $fileId File ID
      *
      * @return string[]
      *
@@ -252,12 +279,14 @@ class Uploader
     {
         $baseTmpPath = $this->getBaseTmpPath();
 
-        $uploader = $this->uploaderFactory->create(['fileId' => $fileId]);
+        $uploader = $this->_uploaderFactory->create(['fileId' => $fileId]);
         $uploader->setAllowedExtensions($this->getAllowedExtensions());
         $uploader->setAllowRenameFiles(true);
         $uploader->setFilesDispersion(true);
 
-        $result = $uploader->save($this->mediaDirectory->getAbsolutePath($baseTmpPath));
+        $result = $uploader->save(
+            $this->mediaDirectory->getAbsolutePath($baseTmpPath)
+        );
 
         if (!$result) {
             throw new LocalizedException(
@@ -269,11 +298,13 @@ class Uploader
          */
         $result['tmp_name'] = str_replace('\\', '/', $result['tmp_name']);
         $result['path'] = str_replace('\\', '/', $result['path']);
-        $result['url'] =  $this->getBaseUrl() . $this->getFilePath($baseTmpPath, $result['file']);
+        $result['url'] = $this->getBaseUrl()
+            . $this->getFilePath($baseTmpPath, $result['file']);
 
         if (isset($result['file'])) {
             try {
-                $relativePath = rtrim($baseTmpPath, '/') . '/' . ltrim($result['file'], '/');
+                $relativePath = rtrim($baseTmpPath, '/')
+                    . '/' . ltrim($result['file'], '/');
                 $this->coreFileStorageDatabase->saveFile($relativePath);
             } catch (\Exception $e) {
                 $this->logger->critical($e);
@@ -289,8 +320,9 @@ class Uploader
     /**
      * Upload file and get the name.
      *
-     * @param string $input
-     * @param array $data
+     * @param string $input Input field name
+     * @param array  $data  Data array
+     *
      * @return string
      */
     public function uploadFileAndGetName($input, $data)

@@ -13,11 +13,14 @@ declare(strict_types=1);
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP version 7
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
 
 
@@ -26,30 +29,40 @@ namespace Jscriptz\Subcats\Cron;
 use Jscriptz\Subcats\Model\License\ApiClient;
 use Psr\Log\LoggerInterface;
 
+/**
+ * License sync cron job.
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
+ */
 class LicenseSync
 {
     /**
+     * API client instance.
+     *
      * @var ApiClient
      */
-    private $apiClient;
+    private $_apiClient;
 
     /**
+     * Logger instance.
+     *
      * @var LoggerInterface
      */
-    private $logger;
+    private $_logger;
 
     /**
      * Constructor.
      *
-     * @param ApiClient $apiClient
-     * @param LoggerInterface $logger
+     * @param ApiClient       $apiClient API client instance
+     * @param LoggerInterface $logger    Logger instance
      */
     public function __construct(
         ApiClient $apiClient,
         LoggerInterface $logger
     ) {
-        $this->apiClient = $apiClient;
-        $this->logger    = $logger;
+        $this->_apiClient = $apiClient;
+        $this->_logger    = $logger;
     }
 
     /**
@@ -61,12 +74,12 @@ class LicenseSync
     {
         try {
             // First API: update/version/news info
-            $this->apiClient->syncUpdateInfo();
+            $this->_apiClient->syncUpdateInfo();
 
             // Second API: trial / license header / whatever your second endpoint returns
-            $this->apiClient->syncVerifyInfo();
+            $this->_apiClient->syncVerifyInfo();
         } catch (\Throwable $e) {
-            $this->logger->error(
+            $this->_logger->error(
                 'Jscriptz_Subcats: license cron failed: ' . $e->getMessage(),
                 ['exception' => $e]
             );

@@ -8,17 +8,17 @@ declare(strict_types=1);
  *
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
- * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
  *
  ********************************************************************
  *
- * PHP version 7
+ * PHP Version 8+
  *
  * @category  Jscriptz
  * @package   Jscriptz_Subcats
  * @author    Jason Lotzer <jasonlotzer@gmail.com>
- * @copyright 2019 Jscriptz LLC
+ * @copyright 2019 - 2025 Jscriptz LLC
  * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
  * @link      https://mage.jscriptz.com
  */
@@ -176,6 +176,9 @@ class Design extends Template
         // Explicit overrides from design config
         if (($color = $this->_configHelper->getDesignLinkColor()) !== null) {
             $vars['--js-subcats-link-color'] = $color;
+        }
+        if (($hoverColor = $this->_configHelper->getDesignLinkHoverColor()) !== null) {
+            $vars['--js-subcats-link-hover-color'] = $hoverColor;
         }
         if (($radius = $this->_configHelper->getDesignCardRadius()) !== null) {
             $vars['--js-subcats-card-radius'] = $radius;

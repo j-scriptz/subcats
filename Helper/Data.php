@@ -8,19 +8,19 @@ declare(strict_types=1);
  *
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
- * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
  *
- * PHP version 7
+ * PHP Version 8+
  *
  ********************************************************************
  *
- * PHP version 7
+ * PHP Version 8+
  *
  * @category  Jscriptz
  * @package   Jscriptz_Subcats
  * @author    Jason Lotzer <jasonlotzer@gmail.com>
- * @copyright 2019 Jscriptz LLC
+ * @copyright 2019 - 2025 Jscriptz LLC
  * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary License
  * @link      https://mage.jscriptz.com
  */
@@ -52,6 +52,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
 
     public const XML_PATH_DESIGN_LINK_COLOR
         = 'jscriptz_subcats/design/link_color';
+    public const XML_PATH_DESIGN_LINK_HOVER_COLOR
+        = 'jscriptz_subcats/design/link_hover_color';
     public const XML_PATH_DESIGN_CARD_RADIUS
         = 'jscriptz_subcats/design/card_radius';
     public const XML_PATH_DESIGN_CARD_BORDER
@@ -370,6 +372,26 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         $value = trim(
             (string)$this->scopeConfig->getValue(
                 self::XML_PATH_DESIGN_LINK_COLOR,
+                ScopeInterface::SCOPE_STORE,
+                $storeId
+            )
+        );
+
+        return $value !== '' ? $value : null;
+    }
+
+    /**
+     * Get design link hover color setting.
+     *
+     * @param int|null $storeId Store ID
+     *
+     * @return string|null
+     */
+    public function getDesignLinkHoverColor($storeId = null)
+    {
+        $value = trim(
+            (string)$this->scopeConfig->getValue(
+                self::XML_PATH_DESIGN_LINK_HOVER_COLOR,
                 ScopeInterface::SCOPE_STORE,
                 $storeId
             )

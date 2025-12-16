@@ -2,7 +2,7 @@
 /**
  * CategoryOrder widget parameter renderer file.
  *
- * PHP version 7
+ * PHP Version 8+
  *
  * @category Jscriptz
  * @package  Jscriptz_Subcats

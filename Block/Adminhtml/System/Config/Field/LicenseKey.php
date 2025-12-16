@@ -8,16 +8,19 @@ declare(strict_types=1);
  *
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
- * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP Version 8+
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 - 2025 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
 
 
@@ -30,20 +33,31 @@ use Magento\Backend\Block\Template\Context;
 
 /**
  * Block LicenseKey
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class LicenseKey extends Field
 {
     /**
+     * Scope config interface
+     *
      * @var ScopeConfigInterface
      */
-    private $scopeConfig;
+    /**
+     * Note: AbstractBlock already defines $_scopeConfig as protected.
+     * This property must not be more restrictive than the parent.
+     *
+     * @var ScopeConfigInterface
+     */
+    protected $_scopeConfig;
 
     /**
      * Constructor.
      *
-     * @param Context $context
-     * @param ScopeConfigInterface $scopeConfig
-     * @param array $data
+     * @param Context              $context     Block context
+     * @param ScopeConfigInterface $scopeConfig Scope config interface
+     * @param array                $data        Additional data
      */
     public function __construct(
         Context $context,
@@ -51,13 +65,14 @@ class LicenseKey extends Field
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->scopeConfig = $scopeConfig;
+        $this->_scopeConfig = $scopeConfig;
     }
 
     /**
      * Render field.
      *
-     * @param AbstractElement $element
+     * @param AbstractElement $element Form element
+     *
      * @return string
      */
     public function render(AbstractElement $element)
@@ -71,18 +86,24 @@ class LicenseKey extends Field
     /**
      * Get element HTML.
      *
-     * @param AbstractElement $element
+     * @param AbstractElement $element Form element
+     *
      * @return string
      */
+    // @codingStandardsIgnoreLine
     protected function _getElementHtml(AbstractElement $element)
     {
         // Read both status fields to determine if license is valid
-        $licenseStatus = strtolower((string)$this->scopeConfig->getValue(
-            'jscriptz_subcats/license/license_status'
-        ));
-        $verifyMessage = strtolower((string)$this->scopeConfig->getValue(
-            'jscriptz_subcats/license/verify_message'
-        ));
+        $licenseStatus = strtolower(
+            (string)$this->_scopeConfig->getValue(
+                'jscriptz_subcats/license/license_status'
+            )
+        );
+        $verifyMessage = strtolower(
+            (string)$this->_scopeConfig->getValue(
+                'jscriptz_subcats/license/verify_message'
+            )
+        );
 
         // Check if license is active/valid in either field
         // This handles both the /update response ("License is active.")

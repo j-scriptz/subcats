@@ -8,30 +8,36 @@ declare(strict_types=1);
  *
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
- * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP Version 8+
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 - 2025 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
-
 
 namespace Jscriptz\Subcats\Observer;
 
 /**
  * Observer CatalogCategoryPrepareSaveObserver
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class CatalogCategoryPrepareSaveObserver implements \Magento\Framework\Event\ObserverInterface
 {
     /**
      * Execute observer.
      *
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param \Magento\Framework\Event\Observer $observer Event observer
+     *
      * @return void
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
@@ -43,9 +49,11 @@ class CatalogCategoryPrepareSaveObserver implements \Magento\Framework\Event\Obs
     /**
      * Filter category data
      *
-     * @param array $rawData
+     * @param array $rawData Raw data array
+     *
      * @return array
      */
+    // @codingStandardsIgnoreLine
     protected function _postData(array $rawData)
     {
         $data = $rawData;

@@ -1,6 +1,28 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Jscriptz LLC.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
+ *
+ ********************************************************************
+ *
+ * PHP Version 8+
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 - 2025 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
+ */
+
 namespace Jscriptz\Subcats\Setup\Patch\Data;
 
 use Jscriptz\Subcats\Model\Category\Attribute\Source\OptionsDesktop;
@@ -22,52 +44,69 @@ use Magento\Framework\Setup\Patch\DataPatchInterface;
  * Create/ensure the Category EAV attributes used by Jscriptz_Subcats.
  *
  * This replaces the legacy InstallData/UpgradeData scripts.
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class CreateCategoryAttributes implements DataPatchInterface
 {
     /**
+     * Module data setup
+     *
      * @var ModuleDataSetupInterface
      */
-    private ModuleDataSetupInterface $moduleDataSetup;
+    private ModuleDataSetupInterface $_moduleDataSetup;
 
     /**
+     * Category setup factory
+     *
      * @var CategorySetupFactory
      */
-    private CategorySetupFactory $categorySetupFactory;
+    private CategorySetupFactory $_categorySetupFactory;
 
     /**
+     * EAV setup factory
+     *
      * @var EavSetupFactory
      */
-    private EavSetupFactory $eavSetupFactory;
+    private EavSetupFactory $_eavSetupFactory;
 
     /**
-     * @param ModuleDataSetupInterface $moduleDataSetup
-     * @param CategorySetupFactory $categorySetupFactory
-     * @param EavSetupFactory $eavSetupFactory
+     * Constructor
+     *
+     * @param ModuleDataSetupInterface $moduleDataSetup      Module data setup
+     * @param CategorySetupFactory     $categorySetupFactory Category setup factory
+     * @param EavSetupFactory          $eavSetupFactory      EAV setup factory
      */
     public function __construct(
         ModuleDataSetupInterface $moduleDataSetup,
         CategorySetupFactory $categorySetupFactory,
         EavSetupFactory $eavSetupFactory
     ) {
-        $this->moduleDataSetup = $moduleDataSetup;
-        $this->categorySetupFactory = $categorySetupFactory;
-        $this->eavSetupFactory = $eavSetupFactory;
+        $this->_moduleDataSetup = $moduleDataSetup;
+        $this->_categorySetupFactory = $categorySetupFactory;
+        $this->_eavSetupFactory = $eavSetupFactory;
     }
 
     /**
-     * @inheritdoc
+     * Apply the patch
+     *
+     * @return void
      */
     public function apply(): void
     {
-        $connection = $this->moduleDataSetup->getConnection();
+        $connection = $this->_moduleDataSetup->getConnection();
         $connection->startSetup();
 
-        $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
-        $categorySetup = $this->categorySetupFactory->create(['setup' => $this->moduleDataSetup]);
+        $eavSetup = $this->_eavSetupFactory->create(
+            ['setup' => $this->_moduleDataSetup]
+        );
+        $categorySetup = $this->_categorySetupFactory->create(
+            ['setup' => $this->_moduleDataSetup]
+        );
 
         // Image attribute (General Information group)
-        $this->addAttributeIfMissing(
+        $this->_addAttributeIfMissing(
             $eavSetup,
             'subcat_image',
             function () use ($categorySetup): void {
@@ -89,7 +128,7 @@ class CreateCategoryAttributes implements DataPatchInterface
         );
 
         // Enable/disable on category (Jscriptz Subcats group)
-        $this->addAttributeIfMissing(
+        $this->_addAttributeIfMissing(
             $eavSetup,
             'is_subcat_enabled',
             function () use ($eavSetup): void {
@@ -115,7 +154,7 @@ class CreateCategoryAttributes implements DataPatchInterface
         );
 
         // Legacy support fields (not required for most storefront output)
-        $this->addAttributeIfMissing(
+        $this->_addAttributeIfMissing(
             $eavSetup,
             'subcat_description',
             function () use ($eavSetup): void {
@@ -146,7 +185,7 @@ class CreateCategoryAttributes implements DataPatchInterface
             }
         );
 
-        $this->addAttributeIfMissing(
+        $this->_addAttributeIfMissing(
             $eavSetup,
             'subcat_name',
             function () use ($eavSetup): void {
@@ -176,7 +215,7 @@ class CreateCategoryAttributes implements DataPatchInterface
         );
 
         // Columns settings
-        $this->addAttributeIfMissing(
+        $this->_addAttributeIfMissing(
             $eavSetup,
             'subcat_cols_desktop',
             function () use ($eavSetup): void {
@@ -197,7 +236,7 @@ class CreateCategoryAttributes implements DataPatchInterface
             }
         );
 
-        $this->addAttributeIfMissing(
+        $this->_addAttributeIfMissing(
             $eavSetup,
             'subcat_cols_tablet',
             function () use ($eavSetup): void {
@@ -219,7 +258,7 @@ class CreateCategoryAttributes implements DataPatchInterface
             }
         );
 
-        $this->addAttributeIfMissing(
+        $this->_addAttributeIfMissing(
             $eavSetup,
             'subcat_cols_phone',
             function () use ($eavSetup): void {
@@ -242,7 +281,7 @@ class CreateCategoryAttributes implements DataPatchInterface
         );
 
         // Selected children (multiselect stores IDs)
-        $this->addAttributeIfMissing(
+        $this->_addAttributeIfMissing(
             $eavSetup,
             'subcats_children',
             function () use ($eavSetup): void {
@@ -272,14 +311,23 @@ class CreateCategoryAttributes implements DataPatchInterface
     /**
      * Add attribute if it does not exist.
      *
-     * @param EavSetup $eavSetup
-     * @param string $attributeCode
-     * @param callable():void $addCallback
-     * @return void
+     * @param EavSetup        $eavSetup      EAV setup instance
+     * @param string          $attributeCode Attribute code
+     * @param callable():void $addCallback   Callback to add attribute
+     *
+     * @return                                      void
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
      */
-    private function addAttributeIfMissing(EavSetup $eavSetup, string $attributeCode, callable $addCallback): void
-    {
-        $attributeId = (int) $eavSetup->getAttributeId(Category::ENTITY, $attributeCode);
+    // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
+    private function _addAttributeIfMissing( // @codingStandardsIgnoreLine
+        EavSetup $eavSetup,
+        string $attributeCode,
+        callable $addCallback
+    ): void {
+        $attributeId = (int) $eavSetup->getAttributeId(
+            Category::ENTITY,
+            $attributeCode
+        );
         if ($attributeId > 0) {
             return;
         }
@@ -288,7 +336,9 @@ class CreateCategoryAttributes implements DataPatchInterface
     }
 
     /**
-     * @inheritdoc
+     * Get dependencies for this patch.
+     *
+     * @return array
      */
     public static function getDependencies(): array
     {
@@ -296,7 +346,9 @@ class CreateCategoryAttributes implements DataPatchInterface
     }
 
     /**
-     * @inheritdoc
+     * Get aliases for this patch.
+     *
+     * @return array
      */
     public function getAliases(): array
     {

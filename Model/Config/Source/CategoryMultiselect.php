@@ -1,6 +1,29 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Jscriptz LLC.
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the EULA
+ * that is bundled with this package in the file LICENSE.
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
+ *
+ ********************************************************************
+ *
+ * PHP Version 8+
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 - 2025 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
+ */
+
+
 namespace Jscriptz\Subcats\Model\Config\Source;
 
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory as CategoryCollectionFactory;
@@ -12,37 +35,45 @@ use Magento\Framework\Option\ArrayInterface;
  *
  * Produces a flattened category tree with FULL PATH labels, e.g.:
  *  "Women / Tops", "Men / Tops", etc.
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class CategoryMultiselect implements ArrayInterface
 {
     /**
+     * Category collection factory
+     *
      * @var CategoryCollectionFactory
      */
-    private $categoryCollectionFactory;
+    private $_categoryCollectionFactory;
 
     /**
+     * Store manager
+     *
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private $_storeManager;
 
     /**
      * Constructor.
      *
-     * @param CategoryCollectionFactory $categoryCollectionFactory
-     * @param StoreManagerInterface $storeManager
+     * @param CategoryCollectionFactory $categoryCollectionFactory Category collection factory
+     * @param StoreManagerInterface     $storeManager              Store manager
      */
     public function __construct(
         CategoryCollectionFactory $categoryCollectionFactory,
         StoreManagerInterface $storeManager
     ) {
-        $this->categoryCollectionFactory = $categoryCollectionFactory;
-        $this->storeManager = $storeManager;
+        $this->_categoryCollectionFactory = $categoryCollectionFactory;
+        $this->_storeManager = $storeManager;
     }
 
     /**
      * Return options array for multiselect.
      *
      * @param int|null $forStoreId Optional store ID to filter categories by.
+     *
      * @return array[]
      */
     public function toOptionArray($forStoreId = null): array
@@ -50,15 +81,19 @@ class CategoryMultiselect implements ArrayInterface
         $options = [];
 
         if ($forStoreId !== null && $forStoreId > 0) {
-            $store = $this->storeManager->getStore($forStoreId);
+            $store = $this->_storeManager->getStore($forStoreId);
         } else {
-            $store = $this->storeManager->getStore();
+            $store = $this->_storeManager->getStore();
         }
         $storeId = (int) $store->getId();
         $rootId  = (int) $store->getRootCategoryId();
 
-        /** @var \Magento\Catalog\Model\ResourceModel\Category\Collection $collection */
-        $collection = $this->categoryCollectionFactory->create();
+        /**
+         * Category collection
+         *
+         * @var \Magento\Catalog\Model\ResourceModel\Category\Collection $collection
+         */
+        $collection = $this->_categoryCollectionFactory->create();
         $collection->addAttributeToSelect('name')
             ->addAttributeToFilter('is_active', 1)
             ->setStoreId($storeId)

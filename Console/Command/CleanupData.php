@@ -8,18 +8,20 @@ declare(strict_types=1);
  *
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
- * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP Version 8+
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 - 2025 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
-
 
 namespace Jscriptz\Subcats\Console\Command;
 
@@ -41,75 +43,103 @@ use Symfony\Component\Console\Output\OutputInterface;
  *  - Category EAV attributes created by the module
  *  - core_config_data rows for jscriptz_subcats/* (and legacy jscriptz/*)
  *  - patch_list rows for this module's data patches
+ *
+ * @category Jscriptz
+ * @package  Jscriptz_Subcats
+ * @author   Jason Lotzer <jasonlotzer@gmail.com>
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class CleanupData extends Command
 {
     /**
+     * Module data setup instance.
+     *
      * @var ModuleDataSetupInterface
      */
-    private $moduleDataSetup;
+    private ModuleDataSetupInterface $_moduleDataSetup;
 
     /**
+     * Resource connection instance.
+     *
      * @var ResourceConnection
      */
-    private $resourceConnection;
+    private ResourceConnection $_resourceConnection;
 
     /**
+     * Logger instance.
+     *
      * @var LoggerInterface
      */
-    private $logger;
+    private LoggerInterface $_logger;
+
+    /**
+     * EAV setup factory.
+     *
+     * @var EavSetupFactory
+     */
+    private EavSetupFactory $_eavSetupFactory;
 
     /**
      * Constructor.
      *
-     * @param ModuleDataSetupInterface $moduleDataSetup
-     * @param ResourceConnection $resourceConnection
-     * @param LoggerInterface $logger
-     * @param string|null $name
+     * @param ModuleDataSetupInterface $moduleDataSetup    Module data setup
+     * @param ResourceConnection       $resourceConnection Resource connection
+     * @param LoggerInterface          $logger             Logger instance
+     * @param EavSetupFactory          $eavSetupFactory    EAV setup factory
+     * @param string|null              $name               Command name
      */
     public function __construct(
         ModuleDataSetupInterface $moduleDataSetup,
         ResourceConnection $resourceConnection,
         LoggerInterface $logger,
+        EavSetupFactory $eavSetupFactory,
         string $name = null
     ) {
         parent::__construct($name);
-        $this->moduleDataSetup   = $moduleDataSetup;
-        $this->resourceConnection = $resourceConnection;
-        $this->logger             = $logger;
+        $this->_moduleDataSetup    = $moduleDataSetup;
+        $this->_resourceConnection = $resourceConnection;
+        $this->_logger             = $logger;
+        $this->_eavSetupFactory    = $eavSetupFactory;
     }
 
     /**
-     * @inheritdoc
+     * Configure the command.
+     *
+     * @return void
      */
     protected function configure(): void
     {
         $this->setName('jscriptz:subcats:cleanup');
-        $this->setDescription('Clean Jscriptz_Subcats EAV attributes and configuration values.');
+        $this->setDescription(
+            'Clean Jscriptz_Subcats EAV attributes and configuration values.'
+        );
         parent::configure();
     }
 
     /**
      * Execute cleanup command.
      *
-     * @param InputInterface $input
-     * @param OutputInterface $output
+     * @param InputInterface  $input  Console input interface
+     * @param OutputInterface $output Console output interface
+     *
      * @return int
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('<info>Starting Jscriptz_Subcats cleanup...</info>');
 
-        $connection = $this->moduleDataSetup->getConnection();
-        $this->moduleDataSetup->startSetup();
+        $connection = $this->_moduleDataSetup->getConnection();
+        $this->_moduleDataSetup->startSetup();
         $connection->beginTransaction();
 
         try {
             // Remove category attributes
-            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-            /** @var EavSetupFactory $eavSetupFactory */
-            $eavSetupFactory = $objectManager->get(EavSetupFactory::class);
-            $eavSetup = $eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
+            $eavSetup = $this->_eavSetupFactory->create(
+                ['setup' => $this->_moduleDataSetup]
+            );
             $entityTypeId = Category::ENTITY;
 
             $attributesToRemove = [
@@ -127,57 +157,72 @@ class CleanupData extends Command
                 $attributeId = $eavSetup->getAttributeId($entityTypeId, $code);
                 if ($attributeId) {
                     $output->writeln(
-                        sprintf(' - Removing category attribute <comment>%s</comment>', $code)
+                        sprintf(
+                            ' - Removing category attribute <comment>%s</comment>',
+                            $code
+                        )
                     );
                     $eavSetup->removeAttribute($entityTypeId, $code);
                 } else {
                     $output->writeln(
-                        sprintf(' - Attribute <comment>%s</comment> not found, skipping.', $code)
+                        sprintf(
+                            ' - Attribute <comment>%s</comment> not found, ' .
+                            'skipping.',
+                            $code
+                        )
                     );
                 }
             }
 
             // Remove core_config_data entries
             // phpcs:ignore Magento2.SQL.RawQuery.FoundRawSql
-            $configTable = $this->moduleDataSetup->getTable('core_config_data');
+            $configTable = $this->_moduleDataSetup->getTable('core_config_data');
             $deleted = $connection->delete(
                 $configTable,
                 "path LIKE 'jscriptz_subcats/%' OR path LIKE 'jscriptz/%'"
             );
             $output->writeln(
                 sprintf(
-                    ' - Removed <comment>%d</comment> row(s) from core_config_data.',
+                    ' - Removed <comment>%d</comment> row(s) from ' .
+                    'core_config_data.',
                     $deleted
                 )
             );
 
             // Remove patch_list entries for data patches
-            $patchTable = $this->moduleDataSetup->getTable('patch_list');
+            $patchTable = $this->_moduleDataSetup->getTable('patch_list');
             if ($connection->isTableExists($patchTable)) {
-                $patchDeleted = $connection->delete(
-                    $patchTable,
-                    "patch_name LIKE 'Jscriptz\\\\Subcats\\\\Setup\\\\Patch\\\\Data\\\\%'"
+                $pattern = "patch_name LIKE 'Jscriptz\\\\Subcats\\\\" .
+                    "Setup\\\\Patch\\\\Data\\\\%'";
+                $patchDeleted = $connection->delete($patchTable, $pattern);
+                $output->writeln(
+                    sprintf(
+                        ' - Removed <comment>%d</comment> row(s) from ' .
+                        'patch_list for patches.',
+                        $patchDeleted
+                    )
                 );
-                $output->writeln(sprintf(
-                    ' - Removed <comment>%d</comment> row(s) from patch_list for Jscriptz_Subcats patches.',
-                    $patchDeleted
-                ));
             }
 
             $connection->commit();
-            $this->moduleDataSetup->endSetup();
+            $this->_moduleDataSetup->endSetup();
 
-            $output->writeln('<info>Jscriptz_Subcats cleanup completed successfully.</info>');
+            $output->writeln(
+                '<info>Jscriptz_Subcats cleanup completed successfully.</info>'
+            );
             return Cli::RETURN_SUCCESS;
         } catch (\Throwable $e) {
             $connection->rollBack();
-            $this->moduleDataSetup->endSetup();
+            $this->_moduleDataSetup->endSetup();
 
-            $this->logger->error(
+            $this->_logger->error(
                 'Error during Jscriptz_Subcats cleanup: ' . $e->getMessage(),
                 ['exception' => $e]
             );
-            $output->writeln('<error>Error during Jscriptz_Subcats cleanup: ' . $e->getMessage() . '</error>');
+            $output->writeln(
+                '<error>Error during Jscriptz_Subcats cleanup: ' .
+                $e->getMessage() . '</error>'
+            );
 
             return Cli::RETURN_FAILURE;
         }

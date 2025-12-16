@@ -8,16 +8,19 @@ declare(strict_types=1);
  *
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
- * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP Version 8+
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 - 2025 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
 
 
@@ -28,13 +31,17 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 
 /**
  * Block Plain
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class Plain extends Field
 {
     /**
      * Render field.
      *
-     * @param AbstractElement $element
+     * @param AbstractElement $element Form element
+     *
      * @return string
      */
     public function render(AbstractElement $element)
@@ -49,9 +56,11 @@ class Plain extends Field
     /**
      * Get element HTML.
      *
-     * @param AbstractElement $element
+     * @param AbstractElement $element Form element
+     *
      * @return string
      */
+    // @codingStandardsIgnoreLine
     protected function _getElementHtml(AbstractElement $element)
     {
         // 1) Whatever Magento already resolved

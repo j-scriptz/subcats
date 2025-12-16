@@ -8,16 +8,19 @@ declare(strict_types=1);
  *
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
- * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP Version 8+
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 - 2025 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
 
 namespace Jscriptz\Subcats\Model\License;
@@ -37,29 +40,40 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Model ApiClient
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class ApiClient
 {
     // ...
     /**
+     * Store manager instance
+     *
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private $_storeManager;
 
     /**
+     * Scope config instance
+     *
      * @var ScopeConfigInterface
      */
-    private $scopeConfig;
+    private $_scopeConfig;
 
     /**
+     * Remote address instance
+     *
      * @var RemoteAddress
      */
-    private $remoteAddress;
+    private $_remoteAddress;
 
     /**
+     * User factory instance
+     *
      * @var UserFactory
      */
-    private $userFactory;
+    private $_userFactory;
     private const MODULE_CODE = 'jscriptz_subcats';
     private const MODULE_NAME = 'Jscriptz_Subcats';
     private const VERIFY_URL  = 'https://mage.jscriptz.com/rest/V1/jscriptz/license/verify';
@@ -73,61 +87,76 @@ class ApiClient
     private const CONFIG_PATH_VERIFY_MESSAGE = 'jscriptz_subcats/license/verify_message';
     private const CONFIG_PATH_LICENSE_STATUS = 'jscriptz_subcats/license/license_status';
     private const CONFIG_PATH_TRIAL_EXPIRED = 'jscriptz_subcats/license/trial_expired';
-    private const CONFIG_PATH_TRIAL_DAYS_REMAINING = 'jscriptz_subcats/license/trial_days_remaining';
+    private const CONFIG_PATH_TRIAL_DAYS_REMAINING
+        = 'jscriptz_subcats/license/trial_days_remaining';
 
     // Your two APIs (relative to base URL)
     private const API_UPDATE_URI = '/V1/jscriptz/license/update';
     private const API_VERIFY_URI = '/V1/jscriptz/license/verify';
 
     /**
+     * Config writer instance
+     *
      * @var WriterInterface
      */
-    private WriterInterface $configWriter;
+    private WriterInterface $_configWriter;
 
     /**
+     * Curl client instance
+     *
      * @var Curl
      */
-    private Curl $curl;
+    private Curl $_curl;
 
     /**
+     * JSON serializer instance
+     *
      * @var Json
      */
-    private Json $json;
+    private Json $_json;
 
     /**
+     * Logger instance
+     *
      * @var LoggerInterface
      */
-    private LoggerInterface $logger;
+    private LoggerInterface $_logger;
 
     /**
+     * Module list instance
+     *
      * @var ModuleListInterface
      */
-    private ModuleListInterface $moduleList;
+    private ModuleListInterface $_moduleList;
 
     /**
+     * Component registrar instance
+     *
      * @var ComponentRegistrarInterface
      */
-    private ComponentRegistrarInterface $componentRegistrar;
+    private ComponentRegistrarInterface $_componentRegistrar;
 
     /**
+     * File driver instance
+     *
      * @var FileDriver
      */
-    private FileDriver $fileDriver;
+    private FileDriver $_fileDriver;
 
     /**
      * Constructor.
      *
-     * @param ScopeConfigInterface $scopeConfig
-     * @param StoreManagerInterface $storeManager
-     * @param RemoteAddress $remoteAddress
-     * @param UserFactory $userFactory
-     * @param WriterInterface $configWriter
-     * @param Curl $curl
-     * @param Json $json
-     * @param LoggerInterface $logger
-     * @param ModuleListInterface $moduleList
-     * @param ComponentRegistrarInterface $componentRegistrar
-     * @param FileDriver $fileDriver
+     * @param ScopeConfigInterface        $scopeConfig        Scope config interface
+     * @param StoreManagerInterface       $storeManager       Store manager interface
+     * @param RemoteAddress               $remoteAddress      Remote address instance
+     * @param UserFactory                 $userFactory        User factory instance
+     * @param WriterInterface             $configWriter       Config writer interface
+     * @param Curl                        $curl               HTTP client instance
+     * @param Json                        $json               JSON serializer instance
+     * @param LoggerInterface             $logger             Logger interface
+     * @param ModuleListInterface         $moduleList         Module list interface
+     * @param ComponentRegistrarInterface $componentRegistrar Component registrar
+     * @param FileDriver                  $fileDriver         File driver instance
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -142,70 +171,77 @@ class ApiClient
         ComponentRegistrarInterface $componentRegistrar,
         FileDriver $fileDriver
     ) {
-        $this->scopeConfig  = $scopeConfig;
-        $this->configWriter = $configWriter;
-        $this->curl         = $curl;
-        $this->json         = $json;
-        $this->logger       = $logger;
-        $this->moduleList = $moduleList;
-        $this->componentRegistrar = $componentRegistrar;
-        $this->fileDriver = $fileDriver;
-        $this->storeManager  = $storeManager;
-        $this->remoteAddress = $remoteAddress;
-        $this->userFactory   = $userFactory;
+        $this->_scopeConfig  = $scopeConfig;
+        $this->_configWriter = $configWriter;
+        $this->_curl         = $curl;
+        $this->_json         = $json;
+        $this->_logger       = $logger;
+        $this->_moduleList = $moduleList;
+        $this->_componentRegistrar = $componentRegistrar;
+        $this->_fileDriver = $fileDriver;
+        $this->_storeManager  = $storeManager;
+        $this->_remoteAddress = $remoteAddress;
+        $this->_userFactory   = $userFactory;
     }
 
     /**
      * Hit /V1/jscriptz/license/update and store latestVersion/newsMessage/etc.
      *
-     * @param string $scopeType
-     * @param int $scopeId
+     * @param string $scopeType Scope type for config save
+     * @param int    $scopeId   Scope ID for config save
+     *
      * @return void
      */
     public function syncUpdateInfo(
         string $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         int $scopeId = 0
     ): void {
-        $licenseKey = (string)$this->scopeConfig->getValue(self::XML_PATH_LICENSE_KEY);
+        $licenseKey = (string)$this->_scopeConfig->getValue(self::XML_PATH_LICENSE_KEY);
 
         // Always sync update info (even without a license key) so trial users still see:
         // - News & Updates
         // - Version status / update available
         $domain = rtrim(
-            (string)$this->scopeConfig->getValue('web/unsecure/base_url', ScopeInterface::SCOPE_STORE),
+            (string)$this->_scopeConfig->getValue(
+                'web/unsecure/base_url',
+                ScopeInterface::SCOPE_STORE
+            ),
             '/'
         );
 
-        $installedVersion = $this->getInstalledVersion();
+        $installedVersion = $this->_getInstalledVersion();
         $endpoint = self::UPDATE_URL;
 
         try {
 
             $payloadArray = [
-                'licenseKey'     => $licenseKey,        // currently ignored by server update()
-                'domain'         => $domain,            // currently ignored by server update()
-                'moduleCode'     => self::MODULE_CODE,  // MUST match server expectations
-                'currentVersion' => $installedVersion,  // MUST be provided for comparison
+                'licenseKey'     => $licenseKey,
+                'domain'         => $domain,
+                'moduleCode'     => self::MODULE_CODE,
+                'currentVersion' => $installedVersion,
             ];
 
             $payloadArray = array_merge(
                 $payloadArray,
-                $this->getLicenseMetadata(),
-                $this->getEnvironmentMetadata()
+                $this->_getLicenseMetadata(),
+                $this->_getEnvironmentMetadata()
             );
 
-            $payload = $this->json->serialize($payloadArray);
+            $payload = $this->_json->serialize($payloadArray);
 
-            $this->curl->addHeader('Content-Type', 'application/json');
-            $this->curl->post($endpoint, $payload);
+            $this->_curl->addHeader('Content-Type', 'application/json');
+            $this->_curl->post($endpoint, $payload);
 
-            $status = (int)$this->curl->getStatus();
-            $body   = (string)$this->curl->getBody();
+            $status = (int)$this->_curl->getStatus();
+            $body   = (string)$this->_curl->getBody();
 
-            $this->logger->info('Jscriptz_Subcats: update API response', ['body' => $body]);
+            $this->_logger->info(
+                'Jscriptz_Subcats: update API response',
+                ['body' => $body]
+            );
 
             if ($status !== 200) {
-                $this->configWriter->save(
+                $this->_configWriter->save(
                     self::CONFIG_PATH_VERSION_STATUS,
                     (string)__('Update check failed (HTTP %1).', $status),
                     $scopeType,
@@ -217,16 +253,18 @@ class ApiClient
 
             $decoded = null;
             try {
-                $decoded = $this->json->unserialize($body);
+                $decoded = $this->_json->unserialize($body);
             } catch (\Throwable $e) {
-                $this->logger->warning(
-                    'Jscriptz_Subcats: update API response not valid JSON: ' . $e->getMessage()
+                $this->_logger->warning(
+                    'Jscriptz_Subcats: update API response not valid JSON: '
+                    . $e->getMessage()
                 );
             }
 
             // License server currently returns a JSON LIST (not object)
             // Format: [ latestVersion, updateAvailable, message, newsMessage,
-            //           trialDaysRemaining, trialExpired, licenseStatus, trialStatus, trialMessage ]
+            // trialDaysRemaining, trialExpired, licenseStatus, trialStatus,
+            // trialMessage ]
             // But we support both list and object forms for durability.
             $latestVersion = '';
             $newsMessage   = '';
@@ -237,15 +275,27 @@ class ApiClient
                 $isList = array_values($decoded) === $decoded;
 
                 if ($isList) {
-                    $latestVersion    = isset($decoded[0]) ? (string)$decoded[0] : '';
+                    $latestVersion = isset($decoded[0])
+                        ? (string)$decoded[0]
+                        : '';
                     $updateAvailable  = $decoded[1] ?? null;
-                    $serverMessage    = isset($decoded[2]) ? (string)$decoded[2] : '';
-                    $newsMessage      = isset($decoded[3]) ? (string)$decoded[3] : '';
+                    $serverMessage = isset($decoded[2])
+                        ? (string)$decoded[2]
+                        : '';
+                    $newsMessage = isset($decoded[3])
+                        ? (string)$decoded[3]
+                        : '';
                 } else {
-                    $latestVersion    = !empty($decoded['latestVersion']) ? (string)$decoded['latestVersion'] : '';
+                    $latestVersion = !empty($decoded['latestVersion'])
+                        ? (string)$decoded['latestVersion']
+                        : '';
                     $updateAvailable  = $decoded['updateAvailable'] ?? null;
-                    $serverMessage    = !empty($decoded['message']) ? (string)$decoded['message'] : '';
-                    $newsMessage      = !empty($decoded['newsMessage']) ? (string)$decoded['newsMessage'] : '';
+                    $serverMessage = !empty($decoded['message'])
+                        ? (string)$decoded['message']
+                        : '';
+                    $newsMessage = !empty($decoded['newsMessage'])
+                        ? (string)$decoded['newsMessage']
+                        : '';
                 }
             }
 
@@ -253,9 +303,11 @@ class ApiClient
 
             // Build Version Status exactly how you want it:
             // - If latest == installed => "<installed> (Latest Version)"
-            // - If latest > installed  => "Installed: <installed> — Newer version available (<latest>) Download Here"
+            // - If latest > installed => "Installed: <installed> — Newer
+            // version available (<latest>) Download Here"
             // phpcs:ignore Magento2.SQL.RawQuery.FoundRawSql
-            $download = 'Update <a href="https://github.com/j-scriptz/subcats" target="_blank">Instructions</a>';
+            $download = 'Update <a href="https://github.com/j-scriptz/subcats"'
+                . ' target="_blank">Instructions</a>';
 
             if ($installedVersion !== '' && $latestVersion !== '') {
                 if (version_compare($installedVersion, $latestVersion, '<')) {
@@ -276,7 +328,7 @@ class ApiClient
                 $versionStatus = $serverMessage !== '' ? $serverMessage : (string)__('No update information.');
             }
 
-            $this->configWriter->save(
+            $this->_configWriter->save(
                 self::CONFIG_PATH_VERSION_STATUS,
                 $versionStatus,
                 $scopeType,
@@ -349,7 +401,7 @@ class ApiClient
 
                 // Persist human-readable License Status (for admin UI)
                 if ($licenseStatusLabel !== '') {
-                    $this->configWriter->save(
+                    $this->_configWriter->save(
                         self::CONFIG_PATH_LICENSE_STATUS,
                         $licenseStatusLabel,
                         $scopeType,
@@ -359,7 +411,7 @@ class ApiClient
 
                 // Persist machine-readable trial flags for frontend gating
                 if ($trialExpired !== null) {
-                    $this->configWriter->save(
+                    $this->_configWriter->save(
                         self::CONFIG_PATH_TRIAL_EXPIRED,
                         $trialExpired ? '1' : '0',
                         $scopeType,
@@ -367,7 +419,7 @@ class ApiClient
                     );
                 }
                 if ($trialDaysRemaining !== null) {
-                    $this->configWriter->save(
+                    $this->_configWriter->save(
                         self::CONFIG_PATH_TRIAL_DAYS_REMAINING,
                         (string)$trialDaysRemaining,
                         $scopeType,
@@ -377,7 +429,7 @@ class ApiClient
             }
 
             if (trim($newsMessage) !== '') {
-                $this->configWriter->save(
+                $this->_configWriter->save(
                     self::CONFIG_PATH_NEWS_MESSAGE,
                     $newsMessage,
                     $scopeType,
@@ -385,7 +437,7 @@ class ApiClient
                 );
             }
         } catch (\Throwable $e) {
-            $this->logger->error(
+            $this->_logger->error(
                 'Jscriptz_Subcats: update API sync exception: ' . $e->getMessage(),
                 ['exception' => $e]
             );
@@ -395,18 +447,19 @@ class ApiClient
     /**
      * Hit /V1/jscriptz/license/verify and store license_status/verify_message
      *
-     * @param string $scopeType
-     * @param int $scopeId
+     * @param string $scopeType Scope type for config save
+     * @param int    $scopeId   Scope ID for config save
+     *
      * @return void
      */
     public function syncVerifyInfo(
         string $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         int $scopeId = 0
     ): void {
-        $licenseKey = (string)$this->scopeConfig->getValue(self::XML_PATH_LICENSE_KEY);
+        $licenseKey = (string)$this->_scopeConfig->getValue(self::XML_PATH_LICENSE_KEY);
 
         $domain = rtrim(
-            (string)$this->scopeConfig->getValue('web/unsecure/base_url', ScopeInterface::SCOPE_STORE),
+            (string)$this->_scopeConfig->getValue('web/unsecure/base_url', ScopeInterface::SCOPE_STORE),
             '/'
         );
 
@@ -421,22 +474,22 @@ class ApiClient
 
             $payloadArray = array_merge(
                 $payloadArray,
-                $this->getLicenseMetadata(),
-                $this->getEnvironmentMetadata()
+                $this->_getLicenseMetadata(),
+                $this->_getEnvironmentMetadata()
             );
 
-            $payload = $this->json->serialize($payloadArray);
+            $payload = $this->_json->serialize($payloadArray);
 
-            $this->curl->addHeader('Content-Type', 'application/json');
-            $this->curl->post($endpoint, $payload);
+            $this->_curl->addHeader('Content-Type', 'application/json');
+            $this->_curl->post($endpoint, $payload);
 
-            $status = (int)$this->curl->getStatus();
-            $body   = (string)$this->curl->getBody();
+            $status = (int)$this->_curl->getStatus();
+            $body   = (string)$this->_curl->getBody();
 
-            $this->logger->info('Jscriptz_Subcats: verify API response', ['body' => $body]);
+            $this->_logger->info('Jscriptz_Subcats: verify API response', ['body' => $body]);
 
             if ($status !== 200) {
-                $this->configWriter->save(
+                $this->_configWriter->save(
                     self::CONFIG_PATH_VERIFY_MESSAGE,
                     (string)__('License verification failed (HTTP %1).', $status),
                     $scopeType,
@@ -447,9 +500,9 @@ class ApiClient
 
             $decoded = null;
             try {
-                $decoded = $this->json->unserialize($body);
+                $decoded = $this->_json->unserialize($body);
             } catch (\Throwable $e) {
-                $this->logger->warning(
+                $this->_logger->warning(
                     'Jscriptz_Subcats: verify API response not valid JSON: ' . $e->getMessage()
                 );
             }
@@ -470,21 +523,21 @@ class ApiClient
             }
 
             // Normalize the verify message to be user-friendly for free trials
-            $normalized = $this->normalizeLicenseStatusMessage($verifyMessage, $licenseKey);
+            $normalized = $this->_normalizeLicenseStatusMessage($verifyMessage, $licenseKey);
 
-            $this->configWriter->save(
+            $this->_configWriter->save(
                 self::CONFIG_PATH_VERIFY_MESSAGE,
                 $normalized,
                 $scopeType,
                 $scopeId
             );
         } catch (\Throwable $e) {
-            $this->logger->error(
+            $this->_logger->error(
                 'Jscriptz_Subcats: verify API sync exception: ' . $e->getMessage(),
                 ['exception' => $e]
             );
 
-            $this->configWriter->save(
+            $this->_configWriter->save(
                 self::CONFIG_PATH_VERIFY_MESSAGE,
                 (string)__('License verification error: %1', $e->getMessage()),
                 $scopeType,
@@ -498,60 +551,61 @@ class ApiClient
      *
      * @return array
      */
-    private function getEnvironmentMetadata(): array
+    private function _getEnvironmentMetadata(): array
     {
-        $store = $this->storeManager->getStore();
+        $store = $this->_storeManager->getStore();
 
         $baseUrl       = $store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK, false);
         $baseUrlSecure = $store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK, true);
 
-        $generalEmail = $this->scopeConfig->getValue(
+        $generalEmail = $this->_scopeConfig->getValue(
             'trans_email/ident_general/email',
             ScopeInterface::SCOPE_STORE
         );
-        $salesEmail = $this->scopeConfig->getValue(
+        $salesEmail = $this->_scopeConfig->getValue(
             'trans_email/ident_sales/email',
             ScopeInterface::SCOPE_STORE
         );
-        $supportEmail = $this->scopeConfig->getValue(
+        $supportEmail = $this->_scopeConfig->getValue(
             'trans_email/ident_support/email',
             ScopeInterface::SCOPE_STORE
         );
 
-        $storeName = $this->scopeConfig->getValue(
+        $storeName = $this->_scopeConfig->getValue(
             'general/store_information/name',
             ScopeInterface::SCOPE_STORE
         );
-        $streetLine1 = $this->scopeConfig->getValue(
+        $streetLine1 = $this->_scopeConfig->getValue(
             'general/store_information/street_line1',
             ScopeInterface::SCOPE_STORE
         );
-        $streetLine2 = $this->scopeConfig->getValue(
+        $streetLine2 = $this->_scopeConfig->getValue(
             'general/store_information/street_line2',
             ScopeInterface::SCOPE_STORE
         );
-        $city = $this->scopeConfig->getValue(
+        $city = $this->_scopeConfig->getValue(
             'general/store_information/city',
             ScopeInterface::SCOPE_STORE
         );
-        $region = $this->scopeConfig->getValue(
+        $region = $this->_scopeConfig->getValue(
             'general/store_information/region',
             ScopeInterface::SCOPE_STORE
         );
-        $postcode = $this->scopeConfig->getValue(
+        $postcode = $this->_scopeConfig->getValue(
             'general/store_information/postcode',
             ScopeInterface::SCOPE_STORE
         );
-        $countryId = $this->scopeConfig->getValue(
+        $countryId = $this->_scopeConfig->getValue(
             'general/store_information/country_id',
             ScopeInterface::SCOPE_STORE
         );
-        $telephone = $this->scopeConfig->getValue(
+        $telephone = $this->_scopeConfig->getValue(
             'general/store_information/phone',
             ScopeInterface::SCOPE_STORE
         );
 
-        $addressParts = array_filter([
+        $addressParts = array_filter(
+            [
             $storeName,
             $streetLine1,
             $streetLine2,
@@ -559,16 +613,17 @@ class ApiClient
             $region,
             $postcode,
             $countryId
-        ]);
+            ]
+        );
         $storeAddress = implode(', ', $addressParts);
 
         // Simple: use admin user with ID 1 (your main admin)
-        $adminUser = $this->userFactory->create()->load(1);
+        $adminUser = $this->_userFactory->create()->load(1);
         $adminEmail = $adminUser->getEmail() ?: null;
         $adminFirstname = $adminUser->getFirstname() ?: null;
         $adminLastname = $adminUser->getLastname() ?: null;
 
-        $clientIp = $this->remoteAddress->getRemoteAddress();
+        $clientIp = $this->_remoteAddress->getRemoteAddress();
 
         return [
             'admin_email'          => $adminEmail,
@@ -590,13 +645,13 @@ class ApiClient
      *
      * @return array
      */
-    private function getLicenseMetadata(): array
+    private function _getLicenseMetadata(): array
     {
-        $licenseStatus = $this->scopeConfig->getValue(
+        $licenseStatus = $this->_scopeConfig->getValue(
             'jscriptz_subcats/license/status',
             ScopeInterface::SCOPE_STORE
         );
-        $trialStart = $this->scopeConfig->getValue(
+        $trialStart = $this->_scopeConfig->getValue(
             'jscriptz_subcats/license/trial_start',
             ScopeInterface::SCOPE_STORE
         );
@@ -610,13 +665,14 @@ class ApiClient
     /**
      * Normalize the human-facing license status message.
      *
-     * Keep a friendly Free Trial message instead of raw "not found" errors while a trial is active.
+     * Keep a friendly Free Trial message instead of raw "not found" errors.
      *
-     * @param string $message
-     * @param string $licenseKey
+     * @param string $message    License status message from server
+     * @param string $licenseKey Current license key
+     *
      * @return string
      */
-    private function normalizeLicenseStatusMessage(string $message, string $licenseKey): string
+    private function _normalizeLicenseStatusMessage(string $message, string $licenseKey): string
     {
         $trimmed = trim($message);
         $lower   = strtolower($trimmed);
@@ -628,13 +684,13 @@ class ApiClient
 
         // If there is no license key yet, fall back to local 30‑day trial info
         if ($licenseKey === '' && ($trimmed === '' || strpos($lower, 'not found') !== false)) {
-            $daysRemaining = $this->getTrialDaysRemaining();
+            $daysRemaining = $this->_getTrialDaysRemaining();
 
             if ($daysRemaining > 0) {
                 return (string)__('Free Trial (%1 days remaining)', $daysRemaining);
             }
 
-            if ($daysRemaining === 0 && $this->hasTrialStart()) {
+            if ($daysRemaining === 0 && $this->_hasTrialStart()) {
                 return (string)__('Free Trial expired.');
             }
         }
@@ -644,13 +700,13 @@ class ApiClient
     }
 
     /**
-     * Calculate remaining trial days based on jscriptz_subcats/license/trial_start.
+     * Calculate remaining trial days based on trial_start config value.
      *
      * @return int
      */
-    private function getTrialDaysRemaining(): int
+    private function _getTrialDaysRemaining(): int
     {
-        $trialStart = (string)$this->scopeConfig->getValue(
+        $trialStart = (string)$this->_scopeConfig->getValue(
             'jscriptz_subcats/license/trial_start',
             ScopeInterface::SCOPE_STORE
         );
@@ -668,7 +724,7 @@ class ApiClient
 
             return $remaining > 0 ? $remaining : 0;
         } catch (\Throwable $e) {
-            $this->logger->warning(
+            $this->_logger->warning(
                 'Jscriptz_Subcats: invalid trial_start value in config.',
                 ['exception' => $e]
             );
@@ -681,9 +737,9 @@ class ApiClient
      *
      * @return bool
      */
-    private function hasTrialStart(): bool
+    private function _hasTrialStart(): bool
     {
-        $trialStart = (string)$this->scopeConfig->getValue(
+        $trialStart = (string)$this->_scopeConfig->getValue(
             'jscriptz_subcats/license/trial_start',
             ScopeInterface::SCOPE_STORE
         );
@@ -696,10 +752,10 @@ class ApiClient
      *
      * @return string
      */
-    private function getInstalledVersion(): string
+    private function _getInstalledVersion(): string
     {
         try {
-            $modulePath = $this->componentRegistrar->getPath(
+            $modulePath = $this->_componentRegistrar->getPath(
                 ComponentRegistrarInterface::MODULE,
                 self::MODULE_NAME
             );
@@ -707,23 +763,23 @@ class ApiClient
             if ($modulePath) {
                 $composerFile = $modulePath . '/composer.json';
                 // phpcs:ignore Magento2.Functions.DiscouragedFunction
-                if ($this->fileDriver->isExists($composerFile)) {
-                    $content = $this->fileDriver->fileGetContents($composerFile);
-                    $data = $this->json->unserialize($content);
+                if ($this->_fileDriver->isExists($composerFile)) {
+                    $content = $this->_fileDriver->fileGetContents($composerFile);
+                    $data = $this->_json->unserialize($content);
                     if (is_array($data) && !empty($data['version'])) {
                         return (string)$data['version'];
                     }
                 }
             }
         } catch (\Throwable $e) {
-            $this->logger->warning(
+            $this->_logger->warning(
                 'Jscriptz_Subcats: Could not read composer.json version: ' . $e->getMessage()
             );
         }
 
         // Fallback to module list (setup_module table) if composer.json read fails
         try {
-            $info = $this->moduleList->getOne(self::MODULE_NAME);
+            $info = $this->_moduleList->getOne(self::MODULE_NAME);
             if (is_array($info) && !empty($info['setup_version'])) {
                 return (string)$info['setup_version'];
             }
@@ -744,11 +800,11 @@ class ApiClient
      *
      * @return string
      */
-    private function getBaseUrl(): string
+    private function _getBaseUrl(): string
     {
         // If the License APIs live on the SAME Magento instance, this works:
         // http[s]://mage.jscriptz.com + /V1/jscriptz/license/...
-        return rtrim($this->scopeConfig->getValue('web/unsecure/base_url'), '/');
+        return rtrim($this->_scopeConfig->getValue('web/unsecure/base_url'), '/');
         // or hard-code: return 'https://mage.jscriptz.com';
     }
 }

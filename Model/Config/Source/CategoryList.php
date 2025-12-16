@@ -8,16 +8,19 @@ declare(strict_types=1);
  *
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
- * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP Version 8+
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 - 2025 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
 
 
@@ -28,20 +31,27 @@ use Magento\Framework\Data\OptionSourceInterface;
 
 /**
  * Model CategoryList
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class CategoryList implements OptionSourceInterface
 {
     /**
+     * Category collection factory.
+     *
      * @var CollectionFactory
      */
-    private $categoryCollectionFactory;
+    private $_categoryCollectionFactory;
 
     /**
-     * @param CollectionFactory $categoryCollectionFactory
+     * Constructor.
+     *
+     * @param CollectionFactory $categoryCollectionFactory Category factory
      */
     public function __construct(CollectionFactory $categoryCollectionFactory)
     {
-        $this->categoryCollectionFactory = $categoryCollectionFactory;
+        $this->_categoryCollectionFactory = $categoryCollectionFactory;
     }
 
     /**
@@ -51,7 +61,7 @@ class CategoryList implements OptionSourceInterface
      */
     public function toOptionArray()
     {
-        $collection = $this->categoryCollectionFactory->create();
+        $collection = $this->_categoryCollectionFactory->create();
         $collection->addAttributeToSelect('name')
             ->addAttributeToFilter('is_active', 1)
             ->addAttributeToFilter('level', ['gt' => 1]) // skip root
@@ -60,7 +70,11 @@ class CategoryList implements OptionSourceInterface
         $options = [];
 
         foreach ($collection as $category) {
-            /** @var \Magento\Catalog\Model\Category $category */
+            /**
+             * Build label with indentation based on category level.
+             *
+             * @var \Magento\Catalog\Model\Category $category Category instance
+             */
             $label = $category->getName();
             $level = (int)$category->getLevel();
 

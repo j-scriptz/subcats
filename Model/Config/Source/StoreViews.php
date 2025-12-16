@@ -8,16 +8,19 @@ declare(strict_types=1);
  *
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
- * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP Version 8+
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 - 2025 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
 
 namespace Jscriptz\Subcats\Model\Config\Source;
@@ -27,22 +30,27 @@ use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Store views source model for widget parameters.
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class StoreViews implements OptionSourceInterface
 {
     /**
+     * Store manager instance.
+     *
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private $_storeManager;
 
     /**
      * Constructor.
      *
-     * @param StoreManagerInterface $storeManager
+     * @param StoreManagerInterface $storeManager Store manager instance
      */
     public function __construct(StoreManagerInterface $storeManager)
     {
-        $this->storeManager = $storeManager;
+        $this->_storeManager = $storeManager;
     }
 
     /**
@@ -54,7 +62,7 @@ class StoreViews implements OptionSourceInterface
     {
         $options = [];
 
-        foreach ($this->storeManager->getWebsites() as $website) {
+        foreach ($this->_storeManager->getWebsites() as $website) {
             foreach ($website->getGroups() as $group) {
                 foreach ($group->getStores() as $store) {
                     $options[] = [

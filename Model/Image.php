@@ -8,16 +8,19 @@ declare(strict_types=1);
  *
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
- * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP Version 8+
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 - 2025 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
 
 
@@ -41,21 +44,30 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 
 /**
+ * Image model for handling image operations.
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
+ *
  * @SuppressWarnings(PHPMD.TooManyFields)
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @method string getFile()
- * @method string getLabel()
- * @method string getPosition()
+ * @method                                           string getFile()
+ * @method                                           string getLabel()
+ * @method                                           string getPosition()
  */
 class Image extends AbstractModel
 {
     /**
+     * Image width
+     *
      * @var int
      */
     protected $width;
 
     /**
+     * Image height
+     *
      * @var int
      */
     protected $height;
@@ -68,145 +80,197 @@ class Image extends AbstractModel
     protected $quality = 100;
 
     /**
+     * Keep aspect ratio flag
+     *
      * @var bool
      */
     protected $keepAspectRatio = true;
 
     /**
+     * Keep frame flag
+     *
      * @var bool
      */
     protected $keepFrame = true;
 
     /**
+     * Keep transparency flag
+     *
      * @var bool
      */
     protected $keepTransparency = true;
 
     /**
+     * Constrain only flag
+     *
      * @var bool
      */
     protected $constrainOnly = true;
 
     /**
+     * Background color RGB values
+     *
      * @var int[]
      */
     protected $backgroundColor = [255, 255, 255];
 
     /**
+     * Base file path
+     *
      * @var string
      */
     protected $baseFile;
 
     /**
+     * Is base file placeholder flag
+     *
      * @var bool
      */
     protected $isBaseFilePlaceholder;
 
     /**
+     * New file path
+     *
      * @var string|bool
      */
     protected $newFile;
 
     /**
+     * Image processor instance
+     *
      * @var MagentoImage
      */
     protected $processor;
 
     /**
+     * Destination subdirectory
+     *
      * @var string
      */
     protected $destinationSubdir;
 
     /**
+     * Rotation angle
+     *
      * @var int
      */
     protected $angle;
 
     /**
+     * Watermark file path
+     *
      * @var string
      */
     protected $watermarkFile;
 
     /**
+     * Watermark position
+     *
      * @var int
      */
     protected $watermarkPosition;
 
     /**
+     * Watermark width
+     *
      * @var int
      */
     protected $watermarkWidth;
 
     /**
+     * Watermark height
+     *
      * @var int
      */
     protected $watermarkHeight;
 
     /**
+     * Watermark image opacity
+     *
      * @var int
      */
     protected $watermarkImageOpacity = 70;
 
     /**
+     * Media directory instance
+     *
      * @var \Magento\Framework\Filesystem\Directory\WriteInterface
      */
     protected $mediaDirectory;
 
     /**
+     * Image factory instance
+     *
      * @var \Magento\Framework\Image\Factory
      */
     protected $imageFactory;
 
     /**
+     * Asset repository instance
+     *
      * @var \Magento\Framework\View\Asset\Repository
      */
     protected $assetRepo;
 
     /**
+     * View file system instance
+     *
      * @var \Magento\Framework\View\FileSystem
      */
     protected $viewFileSystem;
 
     /**
+     * Core file storage database helper
+     *
      * @var \Magento\MediaStorage\Helper\File\Storage\Database
      */
     protected $coreFileStorageDatabase = null;
 
     /**
+     * Scope config instance
+     *
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
     protected $scopeConfig;
 
     /**
+     * Uploader instance
+     *
      * @var Uploader
      */
     protected $uploader;
 
     /**
+     * Store manager instance
+     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
 
     /**
+     * Entity code
+     *
      * @var string
      */
     protected $entityCode;
 
     /**
-     * @param Context $context
-     * @param Registry $registry
-     * @param StoreManagerInterface $storeManager
-     * @param Uploader $uploader
-     * @param Database $coreFileStorageDatabase
-     * @param Filesystem $filesystem
-     * @param ImageFactory $imageFactory
-     * @param Repository $assetRepo
-     * @param ViewFileSystem $viewFileSystem
-     * @param ScopeConfigInterface $scopeConfig
-     * @param string $entityCode
-     * @param AbstractResource|null $resource
-     * @param AbstractDb|null $resourceCollection
-     * @param array $data
+     * Constructor
+     *
+     * @param Context               $context                 Application context
+     * @param Registry              $registry                Registry instance
+     * @param StoreManagerInterface $storeManager            Store manager instance
+     * @param Uploader              $uploader                Uploader instance
+     * @param Database              $coreFileStorageDatabase Database storage helper
+     * @param Filesystem            $filesystem              Filesystem instance
+     * @param MagentoImageFactory   $imageFactory            Image factory
+     * @param Repository            $assetRepo               Asset repository
+     * @param ViewFileSystem        $viewFileSystem          View filesystem
+     * @param ScopeConfigInterface  $scopeConfig             Scope config
+     * @param string                $entityCode              Entity code
+     * @param AbstractResource|null $resource                Resource model
+     * @param AbstractDb|null       $resourceCollection      Resource collection
+     * @param array                 $data                    Additional data
      */
     public function __construct(
         Context $context,
@@ -233,7 +297,13 @@ class Image extends AbstractModel
         $this->scopeConfig              = $scopeConfig;
         $this->entityCode               = $entityCode;
 
-        parent::__construct($context, $registry, $resource, $resourceCollection, $data);
+        parent::__construct(
+            $context,
+            $registry,
+            $resource,
+            $resourceCollection,
+            $data
+        );
 
         $this->mediaDirectory = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
         $this->mediaDirectory->create($this->uploader->getBasePath());
@@ -242,7 +312,8 @@ class Image extends AbstractModel
     /**
      * Set image width
      *
-     * @param int $width
+     * @param int $width Image width in pixels
+     *
      * @return $this
      */
     public function setWidth($width)
@@ -264,7 +335,8 @@ class Image extends AbstractModel
     /**
      * Set image height
      *
-     * @param int $height
+     * @param int $height Image height in pixels
+     *
      * @return $this
      */
     public function setHeight($height)
@@ -286,7 +358,8 @@ class Image extends AbstractModel
     /**
      * Set image quality, values in percentage from 0 to 100
      *
-     * @param int $quality
+     * @param int $quality Image quality (0-100)
+     *
      * @return $this
      */
     public function setQuality($quality)
@@ -308,7 +381,8 @@ class Image extends AbstractModel
     /**
      * Set whether to keep aspect ratio when resizing
      *
-     * @param bool $keep
+     * @param bool $keep Whether to keep aspect ratio
+     *
      * @return $this
      */
     public function setKeepAspectRatio($keep)
@@ -320,7 +394,8 @@ class Image extends AbstractModel
     /**
      * Set whether to keep frame when resizing
      *
-     * @param bool $keep
+     * @param bool $keep Whether to keep frame
+     *
      * @return $this
      */
     public function setKeepFrame($keep)
@@ -332,7 +407,8 @@ class Image extends AbstractModel
     /**
      * Set whether to keep transparency when resizing
      *
-     * @param bool $keep
+     * @param bool $keep Whether to keep transparency
+     *
      * @return $this
      */
     public function setKeepTransparency($keep)
@@ -344,7 +420,8 @@ class Image extends AbstractModel
     /**
      * Set whether to constrain only larger images when resizing
      *
-     * @param bool $flag
+     * @param bool $flag Whether to constrain only larger images
+     *
      * @return $this
      */
     public function setConstrainOnly($flag)
@@ -356,7 +433,8 @@ class Image extends AbstractModel
     /**
      * Set background color for image
      *
-     * @param int[] $rgbArray
+     * @param int[] $rgbArray RGB color array [r, g, b]
+     *
      * @return $this
      */
     public function setBackgroundColor(array $rgbArray)
@@ -368,7 +446,8 @@ class Image extends AbstractModel
     /**
      * Set image dimensions from a size string (e.g., "100x200")
      *
-     * @param string $size
+     * @param string $size Size string in format "widthxheight"
+     *
      * @return $this
      */
     public function setSize($size)
@@ -391,15 +470,17 @@ class Image extends AbstractModel
     /**
      * Check if there is enough memory to process the image file
      *
-     * @param string|null $file
+     * @param string|null $file File path to check memory for
+     *
      * @return bool
      */
     protected function checkMemory($file = null)
     {
-        return $this->getMemoryLimit() > $this->getMemoryUsage() + $this->getNeedMemoryForFile(
-            $file
-        )
-        || $this->getMemoryLimit() == -1;
+        $memoryLimit = $this->getMemoryLimit();
+        $memoryUsage = $this->getMemoryUsage();
+        $needMemory = $this->getNeedMemoryForFile($file);
+        return $memoryLimit > $memoryUsage + $needMemory
+            || $memoryLimit == -1;
     }
 
     /**
@@ -443,8 +524,10 @@ class Image extends AbstractModel
     /**
      * Calculate memory needed to process the image file
      *
-     * @param string|null $file
+     * @param string|null $file File path to calculate memory for
+     *
      * @return float|int
+     *
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     protected function getNeedMemoryForFile($file = null)
@@ -472,15 +555,16 @@ class Image extends AbstractModel
             // if there is no info about this parameter lets set it for maximum
             $imageInfo['bits'] = 8;
         }
-        return round(
-            ($imageInfo[0] * $imageInfo[1] * $imageInfo['bits'] * $imageInfo['channels'] / 8 + Pow(2, 16)) * 1.65
-        );
+        $pixelSize = $imageInfo[0] * $imageInfo[1]
+            * $imageInfo['bits'] * $imageInfo['channels'] / 8;
+        return round(($pixelSize + Pow(2, 16)) * 1.65);
     }
 
     /**
      * Convert array of 3 items (decimal r, g, b) to string of their hex values
      *
-     * @param int[] $rgbArray
+     * @param int[] $rgbArray Array of RGB values [r, g, b]
+     *
      * @return string
      */
     protected function rgbToString($rgbArray)
@@ -499,9 +583,12 @@ class Image extends AbstractModel
     /**
      * Set filenames for base file and new file
      *
-     * @param string $file
+     * @param string $file File path to set as base
+     *
      * @return $this
+     *
      * @throws \Exception
+     *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
@@ -515,7 +602,8 @@ class Image extends AbstractModel
         $baseDir = $this->uploader->getBasePath();
 
         if ($file) {
-            if (!$this->fileExists($baseDir . $file) || !$this->checkMemory($baseDir . $file)) {
+            $basePath = $baseDir . $file;
+            if (!$this->fileExists($basePath) || !$this->checkMemory($basePath)) {
                 $file = null;
             }
         }
@@ -607,7 +695,8 @@ class Image extends AbstractModel
     /**
      * Set image processor.
      *
-     * @param MagentoImage $processor
+     * @param MagentoImage $processor Image processor instance
+     *
      * @return $this
      */
     public function setImageProcessor($processor)
@@ -624,7 +713,9 @@ class Image extends AbstractModel
     public function getImageProcessor()
     {
         if (!$this->processor) {
-            $filename = $this->getBaseFile() ? $this->mediaDirectory->getAbsolutePath($this->getBaseFile()) : null;
+            $filename = $this->getBaseFile()
+                ? $this->mediaDirectory->getAbsolutePath($this->getBaseFile())
+                : null;
             $this->processor = $this->imageFactory->create($filename);
         }
         $this->processor->keepAspectRatio($this->keepAspectRatio);
@@ -639,7 +730,7 @@ class Image extends AbstractModel
     /**
      * Resize image to configured dimensions.
      *
-     * @see \Magento\Framework\Image\Adapter\AbstractAdapter
+     * @see    \Magento\Framework\Image\Adapter\AbstractAdapter
      * @return $this
      */
     public function resize()
@@ -654,7 +745,8 @@ class Image extends AbstractModel
     /**
      * Rotate image by angle.
      *
-     * @param int $angle
+     * @param int $angle Rotation angle in degrees
+     *
      * @return $this
      */
     public function rotate($angle)
@@ -669,7 +761,8 @@ class Image extends AbstractModel
      *
      * This func actually affects only the cache filename.
      *
-     * @param int $angle
+     * @param int $angle Rotation angle in degrees
+     *
      * @return $this
      */
     public function setAngle($angle)
@@ -681,13 +774,15 @@ class Image extends AbstractModel
     /**
      * Add watermark to image. Size param in format 100x200.
      *
-     * @param string $file
-     * @param string $position
-     * @param array $size ['width' => int, 'height' => int]
-     * @param int $width
-     * @param int $height
-     * @param int $opacity
+     * @param string $file     Watermark file path
+     * @param string $position Watermark position
+     * @param array  $size     Size array ['width' => int, 'height' => int]
+     * @param int    $width    Watermark width
+     * @param int    $height   Watermark height
+     * @param int    $opacity  Watermark opacity
+     *
      * @return $this
+     *
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function setWatermark(
@@ -727,10 +822,16 @@ class Image extends AbstractModel
 
         if ($filePath) {
             $imagePreprocessor = $this->getImageProcessor();
-            $imagePreprocessor->setWatermarkPosition($this->getWatermarkPosition());
-            $imagePreprocessor->setWatermarkImageOpacity($this->getWatermarkImageOpacity());
+            $imagePreprocessor->setWatermarkPosition(
+                $this->getWatermarkPosition()
+            );
+            $imagePreprocessor->setWatermarkImageOpacity(
+                $this->getWatermarkImageOpacity()
+            );
             $imagePreprocessor->setWatermarkWidth($this->getWatermarkWidth());
-            $imagePreprocessor->setWatermarkHeight($this->getWatermarkHeight());
+            $imagePreprocessor->setWatermarkHeight(
+                $this->getWatermarkHeight()
+            );
             $imagePreprocessor->watermark($filePath);
         }
 
@@ -761,9 +862,9 @@ class Image extends AbstractModel
     public function getUrl()
     {
         if ($this->newFile === true) {
-            $url = $this->assetRepo->getUrl(
-                "Sample_News::images/".$this->entityCode."/placeholder/{$this->getDestinationSubdir()}.jpg"
-            );
+            $placeholderPath = "Sample_News::images/" . $this->entityCode
+                . "/placeholder/{$this->getDestinationSubdir()}.jpg";
+            $url = $this->assetRepo->getUrl($placeholderPath);
         } else {
             $url = $this->storeManager->getStore()->getBaseUrl(
                 UrlInterface::URL_TYPE_MEDIA
@@ -776,7 +877,8 @@ class Image extends AbstractModel
     /**
      * Set destination subdirectory.
      *
-     * @param string $dir
+     * @param string $dir Destination subdirectory path
+     *
      * @return $this
      */
     public function setDestinationSubdir($dir)
@@ -811,7 +913,8 @@ class Image extends AbstractModel
     /**
      * Set watermark file name
      *
-     * @param string $file
+     * @param string $file Watermark file path
+     *
      * @return $this
      */
     public function setWatermarkFile($file)
@@ -844,9 +947,11 @@ class Image extends AbstractModel
         }
         $baseDir = $this->uploader->getBasePath();
 
+        $storeId = $this->storeManager->getStore()->getId();
+        $websiteId = $this->storeManager->getWebsite()->getId();
         $candidates = [
-            $baseDir . '/watermark/stores/' . $this->storeManager->getStore()->getId() . $file,
-            $baseDir . '/watermark/websites/' . $this->storeManager->getWebsite()->getId() . $file,
+            $baseDir . '/watermark/stores/' . $storeId . $file,
+            $baseDir . '/watermark/websites/' . $websiteId . $file,
             $baseDir . '/watermark/default/' . $file,
             $baseDir . '/watermark/' . $file,
         ];
@@ -866,7 +971,8 @@ class Image extends AbstractModel
     /**
      * Set watermark position
      *
-     * @param string $position
+     * @param string $position Watermark position code
+     *
      * @return $this
      */
     public function setWatermarkPosition($position)
@@ -888,7 +994,8 @@ class Image extends AbstractModel
     /**
      * Set watermark image opacity
      *
-     * @param int $imageOpacity
+     * @param int $imageOpacity Opacity value (0-100)
+     *
      * @return $this
      */
     public function setWatermarkImageOpacity($imageOpacity)
@@ -910,13 +1017,15 @@ class Image extends AbstractModel
     /**
      * Set watermark size
      *
-     * @param array $size
+     * @param array $size Size array ['width' => int, 'height' => int]
+     *
      * @return $this
      */
     public function setWatermarkSize($size)
     {
         if (is_array($size)) {
-            $this->setWatermarkWidth($size['width'])->setWatermarkHeight($size['height']);
+            $this->setWatermarkWidth($size['width'])
+                ->setWatermarkHeight($size['height']);
         }
         return $this;
     }
@@ -924,7 +1033,8 @@ class Image extends AbstractModel
     /**
      * Set watermark width
      *
-     * @param int $width
+     * @param int $width Watermark width in pixels
+     *
      * @return $this
      */
     public function setWatermarkWidth($width)
@@ -946,7 +1056,8 @@ class Image extends AbstractModel
     /**
      * Set watermark height
      *
-     * @param int $height
+     * @param int $height Watermark height in pixels
+     *
      * @return $this
      */
     public function setWatermarkHeight($height)
@@ -975,13 +1086,16 @@ class Image extends AbstractModel
         $directory = $this->uploader->getBasePath() . '/cache';
         $this->mediaDirectory->delete($directory);
 
-        $this->coreFileStorageDatabase->deleteFolder($this->mediaDirectory->getAbsolutePath($directory));
+        $this->coreFileStorageDatabase->deleteFolder(
+            $this->mediaDirectory->getAbsolutePath($directory)
+        );
     }
 
     /**
      * Check if file exists on filesystem or in database storage.
      *
-     * @param string $filename
+     * @param string $filename File path to check
+     *
      * @return bool
      */
     protected function fileExists($filename)
@@ -1004,16 +1118,19 @@ class Image extends AbstractModel
     {
         $fileInfo = null;
         if ($this->newFile === true) {
-            $asset = $this->assetRepo->createAsset(
-                "Sample_News::images/".$this->entityCode."/placeholder/{$this->getDestinationSubdir()}.jpg"
-            );
+            $placeholderPath = "Sample_News::images/" . $this->entityCode
+                . "/placeholder/{$this->getDestinationSubdir()}.jpg";
+            $asset = $this->assetRepo->createAsset($placeholderPath);
             $img = $asset->getSourceFile();
             // phpcs:ignore Magento2.Functions.DiscouragedFunction
             $fileInfo = getimagesize($img);
         } else {
-            if ($this->mediaDirectory->isFile($this->mediaDirectory->getAbsolutePath($this->newFile))) {
+            $newFilePath = $this->mediaDirectory->getAbsolutePath(
+                $this->newFile
+            );
+            if ($this->mediaDirectory->isFile($newFilePath)) {
                 // phpcs:ignore Magento2.Functions.DiscouragedFunction
-                $fileInfo = getimagesize($this->mediaDirectory->getAbsolutePath($this->newFile));
+                $fileInfo = getimagesize($newFilePath);
             }
         }
         return $fileInfo;

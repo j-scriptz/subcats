@@ -8,16 +8,19 @@ declare(strict_types=1);
  *
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
- * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP Version 8+
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 - 2025 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
 
 
@@ -28,6 +31,9 @@ use Magento\Store\Model\ScopeInterface;
 
 /**
  * Model LicenseValidator
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class LicenseValidator
 {
@@ -35,40 +41,45 @@ class LicenseValidator
     public const XML_PATH_LICENSE_STATUS = 'jscriptz_subcats/license/license_status';
 
     /**
+     * Scope config instance.
+     *
      * @var ScopeConfigInterface
      */
-    private $scopeConfig;
+    private $_scopeConfig;
 
     /**
      * Constructor.
      *
-     * @param ScopeConfigInterface $scopeConfig
+     * @param ScopeConfigInterface $scopeConfig Scope config instance
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig
     ) {
-        $this->scopeConfig = $scopeConfig;
+        $this->_scopeConfig = $scopeConfig;
     }
 
     /**
      * Check if license is valid for the given store.
      *
-     * @param int|null $storeId
+     * @param int|null $storeId Store ID
+     *
      * @return bool
      */
     public function isValid($storeId = null)
     {
-        $key = trim((string)$this->scopeConfig->getValue(
-            self::XML_PATH_LICENSE_KEY,
-            ScopeInterface::SCOPE_STORE,
-            $storeId
-        ));
+        $key = trim(
+            (string)$this->_scopeConfig->getValue(
+                self::XML_PATH_LICENSE_KEY,
+                ScopeInterface::SCOPE_STORE,
+                $storeId
+            )
+        );
 
         if ($key === '') {
             return false;
         }
 
-        $status = (string)$this->scopeConfig->getValue(
+        $status = (string)$this->_scopeConfig->getValue(
             self::XML_PATH_LICENSE_STATUS,
             ScopeInterface::SCOPE_STORE,
             $storeId
@@ -81,12 +92,13 @@ class LicenseValidator
     /**
      * Get raw license status string.
      *
-     * @param int|null $storeId
+     * @param int|null $storeId Store ID
+     *
      * @return string
      */
     public function getStatus($storeId = null)
     {
-        return (string)$this->scopeConfig->getValue(
+        return (string)$this->_scopeConfig->getValue(
             self::XML_PATH_LICENSE_STATUS,
             ScopeInterface::SCOPE_STORE,
             $storeId

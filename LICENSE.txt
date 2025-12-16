@@ -1,4 +1,4 @@
-Copyright � 2019 Jscriptz Co. Ltd.
+Copyright 2025 Jscriptz LLC.
 
 This License is entered by Jscriptz to govern the usage or redistribution of Jscriptz software. This is a legal agreement between you (either an individual or a single entity) and Jscriptz for Jscriptz software product(s) which may include extensions, templates and services.
 
@@ -30,5 +30,5 @@ The Agreement becomes effective at the moment when you acquire software from our
 
     6. LIMITATION OF LIABILITY: In no event shall Jscriptz be liable for any damages (including, without limitation, lost profits, business interruption, or lost information) rising out of �Authorized Users� use of or inability to use the Jscriptz products, even if Jscriptz has been advised of the possibility of such damages. In no event will Jscriptz be liable for prosecution arising from use of the Software against law or for any illegal use.
 
-The latest License: https://mage.jscriptz.com/LICENSE
+The latest License: https://mage.jscriptz.com/LICENSE.txt
 >>>>>>> 2808b9c (Initial Commit)

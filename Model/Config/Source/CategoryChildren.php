@@ -8,16 +8,19 @@ declare(strict_types=1);
  *
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
- * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP Version 8+
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 - 2025 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
 
 
@@ -32,39 +35,48 @@ use Magento\Store\Model\StoreManagerInterface;
 
 /**
  * Model CategoryChildren
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class CategoryChildren implements OptionSourceInterface
 {
     /**
+     * Category collection factory
+     *
      * @var CollectionFactory
      */
-    private $categoryCollectionFactory;
+    private $_categoryCollectionFactory;
 
     /**
+     * Request interface
+     *
      * @var RequestInterface
      */
-    private $request;
+    private $_request;
 
     /**
+     * Store manager
+     *
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private $_storeManager;
 
     /**
      * Constructor.
      *
-     * @param CollectionFactory $categoryCollectionFactory
-     * @param RequestInterface $request
-     * @param StoreManagerInterface $storeManager
+     * @param CollectionFactory     $categoryCollectionFactory Category collection factory
+     * @param RequestInterface      $request                   Request interface
+     * @param StoreManagerInterface $storeManager              Store manager
      */
     public function __construct(
         CollectionFactory $categoryCollectionFactory,
         RequestInterface $request,
         StoreManagerInterface $storeManager
     ) {
-        $this->categoryCollectionFactory = $categoryCollectionFactory;
-        $this->request = $request;
-        $this->storeManager = $storeManager;
+        $this->_categoryCollectionFactory = $categoryCollectionFactory;
+        $this->_request = $request;
+        $this->_storeManager = $storeManager;
     }
 
     /**
@@ -74,20 +86,24 @@ class CategoryChildren implements OptionSourceInterface
      */
     public function toOptionArray()
     {
-        $categoryId = (int)$this->request->getParam('id');
+        $categoryId = (int)$this->_request->getParam('id');
         if (!$categoryId) {
             // No current category context; nothing to select
             return [];
         }
 
-        $storeId = (int)$this->storeManager->getStore()->getId();
+        $storeId = (int)$this->_storeManager->getStore()->getId();
 
-        $collection = $this->categoryCollectionFactory->create();
+        $collection = $this->_categoryCollectionFactory->create();
         $collection->addAttributeToSelect('name')
             ->addAttributeToFilter('is_active', 1)
             ->setStoreId($storeId);
 
-        /** @var Category $current */
+        /**
+         * Current category
+         *
+         * @var Category $current
+         */
         $current = $collection->getItemById($categoryId);
         if (!$current) {
             // load current explicitly
@@ -100,7 +116,7 @@ class CategoryChildren implements OptionSourceInterface
 
         // Get descendants of current category, ordered by path
         $path = $current->getPath() . '/';
-        $descendants = $this->categoryCollectionFactory->create();
+        $descendants = $this->_categoryCollectionFactory->create();
         $descendants->addAttributeToSelect(['name', 'path', 'level', 'is_active'])
             ->addAttributeToFilter('path', ['like' => $path . '%'])
             ->addAttributeToFilter('is_active', 1)
@@ -110,7 +126,11 @@ class CategoryChildren implements OptionSourceInterface
         $options = [];
         $baseLevel = (int)$current->getLevel();
 
-        /** @var Category $cat */
+        /**
+         * Category item
+         *
+         * @var Category $cat
+         */
         foreach ($descendants as $cat) {
             $levelDiff = max(0, (int)$cat->getLevel() - $baseLevel - 1);
             $prefix = str_repeat('— ', $levelDiff);

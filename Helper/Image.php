@@ -8,18 +8,20 @@ declare(strict_types=1);
  *
  * This source file is subject to the EULA
  * that is bundled with this package in the file LICENSE.
- * It is also available through the world-wide-web at this URL:
- * http://mage.jscriptz.com/LICENSE
+ * It is also available through the web at this URL:
+ * https://mage.jscriptz.com/LICENSE.txt
  *
  ********************************************************************
  *
- * @category   Jscriptz
- * @package    Jscriptz_Subcats
- * @author     Jason Lotzer (jasonlotzer@gmail.com)
- * @copyright  Copyright (c) 2019 Jscriptz LLC. (https://mage.jscriptz.com)
- * @license    https://mage.jscriptz.com/LICENSE.txt
+ * PHP Version 8+
+ *
+ * @category  Jscriptz
+ * @package   Jscriptz_Subcats
+ * @author    Jason Lotzer <jasonlotzer@gmail.com>
+ * @copyright 2019 - 2025 Jscriptz LLC
+ * @license   https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link      https://mage.jscriptz.com
  */
-
 
 namespace Jscriptz\Subcats\Helper;
 
@@ -27,6 +29,9 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 
 /**
  * Helper Image
+ *
+ * @license  https://mage.jscriptz.com/LICENSE.txt Proprietary
+ * @link     https://mage.jscriptz.com
  */
 class Image extends \Magento\Framework\App\Helper\AbstractHelper
 {
@@ -36,25 +41,33 @@ class Image extends \Magento\Framework\App\Helper\AbstractHelper
     public const DIRECTORY = 'catalog/category';
 
     /**
+     * Media directory instance
+     *
      * @var \Magento\Framework\Filesystem\Directory\WriteInterface
      */
-    protected $_mediaDirectory;
+    protected $mediaDirectory;
 
     /**
+     * Image factory instance
+     *
      * @var \Magento\Framework\Image\Factory
      */
-    protected $_imageFactory;
+    protected $imageFactory;
 
     /**
+     * Store manager instance
+     *
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    protected $_storeManager;
+    protected $storeManager;
 
     /**
-     * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Magento\Framework\Filesystem $filesystem
-     * @param \Magento\Framework\Image\Factory $imageFactory
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * Constructor
+     *
+     * @param \Magento\Framework\App\Helper\Context      $context      Helper context
+     * @param \Magento\Framework\Filesystem              $filesystem   Filesystem instance
+     * @param \Magento\Framework\Image\AdapterFactory    $imageFactory Image factory
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager Store manager
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
@@ -62,21 +75,22 @@ class Image extends \Magento\Framework\App\Helper\AbstractHelper
         \Magento\Framework\Image\AdapterFactory $imageFactory,
         \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
-        $this->_mediaDirectory = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
-        $this->_imageFactory = $imageFactory;
-        $this->_storeManager = $storeManager;
+        $this->mediaDirectory = $filesystem->getDirectoryWrite(DirectoryList::MEDIA);
+        $this->imageFactory = $imageFactory;
+        $this->storeManager = $storeManager;
         parent::__construct($context);
     }
 
     /**
      * First check this file on FS
      *
-     * @param string $filename
+     * @param string $filename File path to check
+     *
      * @return bool
      */
-    protected function _fileExists($filename)
+    protected function fileExists($filename)
     {
-        if ($this->_mediaDirectory->isFile($filename)) {
+        if ($this->mediaDirectory->isFile($filename)) {
             return true;
         }
         return false;
@@ -85,9 +99,10 @@ class Image extends \Magento\Framework\App\Helper\AbstractHelper
     /**
      * Resize image.
      *
-     * @param string $image
-     * @param int|null $width
-     * @param int|null $height
+     * @param string   $image  Image filename
+     * @param int|null $width  Width in pixels
+     * @param int|null $height Height in pixels
+     *
      * @return string
      */
     public function resize($image, $width = null, $height = null)
@@ -102,16 +117,16 @@ class Image extends \Magento\Framework\App\Helper\AbstractHelper
             }
         }
 
-        $absolutePath = $this->_mediaDirectory->getAbsolutePath($mediaFolder) . $image;
-        $imageResized = $this->_mediaDirectory->getAbsolutePath($path) . $image;
+        $absolutePath = $this->mediaDirectory->getAbsolutePath($mediaFolder) . $image;
+        $imageResized = $this->mediaDirectory->getAbsolutePath($path) . $image;
 
-        if (!$this->_fileExists($path . $image) && $this->_fileExists($absolutePath)) {
-            $imageFactory = $this->_imageFactory->create();
+        if (!$this->fileExists($path . $image) && $this->fileExists($absolutePath)) {
+            $imageFactory = $this->imageFactory->create();
             $imageFactory->open($absolutePath);
             $imageFactory->save($imageResized);
         }
 
-        $baseUrl = $this->_storeManager
+        $baseUrl = $this->storeManager
             ->getStore()
             ->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA);
 

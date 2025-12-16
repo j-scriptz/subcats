@@ -14,29 +14,8 @@
                     <option name="default" value="Jscriptz_Subcats::subcats.phtml">
                         <label translate="true">Default Subcats Grid</label>
                     </option>
-                    <option name="hyva_slider" value="Jscriptz_Subcats::widget/hyva-slider.phtml">
-                        <label translate="true">Hyvä Snap Slider (x-snap-slider)</label>
-                    </option>
                 </options>
             </parameter>
-            <parameter name="slider_autoplay" xsi:type="select" visible="true" sort_order="2">
-                <label translate="true">Autoplay Slider</label>
-                <options>
-                    <option name="no" value="0">
-                        <label translate="true">No</label>
-                    </option>
-                    <option name="yes" value="1">
-                        <label translate="true">Yes</label>
-                    </option>
-                </options>
-            </parameter>
-            <parameter name="slider_autoplay_delay" xsi:type="text" visible="true" sort_order="3">
-                <label translate="true">Autoplay Delay (ms)</label>
-                <description translate="true">
-                    Time between slide changes in milliseconds (e.g. 5000). Used only when Autoplay is enabled.
-                </description>
-            </parameter>
-
             <parameter name="store_filter"
                        xsi:type="select"
                        visible="true"
@@ -221,7 +200,7 @@
                     CSS color for the card titles (e.g. #2563eb, #111827). Leave empty to use the global Subcats configuration.
                 </description>
             </parameter>
-            <parameter name="card_title_hover_color" xsi:type="text" visible="true" sort_order="66">
+            <parameter name="card_title_hover_color" xsi:type="text" visible="true" sort_order="116">
                 <label translate="true">Card Title Hover Color</label>
                 <description translate="true">
                     CSS color for the card titles on hover (e.g. #2563eb, #111827). Leave empty to use the theme default.

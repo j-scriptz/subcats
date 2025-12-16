@@ -264,6 +264,14 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
+                <field id="link_hover_color" type="text" translate="label,comment" sortOrder="91" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Card Title Hover Color</label>
+                    <config_path>jscriptz_subcats/design/link_hover_color</config_path>
+                    <comment>Any valid CSS color for hover state. Leave empty to inherit theme.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
                 <field id="name_font_weight" type="text" translate="label,comment"
                        sortOrder="132" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Card Title Font Weight</label>
